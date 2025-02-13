@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>TelegramNotify</name>
+    <name>BWTelegramNotify</name>
     <description>Telegram Notifications for Paper/Velocity server events</description>
 
     <repositories>
