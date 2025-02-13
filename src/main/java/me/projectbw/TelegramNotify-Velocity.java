@@ -21,6 +21,11 @@ public class TelegramNotifyVelocity {
         this.server = server;
         this.logger = logger;
         this.telegramSender = new TelegramSender();
+
+        // Вывод сообщения в консоль
+        logger.info("Plugins ProjectBW Активен");
+
+        // Отправка уведомления в Telegram
         telegramSender.sendMessage("Velocity сервер запущен!");
     }
 
