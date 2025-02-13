@@ -37,8 +37,8 @@ jobs:
   - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BWTG
+          name: BWTelegramNotify
           path: |
-            build/libs/BWTG-*.jar
-            !build/libs/BWTG-*-javadoc.jar
-            !build/libs/BWTG-*-sources.jar
+            build/libs/BWTelegramNotify-*.jar
+            !build/libs/BWTelegramNotify-*-javadoc.jar
+            !build/libs/BWTelegramNotify-*-sources.jar
