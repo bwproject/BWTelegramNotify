@@ -48,7 +48,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload release artifacts
       uses: Roang-zero1/github-upload-release-artifacts-action@v2
-      with:
-        args: "dist/bin/ dist/shell/compiled.sh"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
