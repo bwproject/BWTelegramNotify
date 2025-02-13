@@ -1,26 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.projectbw</groupId>
     <artifactId>BWTelegramNotify</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>BWTelegramNotify</name>
-    <description>Плагин для отправки уведомлений в Telegram при событиях на сервере</description>
-
-    <properties>
-        <java.version>17</java.version>
-        <paper.api.version>1.20.4-R0.1-SNAPSHOT</paper.api.version>
-        <velocity.api.version>3.4.0-SNAPSHOT</velocity.api.version>
-    </properties>
 
     <dependencies>
-        <!-- Paper (Spigot/Bukkit) API -->
+        <!-- Paper API -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>${paper.api.version}</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -28,64 +19,19 @@
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>${velocity.api.version}</version>
+            <version>3.4.0-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Gson для работы с JSON -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.10.1</version>
         </dependency>
     </dependencies>
 
     <repositories>
-        <!-- Репозиторий PaperMC -->
         <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-
-        <!-- Репозиторий Velocity -->
         <repository>
             <id>velocitypowered-repo</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
         </repository>
-
-        <!-- Центральный репозиторий Maven -->
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
     </repositories>
-
-    <build>
-        <plugins>
-            <!-- Компилятор Java -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-
-            <!-- Плагин сборки Jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>me.projectbw.BWTelegramNotifyPaper</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
