@@ -12,20 +12,30 @@
     <name>TelegramNotify</name>
     <description>Telegram Notifications for Paper/Velocity server events</description>
 
+    <!-- Репозитории -->
     <repositories>
         <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>velocitypowered-repo</id>
+            <id>velocity-powered-repo</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>velocity-central-repo</id>
+            <url>https://repo.velocitypowered.com/releases/</url>
+        </repository>
+        <repository>
+            <id>velocity-snapshots-repo</id>
+            <url>https://nexus.velocitypowered.com/repository/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
 
+    <!-- Зависимости -->
     <dependencies>
         <!-- Paper API (для Paper) -->
         <dependency>
@@ -35,11 +45,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Velocity API (для Velocity 3.4.0) -->
+        <!-- Velocity API (для Velocity 3.4.0-SNAPSHOT) -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.4.0</version>
+            <version>3.4.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -58,8 +68,10 @@
         </dependency>
     </dependencies>
 
+    <!-- Плагины для компиляции -->
     <build>
         <plugins>
+            <!-- Плагин для компиляции Java кода -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
