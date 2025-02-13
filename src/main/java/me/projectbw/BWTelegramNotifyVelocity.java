@@ -1,56 +1,49 @@
 package me.projectbw;
 
-import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
-import com.velocitypowered.api.event.connection.PreLogoutEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.event.handler.EventHandler;
+import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0")
 public class BWTelegramNotifyVelocity {
-    private static final Logger logger = LoggerFactory.getLogger(BWTelegramNotifyVelocity.class);
-    private final ProxyServer proxyServer;
+
     private final TelegramSender telegramSender;
+    private final ProxyServer server;
 
-    private final double lowTpsThreshold;
-    private final int tpsCheckInterval;
-    
-    public BWTelegramNotifyVelocity(ProxyServer proxyServer, TelegramSender telegramSender) {
-        this.proxyServer = proxyServer;
+    // Конструктор с передачей зависимости TelegramSender и ProxyServer
+    public BWTelegramNotifyVelocity(TelegramSender telegramSender, ProxyServer server) {
         this.telegramSender = telegramSender;
-        
-        // Извлекаем параметры из конфига
-        this.lowTpsThreshold = proxyServer.getConfiguration().getDouble("telegram.low_tps_threshold", 15.0);
-        this.tpsCheckInterval = proxyServer.getConfiguration().getInt("telegram.tps_check_interval", 10);
+        this.server = server;
     }
 
-    @Subscribe
+    // Обработчик события включения сервера
+    @EventHandler
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        logger.info("[PROJECTBW.RU] BWTelegramNotify для Velocity активен.");
-        telegramSender.sendMessage("Сервер Velocity запущен!");
+        telegramSender.sendMessage("Сервер включен.");
     }
 
-    @Subscribe
+    // Обработчик события выключения сервера
+    @EventHandler
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        telegramSender.sendMessage("Сервер выключен.");
+    }
+
+    // Обработчик события входа игрока на сервер
+    @EventHandler
     public void onPlayerJoin(PostLoginEvent event) {
         Player player = event.getPlayer();
-        telegramSender.sendMessage(String.format("Игрок %s зашел на сервер Velocity.", player.getUsername()));
+        telegramSender.sendMessage("Игрок " + player.getUsername() + " вошел на сервер.");
     }
 
-    @Subscribe
-    public void onPlayerQuit(PreLogoutEvent event) {
+    // Обработчик события выхода игрока с сервера
+    @EventHandler
+    public void onPlayerQuit(DisconnectEvent event) {
         Player player = event.getPlayer();
-        telegramSender.sendMessage(String.format("Игрок %s покинул сервер Velocity.", player.getUsername()));
-    }
-
-    public void sendServerChangeMessage(Player player, String newServer) {
-        telegramSender.sendMessage(String.format("Игрок %s сменил сервер на %s.", player.getUsername(), newServer));
-    }
-    
-    public void sendLowTpsAlert(double currentTps) {
-        if (currentTps < lowTpsThreshold) {
-            telegramSender.sendMessage(String.format("Предупреждение! TPS ниже порога (%f): %f", lowTpsThreshold, currentTps));
-        }
+        telegramSender.sendMessage("Игрок " + player.getUsername() + " покинул сервер.");
     }
 }
