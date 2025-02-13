@@ -13,13 +13,10 @@
     <description>Telegram Notifications for Paper/Velocity server events</description>
 
     <repositories>
-        <!-- Репозиторий Paper -->
         <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-
-        <!-- Репозиторий Velocity -->
         <repository>
             <id>velocitypowered-repo</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
@@ -30,7 +27,6 @@
     </repositories>
 
     <dependencies>
-        <!-- Paper API -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
@@ -38,7 +34,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -46,14 +41,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- SnakeYAML (для работы с YAML) -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.33</version>
         </dependency>
 
-        <!-- HttpClient (для работы с Telegram API) -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
