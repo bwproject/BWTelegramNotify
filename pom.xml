@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.projectbw</groupId>
-    <artifactId>TelegramNotify</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>BWTelegramNotify</artifactId>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>TelegramNotify</name>
+    <name>BWTelegramNotifyy</name>
     <description>Telegram Notifications for Paper/Velocity server events</description>
 
     <!-- Репозитории -->
