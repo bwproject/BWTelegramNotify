@@ -1,0 +1,16 @@
+telegram:
+  token: "YOUR_BOT_TOKEN"
+  chat_ids:
+    - "123456789"
+    - "-1009876543210"
+    - "@your_channel"
+  messages:
+    start: "Сервер запущен!"
+    stop: "Сервер выключен!"
+    restart: "Сервер перезагружен!"
+    low_tps: "⚠ Внимание! TPS сервера опустился ниже {tps}!"
+    player_join: "Игрок {player} зашел на сервер с IP: {ip}"
+    player_leave: "Игрок {player} покинул сервер с IP: {ip}"
+    player_switch_server: "Игрок {player} сменил сервер с {from_server} на {to_server} с IP: {ip}"
+  low_tps_threshold: 15.0  # Порог TPS, ниже которого отправляется уведомление
+  tps_check_interval: 60  # Интервал проверки TPS в секундах
