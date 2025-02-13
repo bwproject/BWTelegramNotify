@@ -2,66 +2,40 @@ package me.projectbw;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
-public class BWTelegramNotifyPaper extends JavaPlugin implements Listener {
-
+public class BWTelegramNotifyPaper extends JavaPlugin {
     private TelegramSender telegramSender;
-    private int tpsCheckInterval;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         FileConfiguration config = getConfig();
-        this.telegramSender = new TelegramSender(config);
-        this.tpsCheckInterval = config.getInt("tpsCheckInterval", 60); // Интервал проверки TPS
+        telegramSender = new TelegramSender(config);
 
-        getServer().getPluginManager().registerEvents(this, this);
-        getLogger().info("\u001B[92m[PROJECTBW.RU] \u001B[93mBWTelegramNotify \u001B[32mАктивен\u001B[0m");
+        getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[PROJECTBW.RU] " + ChatColor.YELLOW + "BWTelegramNotify " + ChatColor.DARK_GREEN + "Активен");
 
-        telegramSender.sendMessage("[SERVER] Сервер запущен!");
+        telegramSender.sendMessage("⚡ Paper сервер запущен!");
 
-        startTpsMonitor();
+        getCommand("status").setExecutor(new StatusCommand());
+
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(telegramSender), this);
     }
 
     @Override
     public void onDisable() {
-        telegramSender.sendMessage("[SERVER] Сервер выключен!");
-        getLogger().info("\u001B[91m[PROJECTBW.RU] BWTelegramNotify Отключен\u001B[0m");
+        telegramSender.sendMessage("⛔ Paper сервер выключен!");
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        String ip = player.getAddress().getAddress().getHostAddress();
-        String message = "[PLAYER] " + player.getName() + " зашел с IP: " + ip;
-        telegramSender.sendMessage(message);
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        String ip = player.getAddress().getAddress().getHostAddress();
-        String message = "[PLAYER] " + player.getName() + " вышел (IP: " + ip + ")";
-        telegramSender.sendMessage(message);
-    }
-
-    private void startTpsMonitor() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                double tps = Bukkit.getServer().getTPS()[0]; // Получаем текущий TPS
-                if (tps < 15) { // Предупреждение о низком TPS
-                    telegramSender.sendMessage("[WARNING] Низкий TPS: " + tps);
-                }
-            }
-        }.runTaskTimer(this, 0, tpsCheckInterval * 20L); // Интервал в секундах
+    private class StatusCommand implements CommandExecutor {
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            sender.sendMessage(ChatColor.GREEN + "[TelegramNotify] Статус: Активен");
+            return true;
+        }
     }
 }
