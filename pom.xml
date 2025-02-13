@@ -11,10 +11,8 @@
 
     <name>TelegramNotify</name>
     <description>Telegram Notifications for Paper/Velocity server events</description>
-    <url>https://github.com/yourusername/TelegramNotify</url>
 
     <dependencies>
-        <!-- Paper API Dependency -->
         <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paper-api</artifactId>
@@ -22,7 +20,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Velocity API Dependency (если используется Velocity) -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>api</artifactId>
@@ -30,32 +27,21 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- SnakeYAML для работы с YAML конфигурацией -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.33</version>
         </dependency>
 
-        <!-- HttpClient для отправки HTTP-запросов в Telegram API -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
-
-        <!-- JUnit для тестирования (если необходимо) -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Плагин для сборки плагина в JAR-файл -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -63,20 +49,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>me.projectbw.TelegramNotifyPaper</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>
