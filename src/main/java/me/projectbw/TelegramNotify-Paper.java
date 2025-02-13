@@ -15,8 +15,14 @@ public class TelegramNotifyPaper extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         telegramSender = new TelegramSender(getConfig());
-        Bukkit.getPluginManager().registerEvents(this, this);
+        
+        // Вывод сообщения в консоль
+        getLogger().info("Plugins ProjectBW Активен");
+
+        // Отправка уведомления в Telegram
         telegramSender.sendMessage("Сервер запущен!");
+
+        Bukkit.getPluginManager().registerEvents(this, this);
         startTpsMonitor();
     }
 
