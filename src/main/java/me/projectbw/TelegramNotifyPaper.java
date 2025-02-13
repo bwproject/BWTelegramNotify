@@ -19,7 +19,7 @@ public class TelegramNotifyPaper extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(this, this);
 
-        getLogger().info("Plugins ProjectBW Активен");
+        getLogger().info("Plugins ProjectBW Активен !");
         telegramSender.sendMessage("Paper сервер запущен!");
     }
 
