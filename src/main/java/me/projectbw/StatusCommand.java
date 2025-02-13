@@ -1,9 +1,10 @@
 package me.projectbw;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class StatusCommand implements CommandExecutor {
     private final TelegramSender telegramSender;
@@ -14,8 +15,11 @@ public class StatusCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        boolean isActive = telegramSender.checkBotStatus();
-        sender.sendMessage(ChatColor.GREEN + "[TelegramNotify] Статус: " + (isActive ? "Активен" : "Неактивен"));
-        return true;
+        if (command.getName().equalsIgnoreCase("status")) {
+            String statusMessage = telegramSender.checkBotStatus();
+            sender.sendMessage("§aСтатус Telegram-бота: " + statusMessage);
+            return true;
+        }
+        return false;
     }
 }
