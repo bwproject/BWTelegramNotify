@@ -2,9 +2,6 @@ package me.projectbw;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,7 +18,7 @@ public class BWTelegramNotifyPaper extends JavaPlugin {
 
         telegramSender.sendMessage("⚡ Paper сервер запущен!");
 
-        getCommand("status").setExecutor(new StatusCommand());
+        getCommand("status").setExecutor(new StatusCommand(telegramSender));
 
         Bukkit.getPluginManager().registerEvents(new PlayerListener(telegramSender), this);
     }
@@ -29,13 +26,5 @@ public class BWTelegramNotifyPaper extends JavaPlugin {
     @Override
     public void onDisable() {
         telegramSender.sendMessage("⛔ Paper сервер выключен!");
-    }
-
-    private class StatusCommand implements CommandExecutor {
-        @Override
-        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            sender.sendMessage(ChatColor.GREEN + "[TelegramNotify] Статус: Активен");
-            return true;
-        }
     }
 }

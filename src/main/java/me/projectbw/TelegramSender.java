@@ -44,3 +44,19 @@ public class TelegramSender {
         }
     }
 }
+
+public boolean checkBotStatus() {
+    try {
+        String urlString = "https://api.telegram.org/bot" + botToken + "/getMe";
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        conn.disconnect();
+
+        return responseCode == 200;
+    } catch (Exception e) {
+        return false;
+    }
+}
