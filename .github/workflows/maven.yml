@@ -39,6 +39,6 @@ jobs:
       with:
         name: BWTelegramNotify
         path: |
-          build/libs/BWTelegramNotify-*.jar
-          !build/libs/BWTelegramNotify-*-javadoc.jar
-          !build/libs/BWTelegramNotify-*-sources.jar
+          build/libs/BWTelegramNotify*.jar
+          !build/libs/BWTelegramNotify*-javadoc.jar
+          !build/libs/BWTelegramNotify*-sources.jar
