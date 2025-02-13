@@ -1,15 +1,16 @@
 telegram:
-  token: "YOUR_BOT_TOKEN"
+  bot_token: YOUR_BOT_TOKEN
   chat_ids:
-    - "123456789"
-    - "-1009876543210"
-  messages:
-    start: "Сервер запущен!"
-    stop: "Сервер выключен!"
-    restart: "Сервер перезагружен!"
-    low_tps: "⚠ Внимание! TPS сервера опустился ниже {tps}!"
-    player_join: "Игрок {player} зашел на сервер с IP: {ip}"
-    player_leave: "Игрок {player} покинул сервер с IP: {ip}"
-    player_switch_server: "Игрок {player} сменил сервер с {from_server} на {to_server} с IP: {ip}"
+    - "your_chat_id_1"
+    - "your_chat_id_2"
   low_tps_threshold: 15.0
-  tps_check_interval: 240
+  tps_check_interval: 10
+
+server:
+  startup_message: "[PROJECTBW.RU] BWTelegramNotify Активен"
+  player_join_message: "Игрок {player} зашел на сервер."
+  player_quit_message: "Игрок {player} покинул сервер."
+  server_change_message: "Игрок {player} сменил сервер на {server}."
+  server_status_message:
+    on: "Сервер включен."
+    off: "Сервер выключен."
