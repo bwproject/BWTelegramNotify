@@ -4,13 +4,14 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
-import com.velocitypowered.api.event.handler.EventHandler;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.event.EventHandler;
+import com.velocitypowered.api.event.Listener;
 
 @Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0")
-public class BWTelegramNotifyVelocity {
+public class BWTelegramNotifyVelocity implements Listener {
 
     private final TelegramSender telegramSender;
     private final ProxyServer server;
