@@ -1,8 +1,8 @@
 {
-  "id": "telegramnotify",
-  "name": "TelegramNotify",
+  "id": "bwtelegramnotify",
+  "name": "BWTelegramNotify",
   "version": "1.0",
-  "main": "me.projectbw.TelegramNotifyVelocity",
+  "main": "me.projectbw.BWTelegramNotifyVelocity"
   "author": "ProjectBW",
-  "description": "Отправка уведомлений о событиях сервера в Telegram"
+  "description": "Отправка уведомлений о событиях сервера в Telegram"  
 }

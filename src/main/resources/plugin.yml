@@ -1,6 +1,18 @@
-name: TelegramNotify
-version: 1.0
-main: me.projectbw.TelegramNotifyPaper
-api-version: 1.16
-description: Отправка уведомлений о событиях сервера в Telegram
+name: BWTelegramNotify
+main: me.projectbw.BWTelegramNotifyPaper
+version: 1.0-SNAPSHOT
 author: ProjectBW
+description: Плагин для отправки уведомлений в Telegram при событиях на сервере
+api-version: 1.20
+softdepend: [Vault]
+
+commands:
+  status:
+    description: Показывает статус подключения бота к Telegram
+    usage: /status
+    permission: bwtelegramnotify.status
+
+permissions:
+  bwtelegramnotify.status:
+    description: Позволяет использовать команду /status
+    default: true
