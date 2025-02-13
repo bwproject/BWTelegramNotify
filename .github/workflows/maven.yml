@@ -39,6 +39,4 @@ jobs:
       with:
         name: BWTelegramNotify
         path: |
-          /home/runner/work/tg_projectbw_plugins/tg_projectbw_plugins/target/BWTelegramNotify*.jar
-          !/home/runner/work/tg_projectbw_plugins/tg_projectbw_plugins/target/BWTelegramNotify*-javadoc.jar
-          !/home/runner/work/tg_projectbw_plugins/tg_projectbw_plugins/target/BWTelegramNotify*-sources.jar
+          /home/runner/work/tg_projectbw_plugins/tg_projectbw_plugins/target/TelegramNotify-1.0-SNAPSHOT.jar
