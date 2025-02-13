@@ -33,7 +33,7 @@ jobs:
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: plugin-jar
+          name: BWTelegramNotify
           path: target/*.jar
           retention-days: 7
 
@@ -50,7 +50,7 @@ jobs:
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: plugin-jar
+          name: BWTelegramNotify
           path: target/
 
       - name: Get release tag
