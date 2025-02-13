@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BWTelegramNotify</name>
+    <name>TelegramNotify</name>
     <description>Telegram Notifications for Paper/Velocity server events</description>
 
     <repositories>
@@ -27,6 +27,7 @@
     </repositories>
 
     <dependencies>
+        <!-- Paper API (для Paper) -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
@@ -34,19 +35,22 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Velocity API (для Velocity 3.4.0) -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.2.0-SNAPSHOT</version>
+            <version>3.4.0</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- Ямл библиотека для обработки конфигураций -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.33</version>
         </dependency>
 
+        <!-- HTTP клиент для отправки сообщений в Telegram -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
