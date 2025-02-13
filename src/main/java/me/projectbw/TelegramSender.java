@@ -1,39 +1,44 @@
 package me.projectbw;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.io.OutputStream;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 public class TelegramSender {
-    private final String botToken;
-    private final List<String> chatIds;
+    private String botToken;
+    private String chatId;
 
+    // Конструктор для Paper
     public TelegramSender(FileConfiguration config) {
-        this.botToken = config.getString("telegram.token");
-        this.chatIds = config.getStringList("telegram.chat_ids");
+        this.botToken = config.getString("telegram.bot_token", "");
+        this.chatId = config.getString("telegram.chat_id", "");
+    }
+
+    // Конструктор для Velocity (без конфигурации)
+    public TelegramSender() {
+        this.botToken = "ВАШ_ТОКЕН_БОТА"; // Укажите токен бота вручную, если нет конфига
+        this.chatId = "ВАШ_CHAT_ID"; // Укажите ID чата/группы
     }
 
     public void sendMessage(String message) {
-        for (String chatId : chatIds) {
-            try {
-                String urlString = "https://api.telegram.org/bot" + botToken + "/sendMessage";
-                String jsonPayload = "{\"chat_id\":\"" + chatId + "\",\"text\":\"" + message + "\"}";
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoOutput(true);
+        try {
+            String apiUrl = "https://api.telegram.org/bot" + botToken + "/sendMessage";
+            String jsonPayload = "{\"chat_id\":\"" + chatId + "\",\"text\":\"" + message + "\"}";
 
-                try (OutputStream os = conn.getOutputStream()) {
-                    os.write(jsonPayload.getBytes());
-                    os.flush();
-                }
-                conn.getResponseCode();
-            } catch (Exception e) {
-                e.printStackTrace();
+            HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(jsonPayload.getBytes(StandardCharsets.UTF_8));
             }
+
+            connection.getResponseCode(); // Отправляем запрос
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
