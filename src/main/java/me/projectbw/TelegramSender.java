@@ -1,62 +1,70 @@
 package me.projectbw;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
 
 public class TelegramSender {
     private final String botToken;
     private final String chatId;
 
     public TelegramSender(FileConfiguration config) {
-        this.botToken = config.getString("telegram.bot_token");
-        this.chatId = config.getString("telegram.chat_id");
-    }
-
-    public TelegramSender() {
-        this.botToken = "ВАШ_ТОКЕН_БОТА";
-        this.chatId = "ВАШ_CHAT_ID";
+        this.botToken = config.getString("telegram.bot-token");
+        this.chatId = config.getString("telegram.chat-id");
     }
 
     public void sendMessage(String message) {
-        if (botToken == null || chatId == null) return;
+        if (botToken == null || chatId == null) {
+            System.out.println("[TelegramSender] Ошибка: botToken или chatId не установлены!");
+            return;
+        }
+
+        String urlString = "https://api.telegram.org/bot" + botToken + "/sendMessage";
+        String jsonPayload = "{\"chat_id\":\"" + chatId + "\",\"text\":\"" + message + "\"}";
 
         try {
-            String urlString = "https://api.telegram.org/bot" + botToken + "/sendMessage";
-            String jsonPayload = "{\"chat_id\":\"" + chatId + "\", \"text\":\"" + message + "\"}";
-
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            OutputStream os = conn.getOutputStream();
-            os.write(jsonPayload.getBytes(StandardCharsets.UTF_8));
-            os.close();
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
 
-            conn.getResponseCode();
+            int responseCode = conn.getResponseCode();
             conn.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            if (responseCode != 200) {
+                System.out.println("[TelegramSender] Ошибка отправки сообщения в Telegram. Код ответа: " + responseCode);
+            }
+        } catch (IOException e) {
+            System.out.println("[TelegramSender] Ошибка: " + e.getMessage());
         }
     }
-}
 
-public boolean checkBotStatus() {
-    try {
-        String urlString = "https://api.telegram.org/bot" + botToken + "/getMe";
-        URL url = new URL(urlString);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
+    public boolean checkBotStatus() {
+        if (botToken == null) {
+            return false;
+        }
 
-        int responseCode = conn.getResponseCode();
-        conn.disconnect();
+        try {
+            String urlString = "https://api.telegram.org/bot" + botToken + "/getMe";
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
 
-        return responseCode == 200;
-    } catch (Exception e) {
-        return false;
+            int responseCode = conn.getResponseCode();
+            conn.disconnect();
+
+            return responseCode == 200;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
