@@ -22,7 +22,7 @@
         <!-- Репозиторий Velocity -->
         <repository>
             <id>velocitypowered-repo</id>
-            <url>https://repo.velocitypowered.com/releases/</url>
+            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.2.0</version>
+            <version>3.1.2</version>
             <scope>provided</scope>
         </dependency>
 
