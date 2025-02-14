@@ -10,29 +10,11 @@
     <packaging>jar</packaging>
 
     <name>BWTelegramNotify</name>
-    <url>https://www.example.com</url>
-
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
-    <repositories>
-        <!-- Репозиторий для Paper API -->
-        <repository>
-            <id>papermc-repo</id>
-            <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-
-        <!-- Репозиторий для Velocity API -->
-        <repository>
-            <id>velocity-repo</id>
-            <url>https://repo.velocitypowered.com</url>
-        </repository>
-    </repositories>
+    <description>Plugin for Telegram Notifications in Velocity and Paper Minecraft servers</description>
+    <url>https://github.com/yourusername/BWTelegramNotify</url>
 
     <dependencies>
-        <!-- Зависимость для Paper API -->
+        <!-- Paper API Dependency -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
@@ -40,14 +22,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для Telegram Bot API -->
-        <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-
-        <!-- Зависимость для Velocity API -->
+        <!-- Velocity API Dependency -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -55,44 +30,54 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для Guice (если требуется для Dependency Injection) -->
+        <!-- Telegram Bot API -->
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>5.4.0</version> <!-- используйте актуальную версию -->
+        </dependency>
+
+        <!-- Guice for Dependency Injection (if used) -->
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-
-        <!-- Зависимость для других библиотек, которые могут понадобиться -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.8</version>
+            <version>5.1.0</version>
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>velocity-snapshot</id>
+            <url>https://repo.velocitypowered.com/snapshots/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>20</source> <!-- Установлено для Java 20 -->
+                    <target>20</target> <!-- Установлено для Java 20 -->
                 </configuration>
             </plugin>
 
+            <!-- Shade Plugin to create the fat JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Main-Class>me.projectbw.BWTelegramNotify</Main-Class>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
