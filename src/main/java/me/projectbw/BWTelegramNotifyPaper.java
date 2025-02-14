@@ -5,8 +5,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BWTelegramNotifyPaper extends JavaPlugin implements Listener {
+    private static final Logger logger = LoggerFactory.getLogger(BWTelegramNotifyPaper.class);
     private TelegramSender telegramSender;
 
     @Override
@@ -14,24 +19,33 @@ public class BWTelegramNotifyPaper extends JavaPlugin implements Listener {
         saveDefaultConfig();
         this.telegramSender = new TelegramSender(
             getConfig().getString("telegram.bot_token"), 
-            String.join(",", getConfig().getStringList("telegram.chat_ids")) // Преобразование списка в строку
+            getConfig().getStringList("telegram.chat_ids")
         );
 
         getServer().getPluginManager().registerEvents(this, this);
-        telegramSender.sendMessage(getConfig().getString("server.startup_message"));
+
+        // Цветной лог в консоль о запуске плагина
+        String message = "§aПлагин BWTelegramNotify активен!";
+        logger.info(message);
+
+        // Также выводим через Adventure
+        Component componentMessage = Component.text("Плагин BWTelegramNotify активен!")
+                .color(TextColor.color(0x00FF00)); // Зеленый цвет
+        logger.info(componentMessage.toString());
+
+        // Отправка в Telegram
+        telegramSender.sendMessage("Плагин BWTelegramNotify активен на сервере!");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        telegramSender.sendMessage(getConfig().getString("server.player_join_message").replace("{player}", event.getPlayer().getName()));
+        String playerName = event.getPlayer().getName();
+        telegramSender.sendMessage(getConfig().getString("server.player_join_message").replace("{player}", playerName));
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        telegramSender.sendMessage(getConfig().getString("server.player_quit_message").replace("{player}", event.getPlayer().getName()));
-    }
-
-    public void onServerShutdown() {
-        telegramSender.sendMessage(getConfig().getString("server.server_status_message.off"));
+        String playerName = event.getPlayer().getName();
+        telegramSender.sendMessage(getConfig().getString("server.player_quit_message").replace("{player}", playerName));
     }
 }
