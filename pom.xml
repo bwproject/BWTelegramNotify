@@ -10,17 +10,16 @@
     <packaging>jar</packaging>
 
     <name>BWTelegramNotify</name>
-    <url>https://github.com/YourUsername/BWTelegramNotify</url>
+    <description>BWTelegramNotify Plugin</description>
 
-    <repositories>
-        <repository>
-            <id>velocity-snapshot</id>
-            <url>https://repo.velocitypowered.com/snapshots/</url>
-        </repository>
-    </repositories>
+    <properties>
+        <maven.compiler.source>20</maven.compiler.source>
+        <maven.compiler.target>20</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
-        <!-- Velocity API -->
+        <!-- Зависимость для Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -28,23 +27,52 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Telegram API -->
+        <!-- Зависимость для Paper API -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Зависимость для Telegram Bot API -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.5.0</version>
+            <version>6.3.0</version> <!-- Используйте последнюю стабильную версию -->
         </dependency>
 
-        <!-- Guice (For dependency injection) -->
+        <!-- Зависимость для slf4j (логгирование) -->
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>5.0.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.0</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Зависимость для JUnit для тестирования -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Плагин для компиляции с использованием Java 20 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -53,6 +81,25 @@
                     <source>20</source>
                     <target>20</target>
                 </configuration>
+            </plugin>
+
+            <!-- Плагин для создания jar с зависимостями -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
