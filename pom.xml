@@ -15,6 +15,7 @@
         <java.version>20</java.version>
         <paper.api.version>1.21-R0.1-SNAPSHOT</paper.api.version>
         <velocity.api.version>3.4.0-SNAPSHOT</velocity.api.version>
+        <telegrambots.version>6.9.7</telegrambots.version>
     </properties>
 
     <repositories>
@@ -28,6 +29,12 @@
         <repository>
             <id>velocitypowered-repo</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+        </repository>
+
+        <!-- JitPack (Telegram API) -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -48,11 +55,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Telegram Bot API (если используется) -->
+        <!-- Telegram Bot API -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.9.7</version>
+            <version>${telegrambots.version}</version>
         </dependency>
     </dependencies>
 
