@@ -14,9 +14,9 @@ public class BWTelegramNotifyPaper extends JavaPlugin implements Listener {
         saveDefaultConfig();
         this.telegramSender = new TelegramSender(
             getConfig().getString("telegram.bot_token"), 
-            getConfig().getStringList("telegram.chat_ids")
+            String.join(",", getConfig().getStringList("telegram.chat_ids")) // Преобразование списка в строку
         );
-        
+
         getServer().getPluginManager().registerEvents(this, this);
         telegramSender.sendMessage(getConfig().getString("server.startup_message"));
     }
