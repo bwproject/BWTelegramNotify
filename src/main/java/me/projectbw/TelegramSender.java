@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramSender extends TelegramLongPollingBot {
+
     private final String botToken;
     private final String chatId;
 
@@ -16,12 +17,12 @@ public class TelegramSender extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        // Можно обработать команды из Telegram
+        // Ваш код для обработки входящих сообщений от пользователей
     }
 
     @Override
     public String getBotUsername() {
-        return "YourBotUsername"; // Укажите имя бота
+        return "YourBotUsername"; // Укажите имя вашего бота
     }
 
     @Override
@@ -41,6 +42,6 @@ public class TelegramSender extends TelegramLongPollingBot {
     }
 
     public String checkBotStatus() {
-        return "Бот работает"; // Можно добавить проверку статуса бота или другую логику
+        return "Бот работает"; // Добавьте проверку статуса бота
     }
 }
