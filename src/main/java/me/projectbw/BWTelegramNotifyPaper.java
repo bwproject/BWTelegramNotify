@@ -1,51 +1,23 @@
 package me.projectbw;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bukkit.event.Listener;
 
-public class BWTelegramNotifyPaper extends JavaPlugin implements Listener {
-    private static final Logger logger = LoggerFactory.getLogger(BWTelegramNotifyPaper.class);
+public class BWTelegramNotifyPaper extends JavaPlugin {
     private TelegramSender telegramSender;
+    private TPSListener tpsListener;
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        this.telegramSender = new TelegramSender(
-            getConfig().getString("telegram.bot_token"), 
-            getConfig().getStringList("telegram.chat_ids")
-        );
+        // Цветной лог в консоль
+        getLogger().info("\u001b[32m[INFO] BWTelegramNotify плагин активен!");  // Зеленый цвет
 
-        getServer().getPluginManager().registerEvents(this, this);
+        // Инициализация и регистрация listener
+        this.telegramSender = new TelegramSender("your_bot_token", "your_chat_id");  // Пример значений
+        this.tpsListener = new TPSListener(telegramSender, 18.0, 60);  // Порог TPS 18 и интервал 60 секунд
 
-        // Цветной лог в консоль о запуске плагина
-        String message = "§aПлагин BWTelegramNotify активен!";
-        logger.info(message);
-
-        // Также выводим через Adventure
-        Component componentMessage = Component.text("Плагин BWTelegramNotify активен!")
-                .color(TextColor.color(0x00FF00)); // Зеленый цвет
-        logger.info(componentMessage.toString());
-
-        // Отправка в Telegram
-        telegramSender.sendMessage("Плагин BWTelegramNotify активен на сервере!");
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        String playerName = event.getPlayer().getName();
-        telegramSender.sendMessage(getConfig().getString("server.player_join_message").replace("{player}", playerName));
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        String playerName = event.getPlayer().getName();
-        telegramSender.sendMessage(getConfig().getString("server.player_quit_message").replace("{player}", playerName));
+        // Регистрация TPSListener
+        Bukkit.getServer().getPluginManager().registerEvents(this.tpsListener, this);
     }
 }
