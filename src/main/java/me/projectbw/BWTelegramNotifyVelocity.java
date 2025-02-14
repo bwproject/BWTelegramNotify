@@ -2,11 +2,11 @@ package me.projectbw;
 
 import com.velocitypowered.api.event.Listener;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
+import com.velocitypowered.api.event.proxy.PlayerJoinEvent;
+import com.velocitypowered.api.event.proxy.PlayerLeaveEvent;
 import com.velocitypowered.api.event.handler.EventHandler;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.event.proxy.PlayerJoinEvent;
-import com.velocitypowered.api.event.proxy.PlayerLeaveEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent.Response;
 
 public class BWTelegramNotifyVelocity {
