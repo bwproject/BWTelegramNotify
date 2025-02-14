@@ -41,6 +41,6 @@ public class TelegramSender extends TelegramLongPollingBot {
     }
 
     public String checkBotStatus() {
-        return "Бот работает";
+        return "Бот работает"; // Можно добавить проверку статуса бота или другую логику
     }
 }
