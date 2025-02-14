@@ -1,31 +1,26 @@
 package me.projectbw.BWTelegramNotify;
 
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
-
+import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
-@Plugin(id = "BWTelegramNotify", name = "BWTelegramNotify", version = "1.0-SNAPSHOT")
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private final ProxyServer server;
-    private final Logger logger;
+    private final ProxyServer proxyServer;
 
     @Inject
-    public Main(ProxyServer server, Logger logger) {
-        this.server = server;
-        this.logger = logger;
+    public Main(ProxyServer proxyServer) {
+        this.proxyServer = proxyServer;
     }
 
     public void onEnable() {
-        // Инициализация плагина
-        logger.info("BWTelegramNotify has been enabled.");
-        server.getEventManager().register(this, new BWTelegramNotifyVelocity(server));
+        logger.info("BWTelegramNotify enabled!");
+        // Инициализация бота Telegram и подписка на события Velocity
     }
 
     public void onDisable() {
-        // Логика завершения работы плагина
-        logger.info("BWTelegramNotify has been disabled.");
+        logger.info("BWTelegramNotify disabled!");
     }
 }
