@@ -15,13 +15,19 @@
         <!-- Репозиторий для Velocity API -->
         <repository>
             <id>velocity-repo</id>
-            <url>https://repo.velocitypowered.com/snapshots/</url>
+            <url>https://repo.velocitypowered.com/repository/maven-public/</url>
         </repository>
-        
+
         <!-- Репозиторий для Paper API -->
         <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+
+        <!-- Центральный репозиторий для других зависимостей -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
 
@@ -42,7 +48,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Другие зависимости, например для Telegram Bot -->
+        <!-- Зависимость для Telegram Bot API -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
