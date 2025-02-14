@@ -1,43 +1,43 @@
 package me.projectbw;
 
 import com.velocitypowered.api.event.EventHandler;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
-import com.velocitypowered.api.event.connection.PreLogoutEvent;
-import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.event.Listener;
+import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.event.proxy.ProxyPingEvent;
+import com.velocitypowered.api.event.proxy.ProxyPingEvent.Response;
+import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
+
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0-SNAPSHOT", description = "Notify server status and players")
-public class BWTelegramNotifyVelocity implements SimpleCommand {
+public class BWTelegramNotifyVelocity implements Listener {
+    private TelegramSender telegramSender;
+    private TPSListener tpsListener;
+    private final Logger logger;
 
-    private static final Logger logger = LoggerFactory.getLogger(BWTelegramNotifyVelocity.class);
-    private final TelegramSender telegramSender;
-
-    public BWTelegramNotifyVelocity() {
-        this.telegramSender = new TelegramSender(
-            "your_bot_token_here",
-            "your_chat_id_here"
-        );
+    public BWTelegramNotifyVelocity(Logger logger) {
+        this.logger = logger;
     }
 
-    @EventHandler
-    public void onPlayerJoin(PostLoginEvent event) {
-        Player player = event.getPlayer();
-        telegramSender.sendMessage("Игрок " + player.getUsername() + " присоединился к серверу");
+    public void onEnable() {
+        // Цветной лог в консоль
+        logger.info("\u001b[32m[INFO] BWTelegramNotify плагин активен!");  // Зеленый цвет
+
+        // Инициализация и регистрация listener
+        this.telegramSender = new TelegramSender("your_bot_token", "your_chat_id");  // Пример значений
+        this.tpsListener = new TPSListener(telegramSender, 18.0, 60);  // Порог TPS 18 и интервал 60 секунд
+
+        // Регистрация TPSListener
+        this.getServer().getEventManager().register(this, this.tpsListener);
     }
 
-    @EventHandler
-    public void onPlayerQuit(PreLogoutEvent event) {
-        Player player = event.getPlayer();
-        telegramSender.sendMessage("Игрок " + player.getUsername() + " покинул сервер");
-    }
-
-    @Override
-    public void execute(Invocation invocation) {
-        String status = telegramSender.checkBotStatus();
-        invocation.source().sendMessage(Component.text(status));
+    public class StatusCommand implements SimpleCommand {
+        @Override
+        public void execute(Invocation invocation) {
+            String status = telegramSender.checkBotStatus();
+            invocation.source().sendMessage(status);
+        }
     }
 }
