@@ -17,6 +17,20 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <!-- Репозиторий для Paper API -->
+        <repository>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+
+        <!-- Репозиторий для Velocity API -->
+        <repository>
+            <id>velocity-repo</id>
+            <url>https://repo.velocitypowered.com</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Зависимость для Paper API -->
         <dependency>
@@ -33,7 +47,7 @@
             <version>5.5.0</version>
         </dependency>
 
-        <!-- Зависимость для Velocity API (если используете Velocity) -->
+        <!-- Зависимость для Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -49,7 +63,6 @@
         </dependency>
 
         <!-- Зависимость для других библиотек, которые могут понадобиться -->
-        <!-- Например, для работы с JSON или другими функциями -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
