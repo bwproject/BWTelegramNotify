@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>BWTelegramNotify</name>
-    <url>https://www.example.com</url>
+    <url>https://projectbw.ru</url>
     
     <!-- Репозитории -->
     <repositories>
