@@ -10,28 +10,21 @@
     <packaging>jar</packaging>
 
     <name>BWTelegramNotify</name>
-    <description>BWTelegramNotify Plugin</description>
-
-    <properties>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
+    <url>https://www.example.com</url>
+    
+    <!-- Репозитории -->
     <repositories>
-        <!-- Репозиторий для Velocity -->
         <repository>
             <id>velocity-repo</id>
             <url>https://repo.velocitypowered.com/snapshots</url>
         </repository>
-
-        <!-- Репозиторий для Paper -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
+    <!-- Зависимости -->
     <dependencies>
         <!-- Зависимость для Velocity API -->
         <dependency>
@@ -41,7 +34,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для Paper API (версия 1.21.4-R0.1-SNAPSHOT) -->
+        <!-- Зависимость для Paper API -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
@@ -49,44 +42,25 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для Telegram Bot API -->
+        <!-- Зависимость для библиотеки Telegram Bot API -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.3.0</version>
+            <version>5.5.0</version>
         </dependency>
 
-        <!-- Зависимость для slf4j (логгирование) -->
+        <!-- Зависимость для библиотеки JSON (например, для работы с JSON в коде) -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.0</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Зависимость для JUnit для тестирования -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.1</version>
-            <scope>test</scope>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.8</version>
         </dependency>
     </dependencies>
 
+    <!-- Плагины -->
     <build>
         <plugins>
-            <!-- Плагин для компиляции с использованием Java 20 -->
+            <!-- Плагин для компиляции -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -97,24 +71,13 @@
                 </configuration>
             </plugin>
 
-            <!-- Плагин для создания jar с зависимостями -->
+            <!-- Плагин для упаковки JAR файла -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
