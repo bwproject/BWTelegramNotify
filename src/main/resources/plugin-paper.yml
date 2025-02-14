@@ -1,12 +1,8 @@
 name: BWTelegramNotify
-version: 1.0
-main: me.projectbw.BWTelegramNotifyPaper
-api-version: 1.21
+version: 1.0-SNAPSHOT
+main: me.projectbw.BWTelegramNotifyVelocity
+api-version: 3.0
 commands:
   status:
-    description: Получить статус бота в Telegram
-    permission: bwtelegramnotify.status
-permissions:
-  bwtelegramnotify.status:
-    description: Разрешение на выполнение команды /status
-    default: op
+    description: Показывает статус бота
+    usage: /status
