@@ -1,0 +1,12 @@
+name: BWTelegramNotify
+version: 1.0-SNAPSHOT
+main: me.projectbw.BWTelegramNotifyPaper
+api-version: 1.21.4
+
+commands:
+  status:
+    description: Проверка состояния бота
+    permission: bwtelegram.notify.status
+    permission-message: Вы не имеете прав для использования этой команды.
+
+# Другие настройки можно добавить, если нужно
