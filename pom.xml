@@ -9,38 +9,32 @@
     <packaging>jar</packaging>
 
     <name>BWTelegramNotify</name>
-    <description>Plugin for sending Telegram notifications</description>
+    <description>Plugin for sending notifications to Telegram</description>
 
     <properties>
         <java.version>20</java.version>
-        <paper.api.version>1.21-R0.1-SNAPSHOT</paper.api.version>
-        <velocity.api.version>3.4.0-SNAPSHOT</velocity.api.version>
+        <velocity.version>3.4.0-SNAPSHOT</velocity.version>
+        <paper.version>1.21-R0.1-SNAPSHOT</paper.version>
         <telegrambots.version>6.9.7</telegrambots.version>
     </properties>
 
     <repositories>
-        <!-- Maven Central (добавляем его первым, чтобы Telegram Bot API брался оттуда) -->
+        <!-- Основной репозиторий Maven Central -->
         <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>maven-central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
 
-        <!-- Paper API -->
+        <!-- Репозиторий PaperMC -->
         <repository>
             <id>papermc-repo</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
 
-        <!-- Velocity API -->
+        <!-- Репозиторий Velocity -->
         <repository>
             <id>velocitypowered-repo</id>
-            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+            <url>https://repo.velocitypowered.com/releases/</url>
         </repository>
     </repositories>
 
@@ -49,7 +43,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>${paper.api.version}</version>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -57,11 +51,11 @@
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>${velocity.api.version}</version>
+            <version>${velocity.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Telegram Bot API -->
+        <!-- Telegram API -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
@@ -71,7 +65,7 @@
 
     <build>
         <plugins>
-            <!-- Плагин для компиляции кода -->
+            <!-- Плагин для компиляции с нужной версией Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -80,6 +74,21 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+
+            <!-- Плагин для создания JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
