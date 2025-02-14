@@ -1,12 +1,10 @@
 name: BWTelegramNotify
-version: 1.0
-main: me.projectbw.BWTelegramNotifyPaper
-api-version: 1.19
+version: 1.0-SNAPSHOT
+main: me.projectbw.BWTelegramNotifyPaper # или me.projectbw.BWTelegramNotifyVelocity в зависимости от платформы
+api-version: 1.21.4
+
 commands:
   status:
-    description: Check the status of the Telegram bot
-    usage: /status
-permissions:
-  bwtelegramnotify.status:
-    description: Allows access to the /status command
-    default: op
+    description: Проверка состояния бота
+    permission: bwtelegram.notify.status
+    permission-message: Вы не имеете прав для использования этой команды.
