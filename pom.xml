@@ -27,7 +27,7 @@
 
         <!-- Репозиторий для Paper -->
         <repository>
-            <id>papermc-repo</id>
+            <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
@@ -41,11 +41,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для Paper API (обновлено на стабильную версию) -->
+        <!-- Зависимость для Paper API (версия 1.21.4-R0.1-SNAPSHOT) -->
         <dependency>
-            <groupId>org.bukkit</groupId>
+            <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.20.5</version> <!-- Используем стабильную версию -->
+            <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
