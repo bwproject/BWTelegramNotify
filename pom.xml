@@ -36,6 +36,12 @@
             <id>velocitypowered-repo</id>
             <url>https://repo.velocitypowered.com/releases/</url>
         </repository>
+
+        <!-- Репозиторий JitPack (для TelegramBots) -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
