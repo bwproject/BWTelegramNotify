@@ -1,8 +1,0 @@
-name: BWTelegramNotify
-version: 1.0-SNAPSHOT
-main: me.projectbw.BWTelegramNotifyPaper
-api-version: 1.21
-commands:
-  status:
-    description: Показывает статус бота
-    usage: /status
