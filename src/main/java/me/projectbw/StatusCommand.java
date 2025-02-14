@@ -1,12 +1,8 @@
 package me.projectbw;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
+import com.velocitypowered.api.command.SimpleCommand;
 
-public class StatusCommand implements CommandExecutor {
+public class StatusCommand implements SimpleCommand {
     private final TelegramSender telegramSender;
 
     public StatusCommand(TelegramSender telegramSender) {
@@ -14,12 +10,8 @@ public class StatusCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("status")) {
-            String statusMessage = telegramSender.checkBotStatus();
-            sender.sendMessage("§aСтатус Telegram-бота: " + statusMessage);
-            return true;
-        }
-        return false;
+    public void execute(Invocation invocation) {
+        String status = telegramSender.checkBotStatus();
+        invocation.source().sendMessage(status);
     }
 }
