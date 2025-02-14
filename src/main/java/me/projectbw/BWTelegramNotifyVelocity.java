@@ -17,10 +17,10 @@ public class BWTelegramNotifyVelocity {
     private final TelegramSender telegramSender;
     private static final Logger logger = LoggerFactory.getLogger("BWTelegramNotify");
 
-    public BWTelegramNotifyVelocity(ProxyServer server, TelegramSender telegramSender) {
+    public BWTelegramNotifyVelocity(ProxyServer server) {
         this.server = server;
-        this.telegramSender = telegramSender;
-        server.getEventManager().register(this);
+        this.telegramSender = new TelegramSender("BOT_TOKEN", "CHAT_ID"); // Укажите токен
+        server.getEventManager().register(this, this);
     }
 
     @Subscribe
