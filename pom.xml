@@ -12,7 +12,7 @@
     <description>Plugin for sending notifications to Telegram</description>
 
     <properties>
-        <java.version>20</java.version>
+        <java.version>21</java.version>
         <velocity.version>3.4.0-SNAPSHOT</velocity.version>
         <paper.version>1.21-R0.1-SNAPSHOT</paper.version>
         <telegrambots.version>6.9.7</telegrambots.version>
