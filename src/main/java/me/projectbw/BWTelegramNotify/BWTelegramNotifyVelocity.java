@@ -1,45 +1,33 @@
 package me.projectbw.BWTelegramNotify;
 
 import com.velocitypowered.api.event.Listener;
-import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.proxy.PlayerJoinEvent;
-import com.velocitypowered.api.event.proxy.PlayerLeaveEvent;
-import com.velocitypowered.api.event.proxy.ServerPreConnectEvent;
+import com.velocitypowered.api.event.connection.PlayerJoinEvent;
+import com.velocitypowered.api.event.connection.PlayerLeaveEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 
 public class BWTelegramNotifyVelocity implements Listener {
+    private static final Logger logger = LoggerFactory.getLogger(BWTelegramNotifyVelocity.class);
+    
+    private final ProxyServer proxyServer;
 
-    private final ProxyServer server;
-
-    public BWTelegramNotifyVelocity(ProxyServer server) {
-        this.server = server;
+    @Inject
+    public BWTelegramNotifyVelocity(ProxyServer proxyServer) {
+        this.proxyServer = proxyServer;
     }
 
     @Subscribe
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // Отправка уведомления о входе игрока
-        // Используйте методы для отправки сообщений в Telegram
-        String playerName = event.getPlayer().getUsername();
-        sendTelegramMessage("Player " + playerName + " has joined the server.");
+        logger.info("Player joined: " + event.getPlayer().getUsername());
+        // Логика отправки уведомлений в Telegram
     }
 
     @Subscribe
     public void onPlayerLeave(PlayerLeaveEvent event) {
-        // Отправка уведомления о выходе игрока
-        String playerName = event.getPlayer().getUsername();
-        sendTelegramMessage("Player " + playerName + " has left the server.");
-    }
-
-    @Subscribe
-    public void onServerPreConnect(ServerPreConnectEvent event) {
-        // Отправка уведомления о смене сервера игроком
-        String playerName = event.getPlayer().getUsername();
-        String serverName = event.getServer().getServerInfo().getName();
-        sendTelegramMessage("Player " + playerName + " is connecting to server " + serverName + ".");
-    }
-
-    private void sendTelegramMessage(String message) {
-        // Реализуйте отправку сообщения в Telegram
-        System.out.println("Sending message to Telegram: " + message);
+        logger.info("Player left: " + event.getPlayer().getUsername());
+        // Логика отправки уведомлений в Telegram
     }
 }
