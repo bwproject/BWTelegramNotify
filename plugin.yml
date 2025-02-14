@@ -1,0 +1,13 @@
+name: BWTelegramNotify
+version: 1.0.0
+main: me.projectbw.BWTelegramNotify.Main
+api-version: 1.21
+commands:
+  status:
+    description: Проверка статуса бота Telegram
+    usage: /status
+    permission: bwtelegramnotify.status
+permissions:
+  bwtelegramnotify.status:
+    description: Разрешение на проверку статуса бота Telegram
+    default: op
