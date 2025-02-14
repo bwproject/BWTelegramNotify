@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -11,8 +10,7 @@
 
     <name>BWTelegramNotify</name>
     <url>https://projectbw.ru</url>
-    
-    <!-- Репозитории -->
+
     <repositories>
         <repository>
             <id>velocity-repo</id>
@@ -24,7 +22,6 @@
         </repository>
     </repositories>
 
-    <!-- Зависимости -->
     <dependencies>
         <!-- Зависимость для Velocity API -->
         <dependency>
@@ -57,10 +54,8 @@
         </dependency>
     </dependencies>
 
-    <!-- Плагины -->
     <build>
         <plugins>
-            <!-- Плагин для компиляции -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -71,7 +66,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Плагин для упаковки JAR файла -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
