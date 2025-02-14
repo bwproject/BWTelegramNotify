@@ -19,6 +19,18 @@
     </properties>
 
     <repositories>
+        <!-- Maven Central (добавляем его первым, чтобы Telegram Bot API брался оттуда) -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
         <!-- Paper API -->
         <repository>
             <id>papermc-repo</id>
@@ -29,12 +41,6 @@
         <repository>
             <id>velocitypowered-repo</id>
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
-        </repository>
-
-        <!-- Maven Central (Telegram API) -->
-        <repository>
-            <id>central</id>
-            <url>https://repo1.maven.org/maven2/</url>
         </repository>
     </repositories>
 
