@@ -18,6 +18,20 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <!-- Репозиторий для Velocity -->
+        <repository>
+            <id>velocity-repo</id>
+            <url>https://repo.velocitypowered.com/snapshots</url>
+        </repository>
+
+        <!-- Репозиторий для Paper -->
+        <repository>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Зависимость для Velocity API -->
         <dependency>
