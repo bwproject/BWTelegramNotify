@@ -1,0 +1,7 @@
+{
+    "id": "bwtelegramnotify",
+    "name": "BWTelegramNotify",
+    "version": "1.0",
+    "main": "me.projectbw.BWTelegramNotifyVelocity",
+    "authors": ["YourName"]
+}
