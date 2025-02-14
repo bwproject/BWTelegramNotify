@@ -1,23 +1,36 @@
 package me.projectbw;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
-public class BWTelegramNotifyPaper extends JavaPlugin {
+public class BWTelegramNotifyPaper extends JavaPlugin implements Listener {
+
     private TelegramSender telegramSender;
-    private TPSListener tpsListener;
 
     @Override
     public void onEnable() {
-        // Цветной лог в консоль
-        getLogger().info("\u001b[32m[INFO] BWTelegramNotify плагин активен!");  // Зеленый цвет
+        getServer().getPluginManager().registerEvents(this, this);
+        getLogger().info("§aПлагин BWTelegramNotify активен.");
+        telegramSender = new TelegramSender("your-bot-token", "your-chat-id");
+    }
 
-        // Инициализация и регистрация listener
-        this.telegramSender = new TelegramSender("your_bot_token", "your_chat_id");  // Пример значений
-        this.tpsListener = new TPSListener(telegramSender, 18.0, 60);  // Порог TPS 18 и интервал 60 секунд
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        String message = "Игрок " + event.getPlayer().getName() + " присоединился к серверу.";
+        telegramSender.sendMessage(message);
+    }
 
-        // Регистрация TPSListener
-        Bukkit.getServer().getPluginManager().registerEvents(this.tpsListener, this);
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        String message = "Игрок " + event.getPlayer().getName() + " покинул сервер.";
+        telegramSender.sendMessage(message);
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info("Плагин BWTelegramNotify отключен.");
     }
 }
