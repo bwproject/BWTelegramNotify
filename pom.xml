@@ -9,17 +9,24 @@
     <packaging>jar</packaging>
 
     <name>BWTelegramNotify</name>
-    <url>https://github.com/bwproject/BWTelegramNotify</url>
+    <url>http://maven.apache.org</url>
+
+    <repositories>
+        <!-- Репозиторий для Velocity API -->
+        <repository>
+            <id>velocity-repo</id>
+            <url>https://repo.velocitypowered.com/snapshots/</url>
+        </repository>
+        
+        <!-- Репозиторий для Paper API -->
+        <repository>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
-        <!-- Telegram Bot API -->
-        <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>5.0.0</version>
-        </dependency>
-
-        <!-- Velocity API -->
+        <!-- Зависимость для Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>api</artifactId>
@@ -27,7 +34,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Paper API -->
+        <!-- Зависимость для Paper API -->
         <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paper-api</artifactId>
@@ -35,24 +42,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- SLF4J for logging -->
+        <!-- Другие зависимости, например для Telegram Bot -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.0-alpha1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.0-alpha1</version>
-        </dependency>
-
-        <!-- JDA for Telegram Bot -->
-        <dependency>
-            <groupId>net.dv8tion</groupId>
-            <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.5</version>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>5.5.0</version>
         </dependency>
     </dependencies>
 
