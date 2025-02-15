@@ -1,24 +1,24 @@
 package me.projectbw.BWTelegramNotify;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Notifier {
+    private static final Logger logger = LoggerFactory.getLogger(Notifier.class);
 
-    public void sendPlayerNotification(String playerName, String action) {
-        // Логика отправки уведомления в Telegram о входе/выходе игрока
-        System.out.println("Player " + playerName + " has " + action);
+    public Notifier() {
+        // Конструктор без параметров
+        logger.info("Notifier Initialized without configuration.");
     }
 
-    public void sendServerSwitchNotification(String playerName, String serverName) {
-        // Логика отправки уведомления о смене сервера
-        System.out.println("Player " + playerName + " switched to server " + serverName);
+    public Notifier(Config config) {
+        // Конструктор с передачей конфигурации
+        logger.info("Notifier Initialized with configuration.");
+        // Логика с конфигом
     }
 
-    public void sendTPSWarning(double tps) {
-        // Логика отправки уведомления о низком TPS
-        System.out.println("Warning: TPS is low (" + tps + ")");
-    }
-
-    public void sendServerStatusNotification(String status) {
-        // Логика отправки уведомления о статусе сервера
-        System.out.println("Server status: " + status);
+    public void sendNotification(String message) {
+        logger.info("Sending notification: " + message);
+        // Логика отправки уведомлений
     }
 }

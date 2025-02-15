@@ -1,25 +1,20 @@
 package me.projectbw.BWTelegramNotify.events;
 
-import com.destroystokyo.paper.event.server.TPSChangeEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import me.projectbw.BWTelegramNotify.Notifier;
 import me.projectbw.BWTelegramNotify.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TPSMonitor implements Listener {
-
-    private Config config;
+public class TPSMonitor {
+    private static final Logger logger = LoggerFactory.getLogger(TPSMonitor.class);
     private Notifier notifier;
 
     public TPSMonitor(Config config) {
-        this.config = config;
-        this.notifier = new Notifier(config);
+        this.notifier = new Notifier(config);  // Передача конфигурации в конструктор Notifier
     }
 
-    @EventHandler
-    public void onTPSChange(TPSChangeEvent event) {
-        if (event.getNewTPS() < Double.parseDouble(config.get("tps_warning_threshold"))) {
-            notifier.sendTPSWarning(event.getNewTPS());
-        }
+    public void startMonitoring() {
+        logger.info("TPS Monitoring started.");
+        // Добавьте код для мониторинга TPS и уведомлений
     }
 }

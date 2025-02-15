@@ -1,24 +1,37 @@
 package me.projectbw.BWTelegramNotify;
 
-import com.velocitypowered.api.event.Listener;
-import com.velocitypowered.api.event.EventHandler;
+import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerJoinEvent;
 import com.velocitypowered.api.event.player.PlayerQuitEvent;
-import me.projectbw.BWTelegramNotify.events.PlayerEvents;
+import com.velocitypowered.api.event.EventManager;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ProxyServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Main implements Listener {
+public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private final ProxyServer proxy;
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        // Логика для уведомления при входе игрока на Velocity
-        Notifier notifier = new Notifier();
-        notifier.sendPlayerNotification(event.getPlayer().getUsername(), "joined the server");
+    public Main(ProxyServer proxy) {
+        this.proxy = proxy;
     }
 
-    @EventHandler
+    @Subscribe
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        logger.info(player.getUsername() + " has joined the server.");
+    }
+
+    @Subscribe
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // Логика для уведомления при выходе игрока с Velocity
-        Notifier notifier = new Notifier();
-        notifier.sendPlayerNotification(event.getPlayer().getUsername(), "left the server");
+        Player player = event.getPlayer();
+        logger.info(player.getUsername() + " has left the server.");
+    }
+
+    public void init() {
+        EventManager eventManager = proxy.getEventManager();
+        eventManager.register(this);
+        logger.info("BWTelegramNotify Plugin Initialized.");
     }
 }
