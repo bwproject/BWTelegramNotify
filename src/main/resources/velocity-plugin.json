@@ -5,7 +5,7 @@
   "description": "A plugin to send notifications from Velocity to Telegram.", 
   "authors": ["The_Mr_Mes109"], 
   "url": "https://projectbw.ru",
-  "main": "me.projectbw.BWTelegramNotify",
+  "main": "me.projectbw.BWTelegramNotify.Main",
   "api-version": "3.0",
   "permissions": [
     {
