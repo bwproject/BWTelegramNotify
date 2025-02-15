@@ -1,0 +1,27 @@
+# Конфигурация плагина BWTelegramNotify
+
+# Токен бота для Telegram
+telegram_bot_token: "your-telegram-bot-token"
+
+# ID чатов, каналов, или ЛС для отправки уведомлений
+notification_chat_ids:
+  - "123456789"   # Пример ID чата или канала
+
+# Настройки для уведомлений о событиях
+notifications:
+  # Уведомление о входе игрока
+  player_join: true
+  # Уведомление о выходе игрока
+  player_quit: true
+  # Уведомление о низком TPS (если TPS меньше этого значения)
+  tps_warning_threshold: 18.0
+  # Уведомление при смене сервера игроком
+  server_switch: true
+  # Уведомление при запуске/выключении сервера
+  server_status: true
+
+# Уведомления о событиях сервера (например, перезагрузка или ошибка)
+server_notifications:
+  - "Server is up!"
+  - "Server is shutting down."
+  - "TPS is too low! Warning!"
