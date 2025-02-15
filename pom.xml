@@ -15,8 +15,10 @@
     </modules>
 
     <dependencyManagement>
-        <dependencies>
-            <!-- Общие зависимости, например, для работы с Telegram API -->
-        </dependencies>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>5.5.0</version>
+        </dependency>
     </dependencyManagement>
 </project>
