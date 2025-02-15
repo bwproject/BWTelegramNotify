@@ -4,7 +4,7 @@ import com.velocitypowered.api.event.Listener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerJoinEvent;
 import com.velocitypowered.api.event.player.PlayerQuitEvent;
-import me.projectbw.BWTelegramNotify.Notifier;
+import java.me.projectbw.BWTelegramNotify.Notifier;
 
 public class PlayerEvents {
 

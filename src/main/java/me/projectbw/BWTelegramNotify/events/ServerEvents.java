@@ -4,7 +4,7 @@ import com.velocitypowered.api.event.Listener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.server.ServerPingEvent;
 import com.velocitypowered.api.event.server.ServerShutdownEvent;
-import me.projectbw.BWTelegramNotify.Notifier;
+import java.me.projectbw.BWTelegramNotify.Notifier;
 
 public class ServerEvents {
 
