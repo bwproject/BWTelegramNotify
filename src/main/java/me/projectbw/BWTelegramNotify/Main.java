@@ -10,11 +10,15 @@ public class Main implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // Ваш код для обработки события входа игрока
+        // Логика для уведомления при входе игрока на Velocity
+        Notifier notifier = new Notifier();
+        notifier.sendPlayerNotification(event.getPlayer().getUsername(), "joined the server");
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // Ваш код для обработки события выхода игрока
+        // Логика для уведомления при выходе игрока с Velocity
+        Notifier notifier = new Notifier();
+        notifier.sendPlayerNotification(event.getPlayer().getUsername(), "left the server");
     }
 }
