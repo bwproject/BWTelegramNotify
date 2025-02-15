@@ -6,29 +6,35 @@
     <groupId>me.projectbw</groupId>
     <artifactId>BWTelegramNotify</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <name>BWTelegramNotify</name>
+    <description>Плагин для отправки уведомлений в Telegram</description>
 
     <properties>
         <java.version>21</java.version>
+        <paper.api.version>1.21-R0.1-SNAPSHOT</paper.api.version>
+        <velocity.api.version>3.4.0-SNAPSHOT</velocity.api.version>
+        <telegrambots.version>6.9.6</telegrambots.version>
     </properties>
 
     <repositories>
+        <!-- Официальное хранилище Maven -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+
         <!-- Репозиторий Paper -->
         <repository>
             <id>papermc-repo</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        
+
         <!-- Репозиторий Velocity -->
         <repository>
             <id>velocitypowered-repo</id>
             <url>https://repo.velocitypowered.com/releases/</url>
-        </repository>
-
-        <!-- Центральный Maven-репозиторий -->
-        <repository>
-            <id>maven-central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
 
@@ -37,7 +43,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21-R0.1-SNAPSHOT</version>
+            <version>${paper.api.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -45,29 +51,59 @@
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.4.0-SNAPSHOT</version>
+            <version>${velocity.api.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Telegram API -->
+        <!-- Telegram Bots API (Используем версию 6.9.6) -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.9.7</version>
+            <version>${telegrambots.version}</version>
+        </dependency>
+
+        <!-- GSON для работы с JSON -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Компилятор Java 21 -->
+            <!-- Плагин для компиляции -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
+            </plugin>
+
+            <!-- Плагин для создания fat jar (если нужно) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.telegram</pattern>
+                                    <shadedPattern>me.projectbw.shaded.telegram</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
