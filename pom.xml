@@ -19,7 +19,7 @@
     </properties>
 
     <repositories>
-        <!-- Официальный Maven -->
+        <!-- Центральный Maven -->
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2/</url>
@@ -61,11 +61,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Telegram Bots API (скачивается с JitPack) -->
+        <!-- Telegram Bots API (Используем JitPack) -->
         <dependency>
-            <groupId>com.github.rubenlagus</groupId>
-            <artifactId>TelegramBots</artifactId>
-            <version>${telegrambots.version}</version>
+            <groupId>com.github.pengrad</groupId>
+            <artifactId>java-telegram-bot-api</artifactId>
+            <version>6.9.7</version>
         </dependency>
 
         <!-- GSON -->
@@ -100,14 +100,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.telegram</pattern>
-                                    <shadedPattern>me.projectbw.shaded.telegram</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
