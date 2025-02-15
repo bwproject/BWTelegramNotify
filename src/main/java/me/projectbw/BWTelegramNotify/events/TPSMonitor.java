@@ -1,4 +1,4 @@
-package me.projectbw.BWTelegramNotify.events;
+package java.me.projectbw.BWTelegramNotify.events;
 
 import com.destroystokyo.paper.event.server.TPSChangeEvent;
 import me.projectbw.BWTelegramNotify.Notifier;

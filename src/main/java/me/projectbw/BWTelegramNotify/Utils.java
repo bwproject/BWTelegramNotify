@@ -1,4 +1,4 @@
-package me.projectbw.BWTelegramNotify;
+package java.me.projectbw.BWTelegramNotify;
 
 public class Utils {
     public static boolean isLowTPS(double tps) {

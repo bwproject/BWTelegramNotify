@@ -1,4 +1,4 @@
-package me.projectbw.BWTelegramNotify;
+package java.me.projectbw.BWTelegramNotify;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;

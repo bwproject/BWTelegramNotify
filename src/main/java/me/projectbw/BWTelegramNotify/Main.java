@@ -1,4 +1,4 @@
-package me.projectbw.BWTelegramNotify;
+package java.me.projectbw.BWTelegramNotify;
 
 // Основной класс плагина
 import com.velocitypowered.api.plugin.Plugin;

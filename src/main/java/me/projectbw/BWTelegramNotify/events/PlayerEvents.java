@@ -1,4 +1,4 @@
-package me.projectbw.BWTelegramNotify.events;
+package java.me.projectbw.BWTelegramNotify.events;
 
 import com.velocitypowered.api.event.Listener;
 import com.velocitypowered.api.event.Subscribe;
