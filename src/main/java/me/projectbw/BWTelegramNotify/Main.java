@@ -1,16 +1,26 @@
 package me.projectbw.BWTelegramNotify;
 
-// Основной класс плагина
 import com.velocitypowered.api.plugin.Plugin;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.velocitypowered.api.proxy.ProxyServer;
+import javax.inject.Inject;
 
-@Plugin(id = "BWTelegramNotify", name = "BWTelegramNotify", version = "1.0-SNAPSHOT")
-public class Main extends JavaPlugin {
-    @Override
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0-SNAPSHOT")
+public class Main {
+
+    private final ProxyServer server;
+
+    @Inject
+    public Main(ProxyServer server) {
+        this.server = server;
+    }
+
     public void onEnable() {
-        getLogger().info("BWTelegramNotify успешно запущен!");
-        // Инициализация бота, конфигурации и прочее
+        // Логика при старте плагина
+        System.out.println("BWTelegramNotify plugin is enabled!");
+    }
+
+    public void onDisable() {
+        // Логика при остановке плагина
+        System.out.println("BWTelegramNotify plugin is disabled!");
     }
 }
