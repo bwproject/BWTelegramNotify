@@ -1,4 +1,4 @@
-package java.me.projectbw.BWTelegramNotify;
+package me.projectbw.BWTelegramNotify;
 
 import java.io.File;
 import java.io.FileInputStream;

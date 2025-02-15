@@ -1,6 +1,6 @@
 name: BWTelegramNotify
 version: 1.0-SNAPSHOT
-main: java.me.projectbw.BWTelegramNotify.Main
+main: me.projectbw.BWTelegramNotify.Main
 api-version: 1.21
 commands:
   bwnotify:
