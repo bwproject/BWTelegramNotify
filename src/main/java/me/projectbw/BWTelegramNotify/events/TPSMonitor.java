@@ -2,10 +2,8 @@ package me.projectbw.BWTelegramNotify.events;
 
 import com.destroystokyo.paper.event.server.TPSChangeEvent;
 import me.projectbw.BWTelegramNotify.Notifier;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
-public class TPSMonitor implements Listener {
+public class TPSMonitor {
 
     private final Notifier notifier;
 
@@ -13,10 +11,10 @@ public class TPSMonitor implements Listener {
         this.notifier = notifier;
     }
 
-    @EventHandler
+    @org.bukkit.event.EventHandler
     public void onTPSChange(TPSChangeEvent event) {
-        double tps = event.getNewTPS();
-        if (tps < 18.0) {
+        double tps = event.getNewTPS()[0]; // Получаем TPS
+        if (tps < 18.0) { // Если TPS меньше 18
             notifier.sendTPSWarning(tps);
         }
     }

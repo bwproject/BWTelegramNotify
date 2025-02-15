@@ -1,12 +1,12 @@
 package me.projectbw.BWTelegramNotify.events;
 
-import com.velocitypowered.api.event.Listener;
-import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.server.ServerPingEvent;
-import com.velocitypowered.api.event.server.ServerShutdownEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerPingEvent;
+import org.bukkit.event.server.ServerShutdownEvent;
 import me.projectbw.BWTelegramNotify.Notifier;
 
-public class ServerEvents {
+public class ServerEvents implements Listener {
 
     private final Notifier notifier;
 
@@ -14,13 +14,15 @@ public class ServerEvents {
         this.notifier = notifier;
     }
 
-    @Subscribe
+    @EventHandler
     public void onServerPing(ServerPingEvent event) {
-        notifier.sendServerStatusNotification("Server is up and running!");
+        // Логика обработки пинга сервера
+        notifier.sendServerStatusNotification("Server is being pinged!");
     }
 
-    @Subscribe
+    @EventHandler
     public void onServerShutdown(ServerShutdownEvent event) {
-        notifier.sendServerStatusNotification("Server is shutting down.");
+        // Логика обработки остановки сервера
+        notifier.sendServerStatusNotification("Server is shutting down!");
     }
 }

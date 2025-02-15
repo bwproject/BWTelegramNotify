@@ -1,35 +1,33 @@
 package me.projectbw.BWTelegramNotify;
 
-import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.Listener;
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.proxy.ProxyServer;
+import me.projectbw.BWTelegramNotify.events.PlayerEvents;
+import me.projectbw.BWTelegramNotify.events.ServerEvents;
+import me.projectbw.BWTelegramNotify.events.ServerSwitchEvent;
+import me.projectbw.BWTelegramNotify.events.TPSMonitor;
+
 import javax.inject.Inject;
 
-@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0-SNAPSHOT", authors = {"YourName"})
-public class Main implements Listener {
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0")
+public class Main {
 
     private final ProxyServer server;
+    private final Notifier notifier;
 
     @Inject
-    public Main(ProxyServer server) {
+    public Main(ProxyServer server, Notifier notifier) {
         this.server = server;
+        this.notifier = notifier;
     }
 
-    // Метод, вызываемый при инициализации плагина
     @EventHandler
-    public void onProxyInitialize(ProxyInitializeEvent event) {
-        // Логика при старте плагина
-        System.out.println("BWTelegramNotify plugin is enabled!");
-
-        // Здесь можно зарегистрировать обработчики событий, например:
-        server.getEventManager().register(this, this);
-    }
-
-    // Метод, вызываемый при остановке плагина
-    public void onDisable() {
-        // Логика при остановке плагина
-        System.out.println("BWTelegramNotify plugin is disabled!");
+    public void onEnable() {
+        server.getEventManager().register(this, new PlayerEvents(notifier));
+        server.getEventManager().register(this, new ServerEvents(notifier));
+        server.getEventManager().register(this, new ServerSwitchEvent(notifier));
+        server.getEventManager().register(this, new TPSMonitor(notifier));
     }
 }
