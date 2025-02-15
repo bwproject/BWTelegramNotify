@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.projectbw</groupId>
+    <groupId>me.projectbw.BWTelegramNotify</groupId>
     <artifactId>BWTelegramNotify-Velocity</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
@@ -27,9 +27,7 @@
             <artifactId>velocity-api</artifactId>
             <version>3.4.0-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        
-        <!-- Зависимость для библиотеки Telegram Bots (если еще не добавлена) -->
+        </dependency>        
     </dependencies>
 
     <build>
