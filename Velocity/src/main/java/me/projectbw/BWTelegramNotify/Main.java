@@ -41,7 +41,7 @@ public class Main {
         Player player = event.getPlayer();
         String playerName = player.getUsername();
 
-        // Сообщение о выходе
+        // Сообщение о выходе игрока
         String message = "Игрок " + playerName + " покинул сервер!";
         bot.sendMessageToTelegram(message);
 
