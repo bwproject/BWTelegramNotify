@@ -1,21 +1,23 @@
 package me.projectbw.BWTelegramNotify.events;
 
-import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.Event;
 import com.velocitypowered.api.event.player.ServerSwitchEvent;
-import me.projectbw.BWTelegramNotify.Notifier;
+import com.velocitypowered.api.event.player.Player;
 
 public class ServerSwitchEvent {
+    private final Player player;
+    private final String previousServer;
 
-    private final Notifier notifier;
-
-    public ServerSwitchEvent(Notifier notifier) {
-        this.notifier = notifier;
+    public ServerSwitchEvent(Player player, String previousServer) {
+        this.player = player;
+        this.previousServer = previousServer;
     }
 
-    @Subscribe
-    public void onServerSwitch(ServerSwitchEvent event) {
-        String playerName = event.getPlayer().getUsername();
-        // Логика отправки уведомления
-        notifier.sendServerSwitchNotification(playerName, event.getPreviousServer().getName());
+    public Player getPlayer() {
+        return player;
+    }
+
+    public String getPreviousServer() {
+        return previousServer;
     }
 }
