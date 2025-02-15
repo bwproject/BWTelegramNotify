@@ -10,7 +10,7 @@
 
     <name>BWTelegramNotify</name>
     <description>Plugin for sending notifications to Telegram from Paper and Velocity servers</description>
-    <url>https://github.com/bwproject/BWTelegramNotify<</url>
+    <url>https://github.com/bwproject/BWTelegramNotify</url>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
