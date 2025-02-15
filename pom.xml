@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.github.rubenlagus</groupId>
             <artifactId>TelegramBots</artifactId>
-            <version>6.9.7</version>
+            <version>6.9.6</version>
         </dependency>
 
         <!-- GSON -->
