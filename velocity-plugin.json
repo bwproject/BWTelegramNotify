@@ -1,0 +1,7 @@
+{
+  "id": "bwtelegramnotify",
+  "name": "BWTelegramNotify",
+  "version": "1.0-SNAPSHOT",
+  "main": "me.projectbw.BWTelegramNotify.Main",
+  "authors": ["Your Name"]
+}
