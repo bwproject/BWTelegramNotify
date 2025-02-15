@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>java.me.projectbw</groupId>
+    <groupId>me.projectbw</groupId>
     <artifactId>BWTelegramNotify</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -12,7 +13,7 @@
     <description>Плагин для отправки уведомлений в Telegram</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
@@ -36,7 +37,7 @@
             <version>6.9.7.1</version>
         </dependency>
 
-        <!-- Paper API -->
+        <!-- Paper API (для событий, связанных с сервером и TPS) -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
