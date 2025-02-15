@@ -9,6 +9,13 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <repositories>
+    <repository>
+      <id>papermc</id>
+      <url>https://repo.papermc.io/repository/maven-public/</url>
+    </repository>
+  </repositories>
+
   <modules>
     <module>Velocity</module>
     <module>Paper</module>
