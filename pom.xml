@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+	<project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -10,7 +10,7 @@
 
     <name>BWTelegramNotify</name>
     <description>Plugin for sending notifications to Telegram from Paper and Velocity servers</description>
-    <url>https://github.com/YourUsername/BWTelegramNotify</url>
+    <url>https://github.com/bwproject/BWTelegramNotify<</url>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -38,11 +38,11 @@
     </repositories>
 
     <dependencies>
-        <!-- Dependency for Velocity API (3.4.0-SNAPSHOT) -->
+        <!-- Dependency for Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>3.4.0-SNAPSHOT</version> <!-- Замените на стабильную версию при необходимости -->
+            <version>3.4.0-SNAPSHOT</version> <!-- Укажите актуальную версию Velocity -->
             <scope>provided</scope>
         </dependency>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.4-R0.1-SNAPSHOT</version> <!-- Замените на стабильную версию при необходимости -->
+            <version>1.21.4-R0.1-SNAPSHOT</version> <!-- Укажите актуальную версию Paper -->
             <scope>provided</scope>
         </dependency>
 
@@ -84,8 +84,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <source>20</source>
-                    <target>20</target>
+                    <source>21</source> <!-- Привели к Java 21 -->
+                    <target>21</target> <!-- Привели к Java 21 -->
                 </configuration>
             </plugin>
 
@@ -105,3 +105,4 @@
         </plugins>
     </build>
 </project>
+	
