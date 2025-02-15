@@ -2,6 +2,11 @@
   "id": "bwtelegramnotify",
   "name": "BWTelegramNotify",
   "version": "1.0-SNAPSHOT",
-  "main": "me.projectbw.BWTelegramNotify.Main",
-  "authors": ["Your Name"]
+  "description": "Plugin for sending notifications to Telegram",
+  "authors": [
+    "The_Mr_Mes109"
+  ],
+  "url": "https://projectbw.ru",
+  "main": "me.projectbw.BWTelegramNotify",
+  "api-version": "3.0"
 }
