@@ -2,6 +2,12 @@ bot:
   username: "your_bot_username"
   token: "your_bot_token"
 
+chatIds:
+  - "chat_id_1"
+  - "chat_id_2"
+
+low_tps_threshold: 16.0 # TPS ниже этого значения будет считаться низким
+
 notifications:
   velocity:
     join: "&aИгрок &e{player} &aвошел в сервер."
