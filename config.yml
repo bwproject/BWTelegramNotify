@@ -1,0 +1,13 @@
+bot:
+  username: "your_bot_username"
+  token: "your_bot_token"
+
+notifications:
+  velocity:
+    join: "&aИгрок &e{player} &aвошел в сервер."
+    quit: "&cИгрок &e{player} &cпокинул сервер."
+    server_switch: "&6Игрок &e{player} &6сменил сервер на &e{server}."
+  paper:
+    join: "&aИгрок &e{player} &aвошел в сервер."
+    quit: "&cИгрок &e{player} &cпокинул сервер."
+    low_tps: "&cВнимание! Низкий TPS: {tps}"
