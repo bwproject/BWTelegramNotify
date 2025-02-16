@@ -33,6 +33,13 @@
             <artifactId>telegrambots</artifactId>
             <version>5.7.0</version>
         </dependency>
+        <!-- Paper Dependency -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
