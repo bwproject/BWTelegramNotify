@@ -1,19 +1,18 @@
-bot:
-  username: "your_bot_username"
-  token: "your_bot_token"
-
-chatIds:
-  - "chat_id_1"
-  - "chat_id_2"
-
-low_tps_threshold: 16.0 # TPS ниже этого значения будет считаться низким
+# Конфигурация для BWTelegramNotify
+telegram:
+  bot_username: "YOUR_BOT_USERNAME"
+  bot_token: "YOUR_BOT_TOKEN"
+  chat_ids:
+    - "YOUR_CHAT_ID_1"
+    - "YOUR_CHAT_ID_2"
 
 notifications:
   velocity:
-    join: "&aИгрок &e{player} &aвошел в сервер."
-    quit: "&cИгрок &e{player} &cпокинул сервер."
-    server_switch: "&6Игрок &e{player} &6сменил сервер на &e{server}."
+    join: "Игрок {player} присоединился к серверу."
+    quit: "Игрок {player} покинул сервер."
+    switch: "Игрок {player} сменил сервер с {from_server} на {to_server}."
+  
   paper:
-    join: "&aИгрок &e{player} &aвошел в сервер."
-    quit: "&cИгрок &e{player} &cпокинул сервер."
-    low_tps: "&cВнимание! Низкий TPS: {tps}"
+    join: "Игрок {player} присоединился к серверу."
+    quit: "Игрок {player} покинул сервер."
+    low_tps: "Внимание! Низкий TPS на сервере."

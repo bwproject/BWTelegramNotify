@@ -1,85 +1,71 @@
 package me.projectbw.BWTelegramNotify;
 
 import com.destroystokyo.paper.event.server.ServerListPingEvent;
-import com.google.inject.Inject;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
-    private static final Logger logger = Logger.getLogger("BWTelegramNotify");
+
     private TelegramBot telegramBot;
     private List<String> chatIds;
-    private double lowTpsThreshold;
-    
-    @Inject
-    public PaperMain() {
-    }
+    private long lastTpsCheck = System.currentTimeMillis();
 
     @Override
     public void onEnable() {
-        // Загружаем конфигурацию
-        saveDefaultConfig();
-        String botUsername = getConfig().getString("bot.username");
-        String botToken = getConfig().getString("bot.token");
-        this.chatIds = getConfig().getStringList("chatIds");
-        this.lowTpsThreshold = getConfig().getDouble("low_tps_threshold", 16.0); // Пример: 16 TPS
-        
-        // Инициализируем бота
-        telegramBot = new TelegramBot(botUsername, botToken);
-        
-        // Подключаем слушатели событий
+        // Регистрируем события
         getServer().getPluginManager().registerEvents(this, this);
-        
-        // Логируем сообщение о старте плагина
-        logger.info("BWTelegramNotify плагин включен!");
-        
-        // Запускаем задачу для отслеживания TPS каждые 10 секунд
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                checkLowTps();
-            }
-        }.runTaskTimer(this, 0L, 200L); // 200L == 10 секунд
+        // Инициализация бота
+        telegramBot = new TelegramBot("YOUR_BOT_USERNAME", "YOUR_BOT_TOKEN");
+        chatIds = getConfig().getStringList("telegram.chat_ids");
     }
 
-    // Отслеживание низкого TPS
-    private void checkLowTps() {
-        double tps = getServer().getTPS()[0];
-        if (tps < lowTpsThreshold) {
-            String message = String.format("Внимание! Низкий TPS: %.2f", tps);
-            telegramBot.sendMessages(chatIds, message);
-            logger.warning("Низкий TPS: " + tps);
-        }
-    }
-
-    // Отправка сообщения о входе игрока
+    // Обработчик события входа игрока
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         String playerName = event.getPlayer().getName();
-        String joinMessage = getConfig().getString("notifications.paper.join");
-        joinMessage = joinMessage.replace("{player}", playerName);
-        telegramBot.sendMessages(chatIds, joinMessage);
-
-        logger.info("Игрок " + playerName + " вошел в игру. Сообщение отправлено в Telegram.");
+        String joinMessage = getConfig().getString("notifications.paper.join").replace("{player}", playerName);
+        sendTelegramMessage(joinMessage);
     }
 
-    // Отправка сообщения о выходе игрока
+    // Обработчик события выхода игрока
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         String playerName = event.getPlayer().getName();
-        String quitMessage = getConfig().getString("notifications.paper.quit");
-        quitMessage = quitMessage.replace("{player}", playerName);
-        telegramBot.sendMessages(chatIds, quitMessage);
+        String quitMessage = getConfig().getString("notifications.paper.quit").replace("{player}", playerName);
+        sendTelegramMessage(quitMessage);
+    }
 
-        logger.info("Игрок " + playerName + " покинул сервер. Сообщение отправлено в Telegram.");
+    // Обработчик пинга от клиента
+    @EventHandler
+    public void onPing(ServerListPingEvent event) {
+        String pingMessage = "Игроки сейчас могут подключаться!";
+        sendTelegramMessage(pingMessage);
+    }
+
+    // Проверка TPS на сервере
+    @Override
+    public void onTick() {
+        long currentTime = System.currentTimeMillis();
+
+        // Проверка TPS каждые 5 секунд
+        if (currentTime - lastTpsCheck >= 5000) {
+            lastTpsCheck = currentTime;
+
+            double tps = getServer().getTPS()[0]; // Получаем текущий TPS (самый быстрый)
+            if (tps < 18.0) { // Порог для низкого TPS (например, 18 TPS)
+                String tpsMessage = getConfig().getString("notifications.paper.low_tps").replace("{tps}", String.valueOf(tps));
+                sendTelegramMessage(tpsMessage);
+            }
+        }
+    }
+
+    // Отправка сообщений в Telegram
+    private void sendTelegramMessage(String message) {
+        telegramBot.sendMessages(chatIds, message);
     }
 }
