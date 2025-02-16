@@ -1,6 +1,6 @@
 name: BWTelegramNotify
 version: 1.0
-main: me.projectbw.BWTelegramNotify.PaperMain # Или VelocityMain для Velocity
+main: me.projectbw.BWTelegramNotify.VelocityMain # PaperMain Или VelocityMain для Velocity
 api-version: 1.21
 commands:
   # Здесь можно добавить команды для плагина, если нужно
