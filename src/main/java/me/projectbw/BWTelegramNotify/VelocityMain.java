@@ -10,7 +10,7 @@ import com.velocitypowered.api.event.Subscribe;
 import javax.inject.Inject;
 import java.util.List;
 
-@Plugin(id = "BWTelegramNotify", name = "BWTelegramNotify", version = "1.0", description = "Telegram Notification Bot for Velocity")
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0", description = "Telegram Notification Bot for Velocity")
 public class VelocityMain {
 
     private final ProxyServer server;
