@@ -23,14 +23,24 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build Paper JAR
+        run: mvn -B package --file pom.xml -Ppaper
 
-      - name: Upload JAR artifact
+      - name: Build Velocity JAR
+        run: mvn -B package --file pom.xml -Pvelocity
+
+      - name: Upload JAR artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BWTelegramNotify
-          path: target/*.jar
+          name: BWTelegramNotify-Paper
+          path: target/BWTelegramNotify-Paper.jar
+          retention-days: 7
+
+      - name: Upload JAR artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: BWTelegramNotify-Velocity
+          path: target/BWTelegramNotify-Velocity.jar
           retention-days: 7
 
   release:
@@ -41,15 +51,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download JAR artifact
+      - name: Download Paper JAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: BWTelegramNotify
+          name: BWTelegramNotify-Paper
+          path: target/
+
+      - name: Download Velocity JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BWTelegramNotify-Velocity
           path: target/
 
       - name: Generate release tag
         id: set_tag
-        run: echo "TAG_NAME=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+        run: echo "TAG_NAME=$(date +'%d.%m.%Y') (Run #${{ github.run_number }})" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -57,7 +73,9 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           release_name: "Auto Release ${{ env.TAG_NAME }}"
           body: "Автоматический релиз при обновлении main"
-          files: target/*.jar
+          files: |
+            target/BWTelegramNotify-Paper.jar
+            target/BWTelegramNotify-Velocity.jar
           draft: false
           prerelease: false
         env:
