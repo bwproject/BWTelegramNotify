@@ -72,13 +72,13 @@ jobs:
       - name: Generate release tag
         id: set_tag
         run: |
-          echo "TAG_NAME=$(date +'%d.%m.%Y') (Run #${{ github.run_number }})" >> $GITHUB_ENV
+          TAG_NAME="$(date +'%d.%m.%Y')-Run-${{ github.run_number }}"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG_NAME }}
-          release_name: "Auto Release ${{ env.TAG_NAME }}"
           body: "Автоматический релиз при обновлении main"
           files: |
             Paper/target/BWTelegramNotify-Paper-*.jar
