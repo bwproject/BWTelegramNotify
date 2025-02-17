@@ -13,6 +13,13 @@ public class PaperMain extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         this.telegramBot = new TelegramBot();
+
+        // Загружаем конфиг
+        saveDefaultConfig(); // если конфиг не существует, он будет создан
+        String chatId = getConfig().getString("chat_id");
+        String botToken = getConfig().getString("bot_token");
+        telegramBot.setConfig(chatId, botToken);
+
         Bukkit.getPluginManager().registerEvents(this, this);
         getLogger().info("BWTelegramNotify for Paper has been enabled!");
     }
