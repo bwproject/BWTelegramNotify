@@ -8,80 +8,55 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
+
 import java.nio.file.Path;
-import java.nio.file.Files;
-import java.io.IOException;
-import java.util.Properties;
+import java.nio.file.Paths;
 
 @Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0")
 public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
     private final TelegramBot telegramBot;
-    private Properties config;
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
-        this.telegramBot = new TelegramBot(); // Создание экземпляра бота
-        loadConfig();
+        this.telegramBot = new TelegramBot();
         logger.info("BWTelegramNotify for Velocity has been enabled!");
     }
 
-    private void loadConfig() {
-        Path configPath = server.getPluginManager().getPlugin("bwtelegramnotify") // Получаем плагин
-                .map(plugin -> plugin.getDescription().getSource().getParent()) // Получаем путь к директории плагина
-                .map(path -> path.resolve("config.properties"))
-                .orElseThrow(() -> new RuntimeException("Plugin directory not found"));
-
-        config = new Properties();
-
-        if (!Files.exists(configPath)) {
-            // Если конфиг не существует, создаём
-            try {
-                Files.createDirectories(configPath.getParent()); // Создаём папки, если их нет
-                Files.createFile(configPath);
-                config.setProperty("chat_id", "your_chat_id");
-                config.setProperty("bot_token", "your_bot_token");
-                config.setProperty("join_message", "Player {player} has joined the server.");
-                config.setProperty("leave_message", "Player {player} has left the server.");
-                config.store(Files.newOutputStream(configPath), null);
-            } catch (IOException e) {
-                logger.error("Failed to create config file.", e);
-            }
-        } else {
-            try {
-                config.load(Files.newInputStream(configPath));
-                String chatId = config.getProperty("chat_id");
-                String botToken = config.getProperty("bot_token");
-
-                // Инициализация бота с конфигом
-                telegramBot.setConfig(chatId, botToken);
-            } catch (IOException e) {
-                logger.error("Failed to load config file.", e);
-            }
-        }
-    }
-
+    // Обработчик для события входа игрока
     @Subscribe
     public void onPlayerJoin(LoginEvent event) {
-        String message = config.getProperty("join_message").replace("{player}", event.getPlayer().getUsername());
+        String message = "Player " + event.getPlayer().getUsername() + " has joined the server.";
         logger.info(message);
         telegramBot.sendMessage(message);
     }
 
+    // Обработчик для события выхода игрока
     @Subscribe
     public void onPlayerLeave(DisconnectEvent event) {
-        String message = config.getProperty("leave_message").replace("{player}", event.getPlayer().getUsername());
+        String message = "Player " + event.getPlayer().getUsername() + " has left the server.";
         logger.info(message);
         telegramBot.sendMessage(message);
     }
 
+    // Обработчик для события смены сервера игроком
     @Subscribe
     public void onServerSwitch(ServerConnectedEvent event) {
         String message = "Player " + event.getPlayer().getUsername() + " switched servers.";
         logger.info(message);
         telegramBot.sendMessage(message);
+    }
+
+    // Чтение конфигурации для бота (например, получение пути для конфигурации)
+    public void loadConfig() {
+        Path path = Paths.get("plugins/BWTelegramNotify/config.json"); // Пример пути к конфигу
+        logger.info("Config path: " + path);
+
+        // Обрабатываем конфигурацию (если требуется, используйте JSON парсинг)
+        Path parentPath = path.getParent();  // Получаем родительскую директорию
+        logger.info("Parent directory: " + parentPath);
     }
 }
