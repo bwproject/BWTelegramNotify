@@ -24,13 +24,17 @@ public class VelocityMain {
     public VelocityMain(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
-        this.telegramBot = new TelegramBot(); // Здесь создаём экземпляр бота
+        this.telegramBot = new TelegramBot(); // Создание экземпляра бота
         loadConfig();
         logger.info("BWTelegramNotify for Velocity has been enabled!");
     }
 
     private void loadConfig() {
-        Path configPath = server.getConfigurationDirectory().resolve("BWTelegramNotify/config.properties"); // Получаем директорию конфигов
+        Path configPath = server.getPluginManager().getPlugin("bwtelegramnotify") // Получаем плагин
+                .map(plugin -> plugin.getDescription().getSource().getParent()) // Получаем путь к директории плагина
+                .map(path -> path.resolve("config.properties"))
+                .orElseThrow(() -> new RuntimeException("Plugin directory not found"));
+
         config = new Properties();
 
         if (!Files.exists(configPath)) {
@@ -52,8 +56,8 @@ public class VelocityMain {
                 String chatId = config.getProperty("chat_id");
                 String botToken = config.getProperty("bot_token");
 
-                // Передаём параметры в TelegramBot
-                telegramBot.initialize(chatId, botToken);
+                // Инициализация бота с конфигом
+                telegramBot.setConfig(chatId, botToken);
             } catch (IOException e) {
                 logger.error("Failed to load config file.", e);
             }
