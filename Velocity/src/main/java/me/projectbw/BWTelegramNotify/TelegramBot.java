@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.bots.LongPollingBot;
 
@@ -32,9 +32,8 @@ public class TelegramBot extends LongPollingBot {
         sendMessage.setText(message);
 
         try {
-            TelegramBotsApi botsApi = new TelegramBotsApi();
-            botsApi.registerBot(this); // Регистрируем текущий экземпляр бота
-            execute(sendMessage); // Отправка сообщения
+            // Отправка сообщения
+            execute(sendMessage);
             logger.info("Message sent: " + message);
         } catch (TelegramApiException e) {
             logger.error("Failed to send message: ", e);
@@ -52,7 +51,19 @@ public class TelegramBot extends LongPollingBot {
     }
 
     @Override
-    public void onUpdateReceived(org.telegram.telegrambots.meta.api.objects.Update update) {
+    public void onUpdateReceived(Update update) {
         // Обработчик входящих обновлений (если нужно)
+        logger.info("Received update: " + update);
+    }
+
+    // Метод для регистрации бота в TelegramBotsApi
+    public void registerBot() {
+        try {
+            TelegramBotsApi botsApi = new TelegramBotsApi();
+            botsApi.registerBot(this); // Регистрируем текущий экземпляр бота
+            logger.info("Bot successfully registered.");
+        } catch (TelegramApiException e) {
+            logger.error("Failed to register bot: ", e);
+        }
     }
 }
