@@ -9,25 +9,25 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-<repositories>
-    <!-- Репозиторий для Velocity API -->
-    <repository>
-        <id>velocity-repo</id>
-        <url>https://repo.velocitypowered.com/snapshots/</url>
-    </repository>
+    <repositories>
+        <!-- Репозиторий для Velocity API -->
+        <repository>
+            <id>velocity-repo</id>
+            <url>https://repo.velocitypowered.com/snapshots/</url>
+        </repository>
 
-    <!-- Репозиторий для TelegramBots -->
-    <repository>
-        <id>telegram-repo</id>
-        <url>https://jitpack.io</url>
-    </repository>
-    
-    <!-- Репозиторий для Maven Central (если он еще не добавлен) -->
-    <repository>
-        <id>maven-central</id>
-        <url>https://repo.maven.apache.org/maven2</url>
-    </repository>
-</repositories>
+        <!-- Репозиторий для TelegramBots -->
+        <repository>
+            <id>telegram-repo</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
+        <!-- Репозиторий для Maven Central -->
+        <repository>
+            <id>maven-central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Зависимость для Velocity API -->
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.9.5</version>
+            <version>6.9.4</version>
         </dependency>
     </dependencies>
 
