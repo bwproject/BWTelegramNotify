@@ -29,19 +29,19 @@ jobs:
       - name: Build Velocity JAR
         run: mvn -B package --file pom.xml -Pvelocity
 
-      - name: Upload JAR artifacts
+      - name: Upload Paper JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: BWTelegramNotify-Paper
-          path: target/BWTelegramNotify-Paper*.jar
-          retention-days: 2
+          path: target/BWTelegramNotify-Paper-*.jar
+          retention-days: 7
 
-      - name: Upload JAR artifacts
+      - name: Upload Velocity JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: BWTelegramNotify-Velocity
-          path: target/BWTelegramNotify-Velocity*.jar
-          retention-days: 2
+          path: target/BWTelegramNotify-Velocity-*.jar
+          retention-days: 7
 
   release:
     name: Create GitHub Release
@@ -74,8 +74,8 @@ jobs:
           release_name: "Auto Release ${{ env.TAG_NAME }}"
           body: "Автоматический релиз при обновлении main"
           files: |
-            target/BWTelegramNotify-Paper*.jar
-            target/BWTelegramNotify-Velocity*.jar
+            target/BWTelegramNotify-Paper-*.jar
+            target/BWTelegramNotify-Velocity-*.jar
           draft: false
           prerelease: false
         env:
