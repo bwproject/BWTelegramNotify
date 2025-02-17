@@ -22,7 +22,7 @@
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
 
-        <!-- Репозиторий для JitPack -->
+        <!-- Репозиторий для JitPack (если нужно использовать неофициальные версии) -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -38,11 +38,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для TelegramBots (версия 5.5.0) -->
+        <!-- Зависимость для TelegramBots (версия 5.5.0 для LongPollingBot) -->
         <dependency>
-            <groupId>com.github.rubenlagus</groupId>
-            <artifactId>TelegramBots</artifactId>
-            <version>4.9.0</version>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>5.5.0</version>
         </dependency>
 
         <!-- Зависимость для Jackson (обработка JSON конфигураций) -->
