@@ -6,9 +6,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.bots.LongPollingBot;
 
-public class TelegramBot {
+public class TelegramBot extends LongPollingBot {
     private static final Logger logger = LoggerFactory.getLogger(TelegramBot.class);
     private String botToken;
     private String chatId;
@@ -32,33 +32,27 @@ public class TelegramBot {
         sendMessage.setText(message);
 
         try {
-            // Создание и регистрация бота для отправки сообщения
             TelegramBotsApi botsApi = new TelegramBotsApi();
-            botsApi.registerBot(new TelegramBotAbsSender());
-            Message sentMessage = botsApi.execute(sendMessage); // Отправка сообщения
-            logger.info("Message sent: " + sentMessage.getText());
+            botsApi.registerBot(this); // Регистрируем текущий экземпляр бота
+            execute(sendMessage); // Отправка сообщения
+            logger.info("Message sent: " + message);
         } catch (TelegramApiException e) {
             logger.error("Failed to send message: ", e);
         }
     }
 
-    // Вспомогательный класс для работы с Telegram Bot API
-    private static class TelegramBotAbsSender extends AbsSender {
+    @Override
+    public String getBotUsername() {
+        return "YOUR_BOT_USERNAME"; // Укажите имя вашего бота
+    }
 
-        @Override
-        public String getBotUsername() {
-            return "YOUR_BOT_USERNAME"; // Укажите имя вашего бота
-        }
+    @Override
+    public String getBotToken() {
+        return botToken; // Используем токен, переданный в setConfig()
+    }
 
-        @Override
-        public String getBotToken() {
-            return botToken; // Используем токен, переданный в setConfig()
-        }
-
-        @Override
-        public Message sendApiMethod(SendMessage sendMessage) throws TelegramApiException {
-            // Логика отправки сообщения
-            return execute(sendMessage);
-        }
+    @Override
+    public void onUpdateReceived(org.telegram.telegrambots.meta.api.objects.Update update) {
+        // Обработчик входящих обновлений (если нужно)
     }
 }
