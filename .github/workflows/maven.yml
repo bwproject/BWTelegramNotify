@@ -28,7 +28,7 @@ jobs:
 
       - name: Check built files
         run: |
-          ls -R BWTelegramNotify/
+          ls -R
 
       - name: Upload Paper JAR artifact
         uses: actions/upload-artifact@v4
