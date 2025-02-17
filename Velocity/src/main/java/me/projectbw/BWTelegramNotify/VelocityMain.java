@@ -2,9 +2,9 @@ package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.player.PlayerLoginEvent;
-import com.velocitypowered.api.event.player.PlayerDisconnectEvent;
-import com.velocitypowered.api.event.player.PlayerSwitchServerEvent;
+import com.velocitypowered.api.event.player.PlayerLoginEvent;  // Возможно, нужно заменить на актуальное событие
+import com.velocitypowered.api.event.player.PlayerDisconnectEvent;  // Проверьте правильность импорта
+import com.velocitypowered.api.event.player.PlayerSwitchServerEvent;  // Проверьте правильность импорта
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
