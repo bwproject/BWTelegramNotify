@@ -39,6 +39,8 @@ public class VelocityMain {
                 Files.createFile(configPath);
                 config.setProperty("chat_id", "your_chat_id");
                 config.setProperty("bot_token", "your_bot_token");
+                config.setProperty("join_message", "Player {player} has joined the server.");
+                config.setProperty("leave_message", "Player {player} has left the server.");
                 config.store(Files.newOutputStream(configPath), null);
             } catch (IOException e) {
                 logger.error("Failed to create config file.", e);
@@ -57,14 +59,14 @@ public class VelocityMain {
 
     @Subscribe
     public void onPlayerJoin(LoginEvent event) {
-        String message = "Player " + event.getPlayer().getUsername() + " has joined the server.";
+        String message = config.getProperty("join_message").replace("{player}", event.getPlayer().getUsername());
         logger.info(message);
         telegramBot.sendMessage(message);
     }
 
     @Subscribe
     public void onPlayerLeave(DisconnectEvent event) {
-        String message = "Player " + event.getPlayer().getUsername() + " has left the server.";
+        String message = config.getProperty("leave_message").replace("{player}", event.getPlayer().getUsername());
         logger.info(message);
         telegramBot.sendMessage(message);
     }
