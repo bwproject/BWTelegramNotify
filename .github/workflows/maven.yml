@@ -23,24 +23,21 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      - name: Build Paper JAR
-        run: mvn -B package --file pom.xml -Ppaper
-
-      - name: Build Velocity JAR
-        run: mvn -B package --file pom.xml -Pvelocity
+      - name: Build project using parent pom.xml
+        run: mvn -B package --file pom.xml
 
       - name: Upload Paper JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: BWTelegramNotify-Paper
-          path: target/BWTelegramNotify-Paper*.jar
+          path: target/BWTelegramNotify-Paper-*.jar
           retention-days: 7
 
       - name: Upload Velocity JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: BWTelegramNotify-Velocity
-          path: target/BWTelegramNotify-Velocity*.jar
+          path: target/BWTelegramNotify-Velocity-*.jar
           retention-days: 7
 
   release:
@@ -74,8 +71,8 @@ jobs:
           release_name: "Auto Release ${{ env.TAG_NAME }}"
           body: "Автоматический релиз при обновлении main"
           files: |
-            target/BWTelegramNotify-Paper*.jar
-            target/BWTelegramNotify-Velocity*.jar
+            target/BWTelegramNotify-Paper-*.jar
+            target/BWTelegramNotify-Velocity-*.jar
           draft: false
           prerelease: false
         env:
