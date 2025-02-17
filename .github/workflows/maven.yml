@@ -26,18 +26,22 @@ jobs:
       - name: Build project using parent pom.xml
         run: mvn -B package --file pom.xml
 
+      - name: Check built files
+        run: |
+          ls -R BWTelegramNotify/
+
       - name: Upload Paper JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: BWTelegramNotify-Paper
-          path: BWTelegramNotify/Paper/target/BWTelegramNotify-Paper-*.jar
+          path: Paper/target/BWTelegramNotify-Paper-*.jar
           retention-days: 7
 
       - name: Upload Velocity JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: BWTelegramNotify-Velocity
-          path: BWTelegramNotify/Velocity/target/BWTelegramNotify-Velocity-*.jar
+          path: Velocity/target/BWTelegramNotify-Velocity-*.jar
           retention-days: 7
 
   release:
@@ -52,13 +56,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: BWTelegramNotify-Paper
-          path: target/
+          path: Paper/target/
 
       - name: Download Velocity JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: BWTelegramNotify-Velocity
-          path: target/
+          path: Velocity/target/
+
+      - name: Check downloaded files
+        run: |
+          ls -R Paper/target/
+          ls -R Velocity/target/
 
       - name: Generate release tag
         id: set_tag
@@ -71,8 +80,8 @@ jobs:
           release_name: "Auto Release ${{ env.TAG_NAME }}"
           body: "Автоматический релиз при обновлении main"
           files: |
-            BWTelegramNotify/Paper/target/BWTelegramNotify-Paper-*.jar
-            BWTelegramNotify/Velocity/target/BWTelegramNotify-Velocity-*.jar
+            Paper/target/BWTelegramNotify-Paper-*.jar
+            Velocity/target/BWTelegramNotify-Velocity-*.jar
           draft: false
           prerelease: false
         env:
