@@ -2,9 +2,9 @@ package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.player.PlayerLoginEvent;  // Возможно, нужно заменить на актуальное событие
-import com.velocitypowered.api.event.player.PlayerDisconnectEvent;  // Проверьте правильность импорта
-import com.velocitypowered.api.event.player.PlayerSwitchServerEvent;  // Проверьте правильность импорта
+import com.velocitypowered.api.event.connection.LoginEvent;  // Используем LoginEvent вместо PlayerLoginEvent
+import com.velocitypowered.api.event.connection.DisconnectEvent;  // Используем DisconnectEvent вместо PlayerDisconnectEvent
+import com.velocitypowered.api.event.player.ServerConnectedEvent;  // Используем ServerConnectedEvent вместо PlayerSwitchServerEvent
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class VelocityMain {
 
     // Обработчик для события входа игрока
     @Subscribe
-    public void onPlayerJoin(PlayerLoginEvent event) {
+    public void onPlayerJoin(LoginEvent event) {
         String message = "Player " + event.getPlayer().getUsername() + " has joined the server.";
         logger.info(message);
         telegramBot.sendMessage(message);
@@ -33,7 +33,7 @@ public class VelocityMain {
 
     // Обработчик для события выхода игрока
     @Subscribe
-    public void onPlayerLeave(PlayerDisconnectEvent event) {
+    public void onPlayerLeave(DisconnectEvent event) {
         String message = "Player " + event.getPlayer().getUsername() + " has left the server.";
         logger.info(message);
         telegramBot.sendMessage(message);
@@ -41,7 +41,7 @@ public class VelocityMain {
 
     // Обработчик для события смены сервера игроком
     @Subscribe
-    public void onServerSwitch(PlayerSwitchServerEvent event) {
+    public void onServerSwitch(ServerConnectedEvent event) {
         String message = "Player " + event.getPlayer().getUsername() + " switched servers.";
         logger.info(message);
         telegramBot.sendMessage(message);
