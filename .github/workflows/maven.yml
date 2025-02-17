@@ -71,7 +71,8 @@ jobs:
 
       - name: Generate release tag
         id: set_tag
-        run: echo "TAG_NAME=$(date +'%d.%m.%Y') (Run #${{ github.run_number }})" >> $GITHUB_ENV
+        run: |
+          echo "TAG_NAME=$(date +'%d.%m.%Y') (Run #${{ github.run_number }})" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
