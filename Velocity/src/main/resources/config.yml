@@ -1,0 +1,12 @@
+# Конфигурация для Velocity
+telegram:
+  botToken: "ВАШ_ТОКЕН"
+  chatId: "ВАШ_ЧАТ_ID"
+
+notifications:
+  serverStart: "Сервер Velocity запущен!"
+  serverStop: "Сервер Velocity выключен!"
+  playerJoin: "Игрок {player} вошел в сеть."
+  playerLeave: "Игрок {player} вышел из сети."
+  playerSwitchServer: "Игрок {player} переместился на сервер {server}."
+  playerIP: "Игрок {player} подключился с IP: {ip}"
