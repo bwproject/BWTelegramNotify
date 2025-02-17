@@ -60,7 +60,7 @@ public class TelegramBot extends TelegramWebhookBot {
     }
 
     @Override
-    public void onUpdateReceived(Update update) {
+    public void onWebhookUpdateReceived(Update update) {
         logger.info("Received update: " + update);
     }
 }
