@@ -1,52 +1,65 @@
 package me.projectbw.BWTelegramNotify;
 
-import fi.iki.elonen.NanoHTTPD;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.util.Map;
-
-public class WebhookServer extends NanoHTTPD {
+public class WebhookServer {
     private static final Logger logger = LoggerFactory.getLogger(WebhookServer.class);
+    private final int port;
     private final TelegramBot bot;
+    private HttpServer server;
 
-    public WebhookServer(int port, TelegramBot bot) throws IOException {
-        super(port);
+    public WebhookServer(int port, TelegramBot bot) {
+        this.port = port;
         this.bot = bot;
-        start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-        logger.info("Webhook server started on port " + port);
     }
 
-    @Override
-    public Response serve(IHTTPSession session) {
-        if (!"POST".equalsIgnoreCase(session.getMethod().name())) {
-            return newFixedLengthResponse(Response.Status.METHOD_NOT_ALLOWED, "text/plain", "Only POST requests allowed");
+    public void start() throws IOException {
+        server = HttpServer.create(new InetSocketAddress(port), 0);
+        server.createContext("/webhook", new WebhookHandler(bot));
+        server.setExecutor(null);
+        server.start();
+        logger.info("Webhook server is listening on port " + port);
+    }
+
+    public void stop() {
+        if (server != null) {
+            server.stop(0);
+            logger.info("Webhook server stopped.");
+        }
+    }
+
+    private static class WebhookHandler implements HttpHandler {
+        private final TelegramBot bot;
+
+        public WebhookHandler(TelegramBot bot) {
+            this.bot = bot;
         }
 
-        try {
-            // Читаем JSON из запроса
-            Map<String, String> body = session.getParms();
-            String json = body.get("postData");
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("POST".equals(exchange.getRequestMethod())) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Update update = objectMapper.readValue(exchange.getRequestBody(), Update.class);
 
-            if (json == null) {
-                return newFixedLengthResponse(Response.Status.BAD_REQUEST, "text/plain", "Invalid request");
+                bot.onUpdateReceived(update);
+
+                String response = "OK";
+                exchange.sendResponseHeaders(200, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            } else {
+                exchange.sendResponseHeaders(405, -1); // Method Not Allowed
             }
-
-            // Парсим JSON в объект Update
-            ObjectMapper objectMapper = new ObjectMapper();
-            Update update = objectMapper.readValue(json, Update.class);
-
-            // Передаём обновление боту
-            bot.onUpdateReceived(update);
-
-            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\": \"ok\"}");
-        } catch (Exception e) {
-            logger.error("Error processing update: ", e);
-            return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/plain", "Error processing update");
         }
     }
 }
