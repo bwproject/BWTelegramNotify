@@ -40,8 +40,8 @@
 
         <!-- Зависимость для TelegramBots (версия 5.5.0) -->
         <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
+            <groupId>com.github.rubenlagus</groupId>
+            <artifactId>TelegramBots</artifactId>
             <version>4.9.0</version>
         </dependency>
 
