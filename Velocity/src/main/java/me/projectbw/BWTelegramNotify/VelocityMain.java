@@ -1,106 +1,78 @@
 package me.projectbw.BWTelegramNotify;
 
-import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
-@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.2")
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.3")
 public class VelocityMain {
+    private static boolean running = false;
     private final ProxyServer server;
     private final Logger logger;
-    private final TelegramBot telegramBot;
+    private TelegramBot telegramBot;
 
-    private static final String BORDER = "\u001B[36m==============================\u001B[0m";
-    private static final String MESSAGE = "\u001B[32m=== Плагин BWTelegramNotify активен ===\u001B[0m";
-
-    @Inject
     public VelocityMain(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
+        server.getCommandManager().register("bwstatusbot", new StatusCommand());
+    }
 
-        // Создаём конфиг и папку, если их нет
-        File configFile = new File("plugins/BWTelegramNotify/config.properties");
-        if (!configFile.exists()) {
-            createDefaultConfig(configFile);
-        }
+    public void onEnable() {
+        running = true;
+        telegramBot = new TelegramBot("YOUR_BOT_TOKEN", List.of("CHAT_ID"));
 
-        // Загружаем конфиг
-        Properties config = loadConfig(configFile);
+        logger.info("\n==============================\n"
+                  + "=== Плагин BWTelegramNotify активен ===\n"
+                  + "==============================");
 
-        String botToken = config.getProperty("bot.token", "default_token");
-        List<String> chatIds = Arrays.stream(config.getProperty("bot.chat_ids", "").split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
+        logger.info("\u001B[32mTelegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\u001B[0m");
 
-        this.telegramBot = new TelegramBot(botToken, chatIds);
+        telegramBot.sendMessage("✅ **Velocity-сервер запущен!**");
+    }
 
-        // Лог в консоль
-        logger.info(BORDER);
-        logger.info(MESSAGE);
-        logger.info(BORDER);
-
-        // Лог о запуске Telegram-бота
-        String botId = botToken.split(":")[0]; // ID бота из токена
-        logger.info("\u001B[32mTelegram-бот запущен! ID бота: " + botId + "\u001B[0m");
-        logger.info("\u001B[36mОтправка уведомлений в чаты: " + chatIds + "\u001B[0m");
+    public void onDisable() {
+        running = false;
+        telegramBot.sendMessage("⛔ **Velocity-сервер выключен!**");
+        logger.info("\u001B[31m⛔ BWTelegramNotify отключен!\u001B[0m");
     }
 
     @Subscribe
-    public void onPlayerJoin(LoginEvent event) {
-        String message = "Игрок " + event.getPlayer().getUsername() + " зашел на сервер.";
-        logger.info("\u001B[33m" + message + "\u001B[0m");
-        telegramBot.sendMessage(message);
+    public void onPlayerLogin(LoginEvent event) {
+        telegramBot.sendMessage("🔵 **Игрок зашел на сервер:** " + event.getPlayer().getUsername());
     }
 
     @Subscribe
-    public void onPlayerQuit(DisconnectEvent event) {
-        String message = "Игрок " + event.getPlayer().getUsername() + " вышел с сервера.";
-        logger.info("\u001B[31m" + message + "\u001B[0m");
-        telegramBot.sendMessage(message);
+    public void onPlayerDisconnect(DisconnectEvent event) {
+        telegramBot.sendMessage("⚪ **Игрок вышел с сервера:** " + event.getPlayer().getUsername());
     }
 
     @Subscribe
-    public void onServerSwitch(ServerConnectedEvent event) {
-        String message = "Игрок " + event.getPlayer().getUsername() + " сменил сервер на " + event.getServer().getServerInfo().getName();
-        logger.info("\u001B[34m" + message + "\u001B[0m");
-        telegramBot.sendMessage(message);
+    public void onPlayerChangeServer(ServerConnectedEvent event) {
+        telegramBot.sendMessage("🔄 **Игрок сменил сервер:** " + event.getPlayer().getUsername() +
+                "\n➡ Новый сервер: " + event.getServer().getServerInfo().getName());
     }
 
-    private void createDefaultConfig(File configFile) {
-        try {
-            Files.createDirectories(Path.of("plugins/BWTelegramNotify"));
-            String defaultConfig = "bot.token=YOUR_BOT_TOKEN\nbot.chat_ids=123456789,-987654321\n";
-            Files.writeString(configFile.toPath(), defaultConfig, StandardOpenOption.CREATE);
-            logger.info("\u001B[32mКонфигурация создана: plugins/BWTelegramNotify/config.properties\u001B[0m");
-        } catch (IOException e) {
-            logger.error("\u001B[31mОшибка при создании конфигурации: " + e.getMessage() + "\u001B[0m");
-        }
+    public static boolean isRunning() {
+        return running;
     }
 
-    private Properties loadConfig(File configFile) {
-        Properties properties = new Properties();
-        try {
-            properties.load(Files.newBufferedReader(configFile.toPath()));
-            logger.info("\u001B[32mКонфигурация загружена успешно!\u001B[0m");
-        } catch (IOException e) {
-            logger.error("\u001B[31mОшибка при загрузке конфигурации: " + e.getMessage() + "\u001B[0m");
+    private class StatusCommand implements SimpleCommand {
+        @Override
+        public void execute(Invocation invocation) {
+            String message = "📢 BWTelegramNotify:\n"
+                    + "Бот: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\n"
+                    + "Сервер: Velocity";
+
+            invocation.source().sendMessage(message);
+            logger.info(message);
         }
-        return properties;
     }
 }
