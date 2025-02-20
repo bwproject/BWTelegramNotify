@@ -8,6 +8,7 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -71,7 +72,8 @@ public class VelocityMain {
                     + "Бот: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\n"
                     + "Сервер: Velocity";
 
-            invocation.source().sendMessage(message);
+            // Используем Component.text() вместо обычной строки
+            invocation.source().sendMessage(Component.text(message));
             logger.info(message);
         }
     }
