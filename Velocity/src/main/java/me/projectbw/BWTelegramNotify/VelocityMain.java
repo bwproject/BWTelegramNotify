@@ -10,6 +10,12 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
+import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.event.LoginEvent;
+import com.velocitypowered.api.event.proxy.DisconnectEvent;
+import com.velocitypowered.api.event.server.ServerConnectedEvent;
+import com.velocitypowered.api.command.SimpleCommand;
 
 import java.util.List;
 
