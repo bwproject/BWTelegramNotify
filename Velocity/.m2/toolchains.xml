@@ -1,1 +1,11 @@
-t
+<toolchains>
+    <toolchain>
+        <type>jdk</type>
+        <provides>
+            <version>21</version>
+        </provides>
+        <configuration>
+            <jdkHome>/path/to/java21</jdkHome>
+        </configuration>
+    </toolchain>
+</toolchains>
