@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.9.6</version>
+            <version>6.9.5</version>
         </dependency>
     </dependencies>
 
