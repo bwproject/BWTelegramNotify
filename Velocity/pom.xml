@@ -10,6 +10,7 @@
     <packaging>jar</packaging>
 
     <properties>
+        <!-- Указываем Java 21 -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,7 +46,7 @@
 
     <build>
         <plugins>
-            <!-- Компилятор Java -->
+            <!-- Плагин для компиляции Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -55,11 +56,11 @@
                 </configuration>
             </plugin>
 
-            <!-- Shade plugin (fat-jar) -->
+            <!-- Плагин для создания fat-jar (shaded jar) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.1</version> <!-- Обновлена версия плагина -->
                 <executions>
                     <execution>
                         <phase>package</phase>
