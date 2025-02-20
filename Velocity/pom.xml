@@ -10,7 +10,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <!-- Указываем Java 21 -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,7 +27,6 @@
     </repositories>
 
     <dependencies>
-        <!-- Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -36,7 +34,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TelegramBots 5.5.0 -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
@@ -60,7 +57,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version> <!-- Обновлена версия плагина -->
+                <version>3.4.1</version> <!-- Версия плагина, которая должна поддерживать JDK 21 -->
                 <executions>
                     <execution>
                         <phase>package</phase>
