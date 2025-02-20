@@ -9,12 +9,19 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Properties;
+
 @Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0")
 public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
     private final TelegramBot telegramBot;
-
+    
     private static final String BORDER = "\u001B[36m==============================\u001B[0m";
     private static final String MESSAGE = "\u001B[32m=== Плагин BWTelegramNotify активен ===\u001B[0m";
 
@@ -22,7 +29,20 @@ public class VelocityMain {
     public VelocityMain(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
-        this.telegramBot = new TelegramBot("YOUR_BOT_TOKEN", "YOUR_CHAT_ID"); // TODO: Загрузить из конфигурации
+
+        // Создаём конфиг и папку, если их нет
+        File configFile = new File("plugins/BWTelegramNotify/config.properties");
+        if (!configFile.exists()) {
+            createDefaultConfig(configFile);
+        }
+
+        // Загружаем конфиг
+        Properties config = loadConfig(configFile);
+
+        String botToken = config.getProperty("bot.token", "default_token");
+        String chatId = config.getProperty("bot.chat_id", "default_chat");
+
+        this.telegramBot = new TelegramBot(botToken, chatId);
 
         // Цветной лог в консоль
         logger.info(BORDER);
@@ -49,5 +69,27 @@ public class VelocityMain {
         String message = "Игрок " + event.getPlayer().getUsername() + " сменил сервер на " + event.getServer().getServerInfo().getName();
         logger.info("\u001B[34m" + message + "\u001B[0m");
         telegramBot.sendMessage(message);
+    }
+
+    private void createDefaultConfig(File configFile) {
+        try {
+            Files.createDirectories(Path.of("plugins/BWTelegramNotify"));
+            String defaultConfig = "bot.token=YOUR_BOT_TOKEN\nbot.chat_id=YOUR_CHAT_ID\n";
+            Files.writeString(configFile.toPath(), defaultConfig, StandardOpenOption.CREATE);
+            logger.info("\u001B[32mКонфигурация создана: plugins/BWTelegramNotify/config.properties\u001B[0m");
+        } catch (IOException e) {
+            logger.error("\u001B[31mОшибка при создании конфигурации: " + e.getMessage() + "\u001B[0m");
+        }
+    }
+
+    private Properties loadConfig(File configFile) {
+        Properties properties = new Properties();
+        try {
+            properties.load(Files.newBufferedReader(configFile.toPath()));
+            logger.info("\u001B[32mКонфигурация загружена успешно!\u001B[0m");
+        } catch (IOException e) {
+            logger.error("\u001B[31mОшибка при загрузке конфигурации: " + e.getMessage() + "\u001B[0m");
+        }
+        return properties;
     }
 }
