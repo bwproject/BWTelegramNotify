@@ -12,30 +12,4 @@
         <module>Velocity</module>
         <module>Paper</module>
     </modules>
-
-    <repositories>
-        <!-- Репозиторий Paper (только для Paper) -->
-        <repository>
-            <id>paper-repo</id>
-            <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-
-        <!-- Репозиторий Velocity (только для Velocity) -->
-        <repository>
-            <id>velocity-repo</id>
-            <url>https://repo.velocitypowered.com/snapshots/</url>
-        </repository>
-
-        <!-- JitPack (для TelegramBots) -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-
-        <!-- Maven Central -->
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-    </repositories>
 </project>
