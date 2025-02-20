@@ -27,6 +27,7 @@
     </repositories>
 
     <dependencies>
+        <!-- Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -34,6 +35,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- TelegramBots 5.5.0 -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
@@ -43,7 +45,7 @@
 
     <build>
         <plugins>
-            <!-- Плагин для компиляции Java -->
+            <!-- Компилятор Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -53,11 +55,11 @@
                 </configuration>
             </plugin>
 
-            <!-- Плагин для создания fat-jar (shaded jar) -->
+            <!-- Плагин для создания fat-jar (Shade) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version> <!-- Версия плагина, которая должна поддерживать JDK 21 -->
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -83,6 +85,26 @@
                                     <shadedPattern>me.projectbw.telegram</shadedPattern>
                                 </relocation>
                             </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Плагин для создания fat-jar (Assembly) как альтернатива Shade -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/bin.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
