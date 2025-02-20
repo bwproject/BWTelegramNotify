@@ -26,11 +26,6 @@
             <id>velocity-repo</id>
             <url>https://repo.velocitypowered.com/snapshots/</url>
         </repository>
-        <!-- JitPack для нестандартных зависимостей -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -42,11 +37,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TelegramBots -->
+        <!-- TelegramBots 5.5.0 -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.9.7</version>
+            <version>5.5.0</version>
         </dependency>
     </dependencies>
 
