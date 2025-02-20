@@ -4,6 +4,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.GetMe;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -45,6 +46,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                 System.err.println("Ошибка при отправке сообщения в Telegram: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void onUpdateReceived(Update update) {
+        // Обязательный метод, но он не нужен для отправки сообщений, поэтому оставляем пустым
     }
 
     @Override
