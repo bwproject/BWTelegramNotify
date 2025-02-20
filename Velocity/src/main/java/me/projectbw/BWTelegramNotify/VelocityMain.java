@@ -14,9 +14,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0")
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.1")
 public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
@@ -40,9 +43,14 @@ public class VelocityMain {
         Properties config = loadConfig(configFile);
 
         String botToken = config.getProperty("bot.token", "default_token");
-        String chatId = config.getProperty("bot.chat_id", "default_chat");
 
-        this.telegramBot = new TelegramBot(botToken, chatId);
+        // Загружаем список чатов
+        List<String> chatIds = Arrays.stream(config.getProperty("bot.chat_ids", "").split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+
+        this.telegramBot = new TelegramBot(botToken, chatIds);
 
         // Цветной лог в консоль
         logger.info(BORDER);
@@ -74,7 +82,7 @@ public class VelocityMain {
     private void createDefaultConfig(File configFile) {
         try {
             Files.createDirectories(Path.of("plugins/BWTelegramNotify"));
-            String defaultConfig = "bot.token=YOUR_BOT_TOKEN\nbot.chat_id=YOUR_CHAT_ID\n";
+            String defaultConfig = "bot.token=YOUR_BOT_TOKEN\nbot.chat_ids=123456789,-987654321\n";
             Files.writeString(configFile.toPath(), defaultConfig, StandardOpenOption.CREATE);
             logger.info("\u001B[32mКонфигурация создана: plugins/BWTelegramNotify/config.properties\u001B[0m");
         } catch (IOException e) {
