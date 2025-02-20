@@ -4,72 +4,54 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
 public class PaperMain extends JavaPlugin implements Listener {
-    private TelegramBot telegramBot;
     private static boolean running = false;
+    private TelegramBot telegramBot;
 
     @Override
     public void onEnable() {
         running = true;
-        telegramBot = new TelegramBot("YOUR_BOT_TOKEN", List.of("CHAT_ID"));
+        saveDefaultConfig();
+        List<String> chatIds = getConfig().getStringList("telegram.chatIds");
+        String botToken = getConfig().getString("telegram.token");
 
-        getLogger().info("\n==============================\n"
-                        + "=== Плагин BWTelegramNotify активен ===\n"
-                        + "==============================");
+        telegramBot = new TelegramBot(botToken, chatIds);
 
-        getLogger().info("\u001B[32mTelegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\u001B[0m");
-
-        getServer().getPluginManager().registerEvents(this, this);
+        Bukkit.getPluginManager().registerEvents(this, this);
         getCommand("bwstatusbot").setExecutor(new StatusCommand());
 
-        telegramBot.sendMessage("✅ **Paper-сервер запущен!**");
+        getServer().getConsoleSender().sendMessage("\n§a==============================\n"
+                + "§a=== Плагин BWTelegramNotify активен ===\n"
+                + "§a==============================");
 
-        startTpsMonitor();
+        getLogger().info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
+
+        telegramBot.sendMessage("✅ **Paper-сервер запущен!**");
     }
 
     @Override
     public void onDisable() {
         running = false;
         telegramBot.sendMessage("⛔ **Paper-сервер выключен!**");
-        getLogger().info("\u001B[31m⛔ BWTelegramNotify отключен!\u001B[0m");
+        getLogger().info("⛔ BWTelegramNotify отключен!");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        telegramBot.sendMessage("🔵 **Игрок зашел на сервер:** " + player.getName());
+        telegramBot.sendMessage("🔵 **Игрок зашел на сервер:** " + event.getPlayer().getName());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        telegramBot.sendMessage("⚪ **Игрок вышел с сервера:** " + player.getName());
-    }
-
-    private void startTpsMonitor() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                double tps = Bukkit.getTPS()[0];
-                if (tps < 15) {
-                    telegramBot.sendMessage("⚠ **Низкий TPS!**\nТекущий TPS: " + String.format("%.2f", tps));
-                }
-            }
-        }.runTaskTimer(this, 0, 1200);
-    }
-
-    public static boolean isRunning() {
-        return running;
+        telegramBot.sendMessage("⚪ **Игрок вышел с сервера:** " + event.getPlayer().getName());
     }
 
     private class StatusCommand implements CommandExecutor {
@@ -77,7 +59,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
             String message = "📢 BWTelegramNotify:\n"
                     + "Бот: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\n"
-                    + "Сервер: PaperMC";
+                    + "Сервер: Paper";
 
             sender.sendMessage(message);
             getLogger().info(message);
