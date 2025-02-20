@@ -2,18 +2,26 @@ package me.projectbw.BWTelegramNotify;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public class PaperMain extends JavaPlugin implements Listener {
     private TelegramBot telegramBot;
+    private FileConfiguration config;
 
     @Override
     public void onEnable() {
-        this.telegramBot = new TelegramBot();
+        saveDefaultConfig();
+        config = getConfig();
+
+        this.telegramBot = new TelegramBot(config.getString("bot.token"), config.getString("bot.chat_id"));
         Bukkit.getPluginManager().registerEvents(this, this);
 
         // Цветной лог

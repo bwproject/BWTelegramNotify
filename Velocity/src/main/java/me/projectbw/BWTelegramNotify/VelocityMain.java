@@ -22,7 +22,7 @@ public class VelocityMain {
     public VelocityMain(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
-        this.telegramBot = new TelegramBot();
+        this.telegramBot = new TelegramBot("YOUR_BOT_TOKEN", "YOUR_CHAT_ID"); // TODO: Загрузить из конфигурации
 
         // Цветной лог в консоль
         logger.info(BORDER);
