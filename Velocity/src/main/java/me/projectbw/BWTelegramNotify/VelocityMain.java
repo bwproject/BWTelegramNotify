@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.1")
+@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.2")
 public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
     private final TelegramBot telegramBot;
-    
+
     private static final String BORDER = "\u001B[36m==============================\u001B[0m";
     private static final String MESSAGE = "\u001B[32m=== Плагин BWTelegramNotify активен ===\u001B[0m";
 
@@ -43,8 +43,6 @@ public class VelocityMain {
         Properties config = loadConfig(configFile);
 
         String botToken = config.getProperty("bot.token", "default_token");
-
-        // Загружаем список чатов
         List<String> chatIds = Arrays.stream(config.getProperty("bot.chat_ids", "").split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
@@ -52,10 +50,15 @@ public class VelocityMain {
 
         this.telegramBot = new TelegramBot(botToken, chatIds);
 
-        // Цветной лог в консоль
+        // Лог в консоль
         logger.info(BORDER);
         logger.info(MESSAGE);
         logger.info(BORDER);
+
+        // Лог о запуске Telegram-бота
+        String botId = botToken.split(":")[0]; // ID бота из токена
+        logger.info("\u001B[32mTelegram-бот запущен! ID бота: " + botId + "\u001B[0m");
+        logger.info("\u001B[36mОтправка уведомлений в чаты: " + chatIds + "\u001B[0m");
     }
 
     @Subscribe
