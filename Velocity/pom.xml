@@ -10,27 +10,14 @@
     <packaging>jar</packaging>
 
     <repositories>
-        <!-- Репозиторий для Velocity API -->
         <repository>
             <id>velocity-repo</id>
             <url>https://repo.velocitypowered.com/snapshots/</url>
         </repository>
-
-        <!-- Репозиторий для TelegramBots -->
-        <repository>
-            <id>telegram-repo</id>
-            <url>https://jitpack.io</url>
-        </repository>
-
-        <!-- Репозиторий для Maven Central -->
-        <repository>
-            <id>maven-central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
     </repositories>
 
     <dependencies>
-        <!-- Зависимость для Velocity API -->
+        <!-- Velocity API -->
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
@@ -38,11 +25,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Зависимость для TelegramBots -->
+        <!-- TelegramBots -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>5.3.0</version>
+            <version>6.9.7</version>
         </dependency>
     </dependencies>
 
@@ -56,6 +43,28 @@
                     <source>21</source>
                     <target>21</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.telegram</pattern>
+                                    <shadedPattern>me.projectbw.telegram</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
