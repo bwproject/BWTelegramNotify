@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>8.2.0</version>
+            <version>5.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
