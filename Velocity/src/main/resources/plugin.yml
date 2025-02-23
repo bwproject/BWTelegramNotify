@@ -1,5 +1,5 @@
 name: BWTelegramNotify
 version: 1.0-SNAPSHOT
 main: me.projectbw.BWTelegramNotify.VelocityMain
-api-version: 3.0
+api-version: 3.4
 depend: [velocity]
