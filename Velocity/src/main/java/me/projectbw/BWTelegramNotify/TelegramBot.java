@@ -22,54 +22,52 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.chatIds = chatIds;
 
         try {
-            // Регистрация бота через TelegramBotsApi
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(this);
 
-            // Получение информации о боте (имя и username)
             User botInfo = execute(new GetMe());
             this.botName = botInfo.getFirstName();
             this.botUsername = botInfo.getUserName();
-            System.out.println("Bot registered successfully: " + botName + " (" + botUsername + ")");
+
+            System.out.println("Telegram-бот запущен: " + botUsername + " (@" + botUsername + ")");
         } catch (TelegramApiException e) {
-            System.err.println("Ошибка при запуске Telegram-бота: " + e.getMessage());
+            System.err.println("Ошибка при запуске Telegram-бота:");
+            e.printStackTrace();
         }
     }
 
     public void sendMessage(String text) {
-        // Отправка сообщений в каждый чат
         for (String chatId : chatIds) {
             SendMessage message = new SendMessage();
+            message.setChatId(String.valueOf(chatId)); // Преобразование chatId в String
+            message.setText(text);
+            message.enableMarkdown(true);
+
             try {
-                message.setChatId(Long.parseLong(chatId));  // Преобразование chatId в Long
-                message.setText(text);
-                message.enableMarkdown(true);
-                System.out.println("Отправка сообщения: chatId=" + chatId + " текст=" + text);
-                execute(message);  // Отправка сообщения
-            } catch (NumberFormatException e) {
-                System.err.println("Неверный формат chatId: " + chatId);
+                execute(message);
             } catch (TelegramApiException e) {
-                System.err.println("Ошибка при отправке сообщения в Telegram: " + e.getMessage());
+                System.err.println("Ошибка при отправке сообщения в Telegram:");
+                e.printStackTrace();
             }
         }
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        // Этот метод обязателен, но не нужен для отправки сообщений, поэтому оставляем пустым
+        // Метод нужен для получения сообщений, но он не используется в этом боте
     }
 
     @Override
     public String getBotUsername() {
-        return botUsername;  // Возвращаем username бота
+        return botUsername;
     }
 
     @Override
     public String getBotToken() {
-        return botToken;  // Возвращаем токен бота
+        return botToken;
     }
 
     public String getBotName() {
-        return botName;  // Возвращаем имя бота
+        return botName;
     }
 }
