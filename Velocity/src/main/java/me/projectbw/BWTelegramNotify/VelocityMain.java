@@ -52,16 +52,16 @@ public class VelocityMain {
         loadConfig();
 
         if (telegramBot != null) {
-            String serverStartedMessage = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
-            telegramBot.sendMessage(serverStartedMessage);
+            String message = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
+            telegramBot.sendMessage(message);
         }
     }
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         if (telegramBot != null) {
-            String serverStoppedMessage = config.getString("messages.server_stopped", "🔴 **Прокси-сервер выключен!**");
-            telegramBot.sendMessage(serverStoppedMessage);
+            String message = config.getString("messages.server_stopped", "🔴 **Прокси-сервер выключен!**");
+            telegramBot.sendMessage(message);
         }
     }
 
@@ -69,9 +69,8 @@ public class VelocityMain {
     public void onPlayerLogin(LoginEvent event) {
         String playerName = event.getPlayer().getUsername();
         if (telegramBot != null) {
-            String playerLoggedInMessage = config.getString("messages.player_logged_in", "✅ **Игрок зашел**: %player%");
-            playerLoggedInMessage = playerLoggedInMessage.replace("%player%", playerName);
-            telegramBot.sendMessage(playerLoggedInMessage);
+            String message = config.getString("messages.player_logged_in", "✅ **Игрок зашел**: %player%");
+            telegramBot.sendMessage(message.replace("%player%", playerName));
         }
     }
 
@@ -79,9 +78,8 @@ public class VelocityMain {
     public void onPlayerDisconnect(DisconnectEvent event) {
         String playerName = event.getPlayer().getUsername();
         if (telegramBot != null) {
-            String playerLoggedOutMessage = config.getString("messages.player_logged_out", "❌ **Игрок вышел**: %player%");
-            playerLoggedOutMessage = playerLoggedOutMessage.replace("%player%", playerName);
-            telegramBot.sendMessage(playerLoggedOutMessage);
+            String message = config.getString("messages.player_logged_out", "❌ **Игрок вышел**: %player%");
+            telegramBot.sendMessage(message.replace("%player%", playerName));
         }
     }
 
@@ -92,17 +90,18 @@ public class VelocityMain {
         String newServer = event.getServer().getServerInfo().getName();
 
         if (telegramBot != null) {
+            String message;
             if (previousServer.isPresent()) {
-                String playerSwitchedServerMessage = config.getString("messages.player_switched_server", "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**");
-                playerSwitchedServerMessage = playerSwitchedServerMessage.replace("%player%", player.getUsername())
+                message = config.getString("messages.player_switched_server", "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**");
+                telegramBot.sendMessage(message
+                        .replace("%player%", player.getUsername())
                         .replace("%previous_server%", previousServer.get())
-                        .replace("%new_server%", newServer);
-                telegramBot.sendMessage(playerSwitchedServerMessage);
+                        .replace("%new_server%", newServer));
             } else {
-                String playerJoinedServerMessage = config.getString("messages.player_joined_server", "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%");
-                playerJoinedServerMessage = playerJoinedServerMessage.replace("%player%", player.getUsername())
-                        .replace("%new_server%", newServer);
-                telegramBot.sendMessage(playerJoinedServerMessage);
+                message = config.getString("messages.player_joined_server", "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%");
+                telegramBot.sendMessage(message
+                        .replace("%player%", player.getUsername())
+                        .replace("%new_server%", newServer));
             }
         }
     }
@@ -112,7 +111,7 @@ public class VelocityMain {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
-                Files.writeString(configFile, "telegram:\n  token: \"\"\n  chats: []\n\nmessages:\n  server_started: \"🔵 **Прокси-сервер запущен!**\"\n  server_stopped: \"🔴 **Прокси-сервер выключен!**\"\n  player_logged_in: \"✅ **Игрок зашел**: %player%\"\n  player_logged_out: \"❌ **Игрок вышел**: %player%\"\n  player_switched_server: \"🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**\"\n  player_joined_server: \"➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%\"");
+                Files.writeString(configFile, "telegram:\n  token: \"\"\n  chats: []\n\nmessages:\n  server_started: \"🔵 **Прокси-сервер запущен!**\"\n  server_stopped: \"🔴 **Прокси-сервер выключен!**\"\n  player_logged_in: \"✅ **Игрок зашел**: %player%\"\n  player_logged_out: \"❌ **Игрок вышел**: %player%\"\n  player_switched_server: \"🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**\"\n  player_joined_server: \"➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%");
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
@@ -120,7 +119,12 @@ public class VelocityMain {
             }
         }
 
-        config = YamlConfiguration.loadConfiguration(configFile.toFile());
+        try {
+            config = YamlConfiguration.loadConfiguration(configFile.toFile());
+        } catch (IOException e) {
+            logger.severe("Ошибка при загрузке config.yml: " + e.getMessage());
+        }
+
         String botToken = config.getString("telegram.token", "");
         List<String> chatIds = config.getStringList("telegram.chats");
 
