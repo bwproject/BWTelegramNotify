@@ -51,6 +51,11 @@ public class VelocityMain {
 
         loadConfig();
 
+        if (config.getBoolean("updater.enabled", true)) {
+            logger.info("Проверка обновлений...");
+            new PluginUpdater().checkForUpdates();
+        }
+
         if (telegramBot != null) {
             String message = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
             telegramBot.sendMessage(message);
@@ -111,7 +116,22 @@ public class VelocityMain {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
-                Files.writeString(configFile, "telegram:\n  token: \"\"\n  chats: []\n\nmessages:\n  server_started: \"🔵 **Прокси-сервер запущен!**\"\n  server_stopped: \"🔴 **Прокси-сервер выключен!**\"\n  player_logged_in: \"✅ **Игрок зашел**: %player%\"\n  player_logged_out: \"❌ **Игрок вышел**: %player%\"\n  player_switched_server: \"🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**\"\n  player_joined_server: \"➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%");
+                Files.writeString(configFile, """
+                        telegram:
+                          token: ""
+                          chats: []
+                        
+                        messages:
+                          server_started: "🔵 **Прокси-сервер запущен!**"
+                          server_stopped: "🔴 **Прокси-сервер выключен!**"
+                          player_logged_in: "✅ **Игрок зашел**: %player%"
+                          player_logged_out: "❌ **Игрок вышел**: %player%"
+                          player_switched_server: "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**"
+                          player_joined_server: "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%"
+                        
+                        updater:
+                          enabled: true
+                        """);
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
