@@ -1,7 +1,9 @@
 # Конфигурация для Velocity
 telegram:
-  token: ""
-  chats: []
+  token: "YOUR_BOT_TOKEN"
+  chats:
+    - "chat_id_1"
+    - "chat_id_2"
 
 messages:
   server_started: "🔵 **Прокси-сервер запущен!**"
@@ -10,5 +12,6 @@ messages:
   player_logged_out: "❌ **Игрок вышел**: %player%"
   player_switched_server: "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**"
   player_joined_server: "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%"
+
 
 
