@@ -31,30 +31,33 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             System.out.println("Telegram-бот запущен: " + botUsername + " (@" + botUsername + ")");
         } catch (TelegramApiException e) {
-            System.err.println("Ошибка при запуске Telegram-бота:");
-            e.printStackTrace();
+            if (e.getMessage() != null && e.getMessage().contains("Error removing old webhook")) {
+                System.out.println("Вебхук отсутствует, пропускаем удаление.");
+            } else {
+                System.err.println("Ошибка при запуске Telegram-бота:");
+                e.printStackTrace();
+            }
         }
     }
 
     public void sendMessage(String text) {
         for (String chatId : chatIds) {
             SendMessage message = new SendMessage();
-            message.setChatId(String.valueOf(chatId)); // Преобразование chatId в String
+            message.setChatId(chatId);
             message.setText(text);
             message.enableMarkdown(true);
 
             try {
                 execute(message);
             } catch (TelegramApiException e) {
-                System.err.println("Ошибка при отправке сообщения в Telegram:");
-                e.printStackTrace();
+                System.err.println("Ошибка при отправке сообщения в Telegram: " + e.getMessage());
             }
         }
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        // Метод нужен для получения сообщений, но он не используется в этом боте
+        // Обязательный метод, но он не нужен для отправки сообщений, поэтому оставляем пустым
     }
 
     @Override
