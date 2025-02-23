@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 @Plugin(
@@ -106,19 +105,26 @@ public class VelocityMain {
                 return;
             } catch (IOException e) {
                 logger.severe("Ошибка при создании config.yml: " + e.getMessage());
+                e.printStackTrace(); // Добавил для отладки
+                return;
             }
         }
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile.toFile());
-        String botToken = config.getString("bot.token", "");
-        List<String> chatIds = config.getStringList("bot.chat_ids");
+        try {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile.toFile());
+            String botToken = config.getString("bot.token", "");
+            List<String> chatIds = config.getStringList("bot.chat_ids");
 
-        if (botToken.isEmpty() || chatIds.isEmpty()) {
-            logger.severe("В config.yml не указан токен или список чатов! Бот не будет запущен.");
-            return;
+            if (botToken.isEmpty() || chatIds.isEmpty()) {
+                logger.severe("В config.yml не указан токен или список чатов! Бот не будет запущен.");
+                return;
+            }
+
+            telegramBot = new TelegramBot(botToken, chatIds);
+            logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
+        } catch (Exception e) {  // Добавил общий `catch`, чтобы избежать неожиданных ошибок
+            logger.severe("Ошибка при загрузке config.yml: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        telegramBot = new TelegramBot(botToken, chatIds);
-        logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
     }
 }
