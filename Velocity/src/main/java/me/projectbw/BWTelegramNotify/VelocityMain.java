@@ -1,5 +1,6 @@
 package me.projectbw.BWTelegramNotify;
 
+import me.projectbw.BWTelegramNotify.PluginUpdater;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
