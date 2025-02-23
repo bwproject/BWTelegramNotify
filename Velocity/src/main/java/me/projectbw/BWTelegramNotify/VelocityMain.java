@@ -34,6 +34,7 @@ public class VelocityMain {
     private final Logger logger;
     private final Path configFile;
     private TelegramBot telegramBot;
+    private YamlConfiguration config;
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
@@ -51,14 +52,16 @@ public class VelocityMain {
         loadConfig();
 
         if (telegramBot != null) {
-            telegramBot.sendMessage("🔵 **Прокси-сервер запущен!**");
+            String serverStartedMessage = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
+            telegramBot.sendMessage(serverStartedMessage);
         }
     }
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         if (telegramBot != null) {
-            telegramBot.sendMessage("🔴 **Прокси-сервер выключен!**");
+            String serverStoppedMessage = config.getString("messages.server_stopped", "🔴 **Прокси-сервер выключен!**");
+            telegramBot.sendMessage(serverStoppedMessage);
         }
     }
 
@@ -66,7 +69,9 @@ public class VelocityMain {
     public void onPlayerLogin(LoginEvent event) {
         String playerName = event.getPlayer().getUsername();
         if (telegramBot != null) {
-            telegramBot.sendMessage("✅ **Игрок зашел**: " + playerName);
+            String playerLoggedInMessage = config.getString("messages.player_logged_in", "✅ **Игрок зашел**: %player%");
+            playerLoggedInMessage = playerLoggedInMessage.replace("%player%", playerName);
+            telegramBot.sendMessage(playerLoggedInMessage);
         }
     }
 
@@ -74,7 +79,9 @@ public class VelocityMain {
     public void onPlayerDisconnect(DisconnectEvent event) {
         String playerName = event.getPlayer().getUsername();
         if (telegramBot != null) {
-            telegramBot.sendMessage("❌ **Игрок вышел**: " + playerName);
+            String playerLoggedOutMessage = config.getString("messages.player_logged_out", "❌ **Игрок вышел**: %player%");
+            playerLoggedOutMessage = playerLoggedOutMessage.replace("%player%", playerName);
+            telegramBot.sendMessage(playerLoggedOutMessage);
         }
     }
 
@@ -86,11 +93,16 @@ public class VelocityMain {
 
         if (telegramBot != null) {
             if (previousServer.isPresent()) {
-                telegramBot.sendMessage("🔄 **Игрок сменил сервер**: " + player.getUsername() +
-                        "\n➡ **" + previousServer.get() + "** → **" + newServer + "**");
+                String playerSwitchedServerMessage = config.getString("messages.player_switched_server", "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**");
+                playerSwitchedServerMessage = playerSwitchedServerMessage.replace("%player%", player.getUsername())
+                        .replace("%previous_server%", previousServer.get())
+                        .replace("%new_server%", newServer);
+                telegramBot.sendMessage(playerSwitchedServerMessage);
             } else {
-                telegramBot.sendMessage("➡ **Игрок зашел на сервер**: " + player.getUsername() +
-                        "\n🟢 **Сервер**: " + newServer);
+                String playerJoinedServerMessage = config.getString("messages.player_joined_server", "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%");
+                playerJoinedServerMessage = playerJoinedServerMessage.replace("%player%", player.getUsername())
+                        .replace("%new_server%", newServer);
+                telegramBot.sendMessage(playerJoinedServerMessage);
             }
         }
     }
@@ -100,31 +112,24 @@ public class VelocityMain {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
-                Files.writeString(configFile, "bot.token: \"\"\nbot.chat_ids: []\n");
+                Files.writeString(configFile, "telegram:\n  token: \"\"\n  chats: []\n\nmessages:\n  server_started: \"🔵 **Прокси-сервер запущен!**\"\n  server_stopped: \"🔴 **Прокси-сервер выключен!**\"\n  player_logged_in: \"✅ **Игрок зашел**: %player%\"\n  player_logged_out: \"❌ **Игрок вышел**: %player%\"\n  player_switched_server: \"🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**\"\n  player_joined_server: \"➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%\"");
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
                 logger.severe("Ошибка при создании config.yml: " + e.getMessage());
-                e.printStackTrace(); // Добавил для отладки
-                return;
             }
         }
 
-        try {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile.toFile());
-            String botToken = config.getString("bot.token", "");
-            List<String> chatIds = config.getStringList("bot.chat_ids");
+        config = YamlConfiguration.loadConfiguration(configFile.toFile());
+        String botToken = config.getString("telegram.token", "");
+        List<String> chatIds = config.getStringList("telegram.chats");
 
-            if (botToken.isEmpty() || chatIds.isEmpty()) {
-                logger.severe("В config.yml не указан токен или список чатов! Бот не будет запущен.");
-                return;
-            }
-
-            telegramBot = new TelegramBot(botToken, chatIds);
-            logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
-        } catch (Exception e) {  // Добавил общий `catch`, чтобы избежать неожиданных ошибок
-            logger.severe("Ошибка при загрузке config.yml: " + e.getMessage());
-            e.printStackTrace();
+        if (botToken.isEmpty() || chatIds.isEmpty()) {
+            logger.severe("В config.yml не указан токен или список чатов! Бот не будет запущен.");
+            return;
         }
+
+        telegramBot = new TelegramBot(botToken, chatIds);
+        logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
     }
 }
