@@ -1,12 +1,14 @@
 # Конфигурация для Velocity
 telegram:
-  botToken: "ВАШ_ТОКЕН"
-  chatId: "ВАШ_ЧАТ_ID"
+  token: ""
+  chats: []
 
-notifications:
-  serverStart: "Сервер Velocity запущен!"
-  serverStop: "Сервер Velocity выключен!"
-  playerJoin: "Игрок {player} вошел в сеть."
-  playerLeave: "Игрок {player} вышел из сети."
-  playerSwitchServer: "Игрок {player} переместился на сервер {server}."
-  playerIP: "Игрок {player} подключился с IP: {ip}"
+messages:
+  server_started: "🔵 **Прокси-сервер запущен!**"
+  server_stopped: "🔴 **Прокси-сервер выключен!**"
+  player_logged_in: "✅ **Игрок зашел**: %player%"
+  player_logged_out: "❌ **Игрок вышел**: %player%"
+  player_switched_server: "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**"
+  player_joined_server: "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%"
+
+
