@@ -22,26 +22,32 @@ public class TelegramBot extends TelegramLongPollingBot {
         this.chatIds = chatIds;
 
         try {
+            // Регистрация бота через TelegramBotsApi
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(this);
 
+            // Получение информации о боте (имя и username)
             User botInfo = execute(new GetMe());
             this.botName = botInfo.getFirstName();
             this.botUsername = botInfo.getUserName();
+            System.out.println("Bot registered successfully: " + botName + " (" + botUsername + ")");
         } catch (TelegramApiException e) {
             System.err.println("Ошибка при запуске Telegram-бота: " + e.getMessage());
         }
     }
 
     public void sendMessage(String text) {
+        // Отправка сообщений в каждый чат
         for (String chatId : chatIds) {
             SendMessage message = new SendMessage();
-            message.setChatId(chatId);
-            message.setText(text);
-            message.enableMarkdown(true);
-            
             try {
-                execute(message);
+                message.setChatId(Long.parseLong(chatId));  // Преобразование chatId в Long
+                message.setText(text);
+                message.enableMarkdown(true);
+                System.out.println("Отправка сообщения: chatId=" + chatId + " текст=" + text);
+                execute(message);  // Отправка сообщения
+            } catch (NumberFormatException e) {
+                System.err.println("Неверный формат chatId: " + chatId);
             } catch (TelegramApiException e) {
                 System.err.println("Ошибка при отправке сообщения в Telegram: " + e.getMessage());
             }
@@ -50,20 +56,20 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        // Обязательный метод, но он не нужен для отправки сообщений, поэтому оставляем пустым
+        // Этот метод обязателен, но не нужен для отправки сообщений, поэтому оставляем пустым
     }
 
     @Override
     public String getBotUsername() {
-        return botUsername;
+        return botUsername;  // Возвращаем username бота
     }
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return botToken;  // Возвращаем токен бота
     }
 
     public String getBotName() {
-        return botName;
+        return botName;  // Возвращаем имя бота
     }
 }
