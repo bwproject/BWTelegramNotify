@@ -1,18 +1,15 @@
 package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -35,8 +32,6 @@ public class VelocityMain {
     private final Path configFile;
     private TelegramBot telegramBot;
     private YamlConfiguration config;
-    private String botName = "Неизвестно";
-    private String chatId = "Не задан";
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
@@ -63,16 +58,7 @@ public class VelocityMain {
             telegramBot.sendMessage(message);
         }
 
-        registerCommands();
-
         logger.info("BWTelegramNotify успешно загружен!");
-    }
-
-    private void registerCommands() {
-        CommandManager commandManager = server.getCommandManager();
-        CommandMeta meta = commandManager.metaBuilder("bwbotstatus").plugin(this).build();
-        commandManager.register(meta, new BWBotStatusCommand(this));
-        logger.info("Команда /bwbotstatus зарегистрирована.");
     }
 
     @Subscribe
@@ -139,8 +125,7 @@ public class VelocityMain {
                 Files.writeString(configFile, """
                         telegram:
                           token: ""
-                          bot_name: "MyTelegramBot"
-                          chat_id: "-1001234567890"
+                          chats: []
                         
                         messages:
                           server_started: "🔵 **Прокси-сервер запущен!**"
@@ -168,23 +153,14 @@ public class VelocityMain {
         }
 
         String botToken = config.getString("telegram.token", "");
-        botName = config.getString("telegram.bot_name", "Неизвестно");
-        chatId = config.getString("telegram.chat_id", "Не задан");
+        List<String> chatIds = config.getStringList("telegram.chats");
 
-        if (botToken.isEmpty() || chatId.isEmpty()) {
-            logger.severe("В config.yml не указан токен или ID чата! Бот не будет запущен.");
+        if (botToken.isEmpty() || chatIds.isEmpty()) {
+            logger.severe("В config.yml не указан токен или список чатов! Бот не будет запущен.");
             return;
         }
 
-        telegramBot = new TelegramBot(botToken, List.of(chatId));
-        logger.info("Telegram-бот запущен: " + botName);
-    }
-
-    public String getBotName() {
-        return botName;
-    }
-
-    public String getChatId() {
-        return chatId;
+        telegramBot = new TelegramBot(botToken, chatIds);
+        logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
     }
 }
