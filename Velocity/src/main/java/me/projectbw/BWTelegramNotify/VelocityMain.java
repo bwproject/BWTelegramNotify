@@ -23,13 +23,14 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @Plugin(
-        id = "bwtelegramnotify",
-        name = "BWTelegramNotify",
-        version = "1.0-SNAPSHOT",
-        description = "Отправляет уведомления в Telegram о событиях на сервере",
-        authors = {"The_Mr_Mes109"},
-        dependencies = {@Dependency(id = "velocity")}
+    id = "bwtelegramnotify",
+    name = "BWTelegramNotify",
+    version = "1.0.0",
+    description = "Плагин для уведомлений в Telegram",
+    authors = {"The_Mr_Mes109"},
+    dependencies = {@Dependency(id = "velocity")}
 )
+
 public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
