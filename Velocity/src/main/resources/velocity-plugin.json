@@ -3,5 +3,11 @@
   "name": "BWTelegramNotify",
   "version": "1.0",
   "main": "me.projectbw.BWTelegramNotify.VelocityMain",
-  "authors": ["The_Mr_Mes109"]
+  "authors": ["The_Mr_Mes109"],
+  "dependencies": [
+    {
+      "id": "velocity",
+      "optional": false
+    }
+  ]
 }
