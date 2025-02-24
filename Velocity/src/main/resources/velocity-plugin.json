@@ -6,7 +6,7 @@
   "authors": ["The_Mr_Mes109"],
   "dependencies": [
     {
-      "id": "velocity",
+      "id": "server",
       "optional": false
     }
   ]
