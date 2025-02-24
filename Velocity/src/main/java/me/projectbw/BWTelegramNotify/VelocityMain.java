@@ -1,6 +1,5 @@
 package me.projectbw.BWTelegramNotify;
 
-import me.projectbw.BWTelegramNotify.PluginUpdater;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
@@ -8,9 +7,7 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.simpleyaml.configuration.file.YamlConfiguration;
@@ -27,10 +24,8 @@ import java.util.logging.Logger;
     name = "BWTelegramNotify",
     version = "1.0.0",
     description = "Плагин для уведомлений в Telegram",
-    authors = {"The_Mr_Mes109"},
-    dependencies = {@Dependency(id = "velocity")}
+    authors = {"The_Mr_Mes109"}
 )
-
 public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
@@ -39,7 +34,7 @@ public class VelocityMain {
     private YamlConfiguration config;
 
     @Inject
-    public VelocityMain(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
+    public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
         this.server = server;
         this.logger = logger;
         this.configFile = dataFolder.resolve("config.yml");
@@ -48,7 +43,7 @@ public class VelocityMain {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         logger.info("==================================");
-        logger.info("===    BWTelegramNotify загружен   ===");
+        logger.info("=== BWTelegramNotify загружается ===");
         logger.info("==================================");
 
         loadConfig();
@@ -62,19 +57,24 @@ public class VelocityMain {
             String message = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
             telegramBot.sendMessage(message);
         }
+
+        logger.info("BWTelegramNotify успешно загружен!");
     }
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
+        logger.info("BWTelegramNotify: Остановка плагина...");
         if (telegramBot != null) {
             String message = config.getString("messages.server_stopped", "🔴 **Прокси-сервер выключен!**");
             telegramBot.sendMessage(message);
         }
+        logger.info("BWTelegramNotify успешно отключен.");
     }
 
     @Subscribe
     public void onPlayerLogin(LoginEvent event) {
         String playerName = event.getPlayer().getUsername();
+        logger.info("Игрок зашел: " + playerName);
         if (telegramBot != null) {
             String message = config.getString("messages.player_logged_in", "✅ **Игрок зашел**: %player%");
             telegramBot.sendMessage(message.replace("%player%", playerName));
@@ -84,6 +84,7 @@ public class VelocityMain {
     @Subscribe
     public void onPlayerDisconnect(DisconnectEvent event) {
         String playerName = event.getPlayer().getUsername();
+        logger.info("Игрок вышел: " + playerName);
         if (telegramBot != null) {
             String message = config.getString("messages.player_logged_out", "❌ **Игрок вышел**: %player%");
             telegramBot.sendMessage(message.replace("%player%", playerName));
@@ -95,6 +96,8 @@ public class VelocityMain {
         Player player = event.getPlayer();
         Optional<String> previousServer = event.getPreviousServer().map(server -> server.getServerInfo().getName());
         String newServer = event.getServer().getServerInfo().getName();
+
+        logger.info("Игрок " + player.getUsername() + " сменил сервер: " + previousServer.orElse("null") + " -> " + newServer);
 
         if (telegramBot != null) {
             String message;
@@ -114,6 +117,7 @@ public class VelocityMain {
     }
 
     private void loadConfig() {
+        logger.info("Загрузка config.yml...");
         if (!Files.exists(configFile)) {
             try {
                 Files.createDirectories(configFile.getParent());
@@ -143,6 +147,7 @@ public class VelocityMain {
 
         try {
             config = YamlConfiguration.loadConfiguration(configFile.toFile());
+            logger.info("config.yml загружен успешно.");
         } catch (IOException e) {
             logger.severe("Ошибка при загрузке config.yml: " + e.getMessage());
         }
