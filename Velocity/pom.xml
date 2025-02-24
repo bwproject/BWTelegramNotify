@@ -39,7 +39,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TelegramBots (Используем 6.9.6) -->
+        <!-- TelegramBots 5.5.0 -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
@@ -104,12 +104,6 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <relocations>
-                                <relocation>
-                                    <pattern>org.telegram</pattern>
-                                    <shadedPattern>me.projectbw.telegram</shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
