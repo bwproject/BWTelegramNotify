@@ -1,7 +1,8 @@
 # Конфигурация для Paper
 telegram:
   botToken: "ВАШ_ТОКЕН"
-  chatId: "ВАШ_ЧАТ_ID"
+  chatIds:
+    - "ВАШ_ЧАТ_ID"
 
 messages:
   server_started: "✅ **Paper-сервер запущен!**"
