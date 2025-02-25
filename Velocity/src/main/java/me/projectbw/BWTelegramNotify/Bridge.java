@@ -19,18 +19,18 @@ public class Bridge {
     @Inject
     public Bridge(ProxyServer server) {
         this.server = server;
+        // Инициализация Telegram-бота в конструкторе, так как он зависит от сервера.
+        loadConfig();
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        // Загружаем конфигурацию Telegram-бота
-        loadConfig();
-
         // Регистрируем команду для обработки входящих сообщений
         server.getCommandManager().register("velocity_send", new VelocitySendCommand());
     }
 
     private void loadConfig() {
+        // Инициализация Telegram-бота, если он еще не создан
         if (telegramBot == null) {
             String botToken = "ВАШ_ТОКЕН";  // Укажите ваш токен
             List<String> chatIds = List.of("ВАШ_ЧАТ_ID");  // Укажите ваш chat ID
@@ -38,7 +38,7 @@ public class Bridge {
         }
     }
 
-    private class VelocitySendCommand implements Command {
+    private class VelocitySendCommand implements Command {  // Здесь мы реализуем интерфейс Command
 
         @Override
         public void execute(CommandSource source, String[] args) {
