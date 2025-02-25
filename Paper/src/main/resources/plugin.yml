@@ -3,3 +3,9 @@ main: me.projectbw.BWTelegramNotify.PaperMain
 version: 1.0
 api-version: 1.21
 author: The_Mr_Mes109
+
+commands:
+  bwstatusbot:
+    description: "Показать статус BWTelegramNotify"
+    usage: "/bwstatusbot"
+    permission: "bwtelegramnotify.status"
