@@ -32,7 +32,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         updateEnabled = getConfig().getBoolean("settings.update", true);
 
         if (botToken.isEmpty() || chatIds.isEmpty()) {
-            getLogger().severe("Ошибка: botToken или chatIds не указаны в config.yml! Отключение плагина...");
+            getLogger().severe("❌ Ошибка: botToken или chatIds не указаны в config.yml! Отключение плагина...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -45,14 +45,14 @@ public class PaperMain extends JavaPlugin implements Listener {
         if (getCommand("bwstatusbot") != null) {
             getCommand("bwstatusbot").setExecutor(new StatusCommand());
         } else {
-            getLogger().warning("Команда /bwstatusbot не зарегистрирована в plugin.yml!");
+            getLogger().warning("⚠ Команда /bwstatusbot не зарегистрирована в plugin.yml!");
         }
 
         getServer().getConsoleSender().sendMessage("\n§a==============================\n"
                 + "§a=== Плагин BWTelegramNotify активен ===\n"
                 + "§a==============================");
 
-        getLogger().info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
+        getLogger().info("✅ Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
 
         telegramBot.sendMessage(getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
 
@@ -66,12 +66,18 @@ public class PaperMain extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         running = false;
-        telegramBot.sendMessage(getConfig().getString("messages.server_stopped", "⛔ **Paper-сервер выключен!**"));
+
+        if (telegramBot != null) {
+            telegramBot.sendMessage(getConfig().getString("messages.server_stopped", "⛔ **Paper-сервер выключен!**"));
+        }
+
         getLogger().info("⛔ BWTelegramNotify отключен!");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (telegramBot == null) return;
+
         String message = getConfig().getString("messages.player_join", "🔵 **Игрок зашел на сервер:** {player}")
                 .replace("{player}", event.getPlayer().getName());
         telegramBot.sendMessage(message);
@@ -79,6 +85,8 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if (telegramBot == null) return;
+
         String message = getConfig().getString("messages.player_quit", "⚪ **Игрок вышел с сервера:** {player}")
                 .replace("{player}", event.getPlayer().getName());
         telegramBot.sendMessage(message);
@@ -90,6 +98,8 @@ public class PaperMain extends JavaPlugin implements Listener {
             public void run() {
                 double tps = Bukkit.getTPS()[0];
                 if (tps < tpsThreshold) {
+                    if (telegramBot == null) return;
+
                     String message = getConfig().getString("messages.low_tps", "⚠ **Низкий TPS:** {tps}")
                             .replace("{tps}", String.format("%.2f", tps));
                     telegramBot.sendMessage(message);
@@ -101,6 +111,11 @@ public class PaperMain extends JavaPlugin implements Listener {
     private class StatusCommand implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (telegramBot == null) {
+                sender.sendMessage("❌ Бот не запущен! Проверьте конфигурацию.");
+                return true;
+            }
+
             String message = "📢 BWTelegramNotify:\n"
                     + "Бот: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\n"
                     + "Сервер: Paper";
