@@ -20,7 +20,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     private TelegramBot telegramBot;
     private double tpsThreshold;
     private boolean updateEnabled;
-    private boolean isVelocity = false;
+    private boolean isVelocity;
 
     @Override
     public void onEnable() {
@@ -40,7 +40,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
         updateEnabled = getConfig().getBoolean("settings.update", true);
 
-        // Определение, запущен ли сервер за Velocity
+        // Определяем, работает ли сервер через Velocity
         isVelocity = isVelocityEnabled();
 
         if (isVelocity) {
@@ -118,6 +118,30 @@ public class PaperMain extends JavaPlugin implements Listener {
         }.runTaskTimer(this, 600L, 1200L);
     }
 
+    private boolean isVelocityEnabled() {
+        File paperConfigPath = new File(getServer().getWorldContainer(), "paper-global.yml");
+
+        if (!paperConfigPath.exists()) {
+            getLogger().warning("⚠ Файл paper-global.yml не найден! Проверяю в config/...");
+            paperConfigPath = new File(getServer().getWorldContainer(), "config/paper-global.yml");
+
+            if (!paperConfigPath.exists()) {
+                getLogger().warning("⚠ Не найден ни один файл paper-global.yml! Невозможно определить, работает ли сервер за Velocity.");
+                return false;
+            }
+        }
+
+        try {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(paperConfigPath);
+            boolean velocityEnabled = config.getBoolean("proxies.velocity.enabled", false);
+            getLogger().info("🔍 Проверка paper-global.yml: proxies.velocity.enabled = " + velocityEnabled);
+            return velocityEnabled;
+        } catch (Exception e) {
+            getLogger().severe("❌ Ошибка при чтении paper-global.yml: " + e.getMessage());
+            return false;
+        }
+    }
+
     private class StatusCommand implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -127,25 +151,6 @@ public class PaperMain extends JavaPlugin implements Listener {
             sender.sendMessage(message);
             getLogger().info(message);
             return true;
-        }
-    }
-
-    /**
-     * Проверяет, включен ли режим Velocity в paper-global.yml
-     */
-    private boolean isVelocityEnabled() {
-        File paperGlobalConfig = new File(Bukkit.getWorldContainer(), "config/paper-global.yml");
-        if (!paperGlobalConfig.exists()) {
-            getLogger().warning("⚠ Не найден файл paper-global.yml! Невозможно определить, работает ли сервер за Velocity.");
-            return false;
-        }
-
-        try {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(paperGlobalConfig);
-            return config.getBoolean("proxies.velocity.enabled", false);
-        } catch (Exception e) {
-            getLogger().severe("❌ Ошибка при чтении paper-global.yml: " + e.getMessage());
-            return false;
         }
     }
 }
