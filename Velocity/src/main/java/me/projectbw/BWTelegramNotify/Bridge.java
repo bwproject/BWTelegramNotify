@@ -1,5 +1,7 @@
 package me.projectbw.BWTelegramNotify;
 
+import com.velocitypowered.api.command.Command;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.event.Subscribe;
@@ -25,19 +27,25 @@ public class Bridge {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        // Регистрируем команду
-        server.getCommandManager().register("velocity_send", (source, args) -> {
-            if (args.length < 2) {
-                source.sendMessage(Component.text("Ошибка: Неверное количество аргументов. Использование: /velocity_send <action> <message>"));
-                return;
+        // Регистрация команды с правильным методом
+        CommandMeta commandMeta = server.getCommandManager().metaBuilder("velocity_send")
+            .build();
+
+        server.getCommandManager().register(commandMeta, new Command() {
+            @Override
+            public void execute(CommandSource source, String[] args) {
+                if (args.length < 2) {
+                    source.sendMessage(Component.text("Ошибка: Неверное количество аргументов. Использование: /velocity_send <action> <message>"));
+                    return;
+                }
+
+                String action = args[0];
+                String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+
+                // Обработка команды и отправка сообщения в Telegram
+                sendMessageToTelegram(action, message);
+                source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
             }
-
-            String action = args[0];
-            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-
-            // Обработка команды и отправка сообщения в Telegram
-            sendMessageToTelegram(action, message);
-            source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
         });
     }
 
