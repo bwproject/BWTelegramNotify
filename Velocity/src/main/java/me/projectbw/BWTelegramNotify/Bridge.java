@@ -1,8 +1,8 @@
 package me.projectbw.BWTelegramNotify;
 
 import com.velocitypowered.api.command.Command;
-import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -29,7 +29,7 @@ public class Bridge {
         CommandMeta commandMeta = server.getCommandManager().metaBuilder("velocity_send")
             .build();
 
-        // Теперь регистрируем команду через CommandExecutor
+        // Регистрация команды с командным исполнителем
         server.getCommandManager().register(commandMeta, new VelocitySendExecutor());
     }
 
@@ -40,7 +40,7 @@ public class Bridge {
         }
     }
 
-    // Реализация команды через CommandExecutor
+    // Реализация Command через интерфейс CommandExecutor
     public class VelocitySendExecutor implements Command {
         @Override
         public void execute(CommandSource source, String[] args) {
