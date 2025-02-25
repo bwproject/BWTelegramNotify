@@ -3,10 +3,9 @@ telegram:
   botToken: "ВАШ_ТОКЕН"
   chatId: "ВАШ_ЧАТ_ID"
 
-notifications:
-  serverStart: "Сервер Paper запущен!"
-  serverStop: "Сервер Paper выключен!"
-  playerJoin: "Игрок {player} вошел на сервер."
-  playerLeave: "Игрок {player} вышел с сервера."
-  lowTPS: "Внимание! Низкий TPS: {tps}"
-  playerIP: "Игрок {player} подключился с IP: {ip}"
+messages:
+  server_started: "✅ **Paper-сервер запущен!**"
+  server_stopped: "⛔ **Paper-сервер выключен!**"
+  player_join: "🔵 **Игрок зашел на сервер:** {player}"
+  player_quit: "⚪ **Игрок вышел с сервера:** {player}"
+  low_tps: "⚠ **Низкий TPS:** {tps}"
