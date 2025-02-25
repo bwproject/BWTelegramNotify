@@ -60,7 +60,7 @@ public class VelocityMain {
         }
 
         // Создаем и запускаем Bridge, передаем туда telegramBot
-        bridge = new Bridge(server, telegramBot);  // Передаем telegramBot в Bridge
+        bridge = new Bridge(server, telegramBot);
         logger.info("Bridge успешно запущен.");
 
         logger.info("BWTelegramNotify успешно загружен!");
