@@ -1,10 +1,14 @@
 package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.command.Command;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.PlayerJoinEvent;
+import com.velocitypowered.api.event.player.PlayerQuitEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
@@ -12,6 +16,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,6 +121,34 @@ public class VelocityMain {
         }
     }
 
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        String message = "🔵 **Игрок зашел на сервер Velocity:** " + event.getPlayer().getUsername();
+        telegramBot.sendMessage(message);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        String message = "⚪ **Игрок вышел с сервера Velocity:** " + event.getPlayer().getUsername();
+        telegramBot.sendMessage(message);
+    }
+
+    @Command(aliases = "velocity_send", description = "Sends a message to the Telegram bot.", usage = "/velocity_send <action> <message>")
+    public void velocitySend(CommandSource source, String action, String message) {
+        switch (action) {
+            case "server_started":
+            case "server_stopped":
+            case "player_join":
+            case "player_quit":
+            case "low_tps":
+                telegramBot.sendMessage(message);
+                break;
+            default:
+                source.sendMessage("❌ Неизвестная команда: " + action);
+                break;
+        }
+    }
+
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
         if (!Files.exists(configFile)) {
@@ -150,6 +183,7 @@ public class VelocityMain {
             logger.info("config.yml загружен успешно.");
         } catch (IOException e) {
             logger.severe("Ошибка при загрузке config.yml: " + e.getMessage());
+            return;
         }
 
         String botToken = config.getString("telegram.token", "");
