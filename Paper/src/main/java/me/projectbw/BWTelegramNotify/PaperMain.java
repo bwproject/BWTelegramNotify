@@ -18,6 +18,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     private TelegramBot telegramBot;
     private PluginUpdater pluginUpdater;
     private double tpsThreshold;
+    private boolean updateEnabled;
 
     @Override
     public void onEnable() {
@@ -27,7 +28,8 @@ public class PaperMain extends JavaPlugin implements Listener {
 
         List<String> chatIds = getConfig().getStringList("telegram.chatIds");
         String botToken = getConfig().getString("telegram.token");
-        tpsThreshold = getConfig().getDouble("tps_threshold", 15.0);
+        tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
+        updateEnabled = getConfig().getBoolean("settings.update", true);
 
         telegramBot = new TelegramBot(botToken, chatIds);
         pluginUpdater = new PluginUpdater();
@@ -43,8 +45,10 @@ public class PaperMain extends JavaPlugin implements Listener {
 
         telegramBot.sendMessage(getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
 
-        // Проверка обновлений при запуске
-        Bukkit.getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
+        // Проверка обновлений при запуске, если включено в конфиге
+        if (updateEnabled) {
+            Bukkit.getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
+        }
 
         // Запуск мониторинга TPS
         startTpsMonitor();
