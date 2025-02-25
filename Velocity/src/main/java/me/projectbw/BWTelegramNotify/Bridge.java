@@ -1,6 +1,5 @@
 package me.projectbw.BWTelegramNotify;
 
-import com.velocitypowered.api.command.Command;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.SimpleCommand;
@@ -30,18 +29,17 @@ public class Bridge {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        // Logging before registration
-        logger.info("Starting command registration...");
-        
+        logger.info("=== Начинаем регистрацию команды... ===");
+
         try {
-            server.getCommandManager().register(
-                CommandMeta.builder("velocity_send")
-                    .build(),
-                new VelocitySendCommand()
-            );
-            logger.info("Command registered successfully.");
+            CommandMeta commandMeta = server.getCommandManager()
+                .metaBuilder("velocity_send")
+                .build();
+
+            server.getCommandManager().register(commandMeta, new VelocitySendCommand());
+            logger.info("Команда /velocity_send успешно зарегистрирована.");
         } catch (Exception e) {
-            logger.severe("Error registering command: " + e.getMessage());
+            logger.severe("Ошибка при регистрации команды: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -50,14 +48,19 @@ public class Bridge {
         if (telegramBot != null) {
             String fullMessage = action + ": " + message;
             telegramBot.sendMessage(fullMessage);
+        } else {
+            logger.warning("Ошибка: TelegramBot не инициализирован!");
         }
     }
 
-    // Command class implementation
-    public class VelocitySendCommand implements SimpleCommand {
+    // Реализация команды
+    public static class VelocitySendCommand implements SimpleCommand {
         @Override
-        public void execute(CommandSource source, String[] args) {
-            logger.info("Executing /velocity_send command...");
+        public void execute(Invocation invocation) {
+            CommandSource source = invocation.source();
+            String[] args = invocation.arguments();
+
+            logger.info("Команда /velocity_send была вызвана");
 
             if (args.length < 2) {
                 source.sendMessage(Component.text("Ошибка: Неверное количество аргументов. Использование: /velocity_send <action> <message>"));
@@ -67,7 +70,7 @@ public class Bridge {
             String action = args[0];
             String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-            sendMessageToTelegram(action, message);
+            logger.info("Отправка в Telegram: Action = " + action + ", Message = " + message);
             source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
         }
     }
