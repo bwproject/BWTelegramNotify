@@ -32,6 +32,7 @@ public class VelocityMain {
     private final Path configFile;
     private TelegramBot telegramBot;
     private YamlConfiguration config;
+    private Bridge bridge;  // Экземпляр Bridge
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
@@ -57,6 +58,10 @@ public class VelocityMain {
             String message = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
             telegramBot.sendMessage(message);
         }
+
+        // Создаем и запускаем Bridge, передаем туда telegramBot
+        bridge = new Bridge(server, telegramBot);
+        logger.info("Bridge успешно запущен.");
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
