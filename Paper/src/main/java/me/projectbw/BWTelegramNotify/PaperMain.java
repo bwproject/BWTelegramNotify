@@ -28,7 +28,6 @@ public class PaperMain extends JavaPlugin implements Listener {
         String botToken = getConfig().getString("telegram.botToken", "").trim();
         List<String> chatIds = getConfig().getStringList("telegram.chatIds");
 
-        // Проверяем, что токен и список чатов не пустые
         if (botToken.isEmpty() || chatIds.isEmpty()) {
             getLogger().severe("❌ Ошибка: botToken или chatIds не указаны в config.yml! Отключение плагина...");
             getServer().getPluginManager().disablePlugin(this);
@@ -38,11 +37,13 @@ public class PaperMain extends JavaPlugin implements Listener {
         tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
         updateEnabled = getConfig().getBoolean("settings.update", true);
 
-        if (Bukkit.getPluginManager().getPlugin("Velocity") != null) {
-            // Сервер работает через Velocity, отправляем сообщения в Velocity
-            sendToVelocity("server_started", getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
+        boolean isVelocity = Bukkit.getPluginManager().getPlugin("Velocity") != null;
+
+        if (isVelocity) {
+            getLogger().info("✅ Сервер запущен через Paper за Velocity.");
+            sendToVelocity("server_started", getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен через Velocity!**"));
         } else {
-            // Сервер работает на Paper, создаем и запускаем Telegram-бота
+            getLogger().info("✅ Сервер запущен через Paper.");
             telegramBot = new TelegramBot(botToken, chatIds);
             telegramBot.sendMessage(getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
         }
@@ -92,7 +93,6 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     private void sendToVelocity(String action, String message) {
-        // Отправляем команду на сервер Velocity, если он используется
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "velocity_send " + action + " " + message);
     }
 
@@ -117,8 +117,9 @@ public class PaperMain extends JavaPlugin implements Listener {
     private class StatusCommand implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            boolean isVelocity = Bukkit.getPluginManager().getPlugin("Velocity") != null;
             String message = "📢 BWTelegramNotify:\n"
-                    + "Сервер: " + (Bukkit.getPluginManager().getPlugin("Velocity") != null ? "Velocity" : "Paper");
+                    + "Сервер: " + (isVelocity ? "Paper за Velocity" : "Paper");
 
             sender.sendMessage(message);
             getLogger().info(message);
