@@ -16,7 +16,6 @@ import java.util.List;
 public class PaperMain extends JavaPlugin implements Listener {
     private static boolean running = false;
     private TelegramBot telegramBot;
-    private PluginUpdater pluginUpdater;
     private double tpsThreshold;
     private boolean updateEnabled;
 
@@ -39,27 +38,17 @@ public class PaperMain extends JavaPlugin implements Listener {
         tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
         updateEnabled = getConfig().getBoolean("settings.update", true);
 
-        telegramBot = new TelegramBot(botToken, chatIds);
-        pluginUpdater = new PluginUpdater();
-
-        Bukkit.getPluginManager().registerEvents(this, this);
-
-        if (getCommand("bwstatusbot") != null) {
-            getCommand("bwstatusbot").setExecutor(new StatusCommand());
+        if (Bukkit.getPluginManager().getPlugin("Velocity") != null) {
+            // Сервер работает через Velocity, отправляем сообщения в Velocity
+            sendToVelocity("server_started", getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
         } else {
-            getLogger().warning("⚠ Команда /bwstatusbot не зарегистрирована в plugin.yml!");
+            // Сервер работает на Paper, создаем и запускаем Telegram-бота
+            telegramBot = new TelegramBot(botToken, chatIds);
+            telegramBot.sendMessage(getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
         }
 
-        getServer().getConsoleSender().sendMessage("\n§a==============================\n"
-                + "§a=== Плагин BWTelegramNotify активен ===\n"
-                + "§a==============================");
-
-        getLogger().info("✅ Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
-
-        telegramBot.sendMessage(getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
-
         if (updateEnabled) {
-            Bukkit.getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
+            Bukkit.getScheduler().runTaskAsynchronously(this, () -> new PluginUpdater().checkForUpdates());
         }
 
         startTpsMonitor();
@@ -73,25 +62,38 @@ public class PaperMain extends JavaPlugin implements Listener {
             telegramBot.sendMessage(getConfig().getString("messages.server_stopped", "⛔ **Paper-сервер выключен!**"));
         }
 
+        sendToVelocity("server_stopped", getConfig().getString("messages.server_stopped", "⛔ **Paper-сервер выключен!**"));
+
         getLogger().info("⛔ BWTelegramNotify отключен!");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (telegramBot == null) return;
-
         String message = getConfig().getString("messages.player_join", "🔵 **Игрок зашел на сервер:** {player}")
                 .replace("{player}", event.getPlayer().getName());
-        telegramBot.sendMessage(message);
+
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        } else {
+            sendToVelocity("player_join", message);
+        }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (telegramBot == null) return;
-
         String message = getConfig().getString("messages.player_quit", "⚪ **Игрок вышел с сервера:** {player}")
                 .replace("{player}", event.getPlayer().getName());
-        telegramBot.sendMessage(message);
+
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        } else {
+            sendToVelocity("player_quit", message);
+        }
+    }
+
+    private void sendToVelocity(String action, String message) {
+        // Отправляем команду на сервер Velocity, если он используется
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "velocity_send " + action + " " + message);
     }
 
     private void startTpsMonitor() {
@@ -100,11 +102,13 @@ public class PaperMain extends JavaPlugin implements Listener {
             public void run() {
                 double tps = Bukkit.getTPS()[0];
                 if (tps < tpsThreshold) {
-                    if (telegramBot == null) return;
-
                     String message = getConfig().getString("messages.low_tps", "⚠ **Низкий TPS:** {tps}")
                             .replace("{tps}", String.format("%.2f", tps));
-                    telegramBot.sendMessage(message);
+                    if (telegramBot != null) {
+                        telegramBot.sendMessage(message);
+                    } else {
+                        sendToVelocity("low_tps", message);
+                    }
                 }
             }
         }.runTaskTimer(this, 600L, 1200L);
@@ -113,14 +117,8 @@ public class PaperMain extends JavaPlugin implements Listener {
     private class StatusCommand implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (telegramBot == null) {
-                sender.sendMessage("❌ Бот не запущен! Проверьте конфигурацию.");
-                return true;
-            }
-
             String message = "📢 BWTelegramNotify:\n"
-                    + "Бот: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")\n"
-                    + "Сервер: Paper";
+                    + "Сервер: " + (Bukkit.getPluginManager().getPlugin("Velocity") != null ? "Velocity" : "Paper");
 
             sender.sendMessage(message);
             getLogger().info(message);
