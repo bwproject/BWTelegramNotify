@@ -10,7 +10,6 @@ import net.kyori.adventure.text.Component;
 import javax.inject.Inject;
 import java.util.List;
 
-@Plugin(id = "bwtelegramnotify", name = "BWTelegramNotify", version = "1.0.0", description = "Плагин для уведомлений в Telegram", authors = {"The_Mr_Mes109"})
 public class Bridge {
 
     private final ProxyServer server;
