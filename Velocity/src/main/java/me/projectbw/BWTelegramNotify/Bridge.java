@@ -13,36 +13,34 @@ import java.util.Arrays;
 public class Bridge {
 
     private final ProxyServer server;
-    private TelegramBot telegramBot;  // Не статический
+    private TelegramBot telegramBot;
 
     @Inject
     public Bridge(ProxyServer server) {
         this.server = server;
     }
 
-    // Сеттер для TelegramBot
     public void setTelegramBot(TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        // Регистрация команды с правильным методом
         CommandMeta commandMeta = server.getCommandManager().metaBuilder("velocity_send")
             .build();
 
-        // Регистрация команды через CommandExecutor
+        // Теперь регистрируем команду через CommandExecutor
         server.getCommandManager().register(commandMeta, new VelocitySendExecutor());
     }
 
     private void sendMessageToTelegram(String action, String message) {
         if (telegramBot != null) {
             String fullMessage = action + ": " + message;
-            telegramBot.sendMessage(fullMessage);  // Отправляем в Telegram
+            telegramBot.sendMessage(fullMessage);
         }
     }
 
-    // Явная реализация CommandExecutor
+    // Реализация команды через CommandExecutor
     public class VelocitySendExecutor implements Command {
         @Override
         public void execute(CommandSource source, String[] args) {
@@ -54,7 +52,6 @@ public class Bridge {
             String action = args[0];
             String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-            // Обработка команды и отправка сообщения в Telegram
             sendMessageToTelegram(action, message);
             source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
         }
