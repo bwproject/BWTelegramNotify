@@ -26,16 +26,18 @@ public class PaperMain extends JavaPlugin implements Listener {
         saveDefaultConfig();
         reloadConfig();
 
-        List<String> chatIds = getConfig().getStringList("telegram.chatIds");
         String botToken = getConfig().getString("telegram.botToken", "").trim();
-        tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
-        updateEnabled = getConfig().getBoolean("settings.update", true);
+        List<String> chatIds = getConfig().getStringList("telegram.chatIds");
 
+        // Проверяем, что токен и список чатов не пустые
         if (botToken.isEmpty() || chatIds.isEmpty()) {
             getLogger().severe("❌ Ошибка: botToken или chatIds не указаны в config.yml! Отключение плагина...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
+        updateEnabled = getConfig().getBoolean("settings.update", true);
 
         telegramBot = new TelegramBot(botToken, chatIds);
         pluginUpdater = new PluginUpdater();
