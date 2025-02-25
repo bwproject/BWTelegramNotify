@@ -31,28 +31,32 @@ public class Bridge {
         CommandMeta commandMeta = server.getCommandManager().metaBuilder("velocity_send")
             .build();
 
-        server.getCommandManager().register(commandMeta, new Command() {
-            @Override
-            public void execute(CommandSource source, String[] args) {
-                if (args.length < 2) {
-                    source.sendMessage(Component.text("Ошибка: Неверное количество аргументов. Использование: /velocity_send <action> <message>"));
-                    return;
-                }
-
-                String action = args[0];
-                String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-
-                // Обработка команды и отправка сообщения в Telegram
-                sendMessageToTelegram(action, message);
-                source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
-            }
-        });
+        // Регистрация команды через явную реализацию класса
+        server.getCommandManager().register(commandMeta, new VelocitySendCommand());
     }
 
     private void sendMessageToTelegram(String action, String message) {
         if (telegramBot != null) {
             String fullMessage = action + ": " + message;
             telegramBot.sendMessage(fullMessage);  // Отправляем в Telegram
+        }
+    }
+
+    // Явная реализация команды
+    public class VelocitySendCommand implements Command {
+        @Override
+        public void execute(CommandSource source, String[] args) {
+            if (args.length < 2) {
+                source.sendMessage(Component.text("Ошибка: Неверное количество аргументов. Использование: /velocity_send <action> <message>"));
+                return;
+            }
+
+            String action = args[0];
+            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+
+            // Обработка команды и отправка сообщения в Telegram
+            sendMessageToTelegram(action, message);
+            source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
         }
     }
 }
