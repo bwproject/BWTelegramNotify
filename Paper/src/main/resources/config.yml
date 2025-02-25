@@ -1,8 +1,7 @@
 # Конфигурация для Paper
 telegram:
-  token: "ВАШ_ТОКЕН"
-  chatIds:
-    - "ВАШ_ЧАТ_ID"  # Можно указать несколько чатов
+  botToken: "ВАШ_ТОКЕН"
+  chatId: "ВАШ_ЧАТ_ID"
 
 messages:
   server_started: "✅ **Paper-сервер запущен!**"
@@ -12,4 +11,5 @@ messages:
   low_tps: "⚠ **Низкий TPS:** {tps}"
 
 settings:
-  tps_threshold: 15.0  # Порог для уведомлений о низком TPS
+  tps: 15.0
+  update: true
