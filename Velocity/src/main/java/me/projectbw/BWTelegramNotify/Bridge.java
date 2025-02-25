@@ -31,8 +31,8 @@ public class Bridge {
         CommandMeta commandMeta = server.getCommandManager().metaBuilder("velocity_send")
             .build();
 
-        // Регистрация команды через явную реализацию класса
-        server.getCommandManager().register(commandMeta, new VelocitySendCommand());
+        // Регистрация команды через CommandExecutor
+        server.getCommandManager().register(commandMeta, new VelocitySendExecutor());
     }
 
     private void sendMessageToTelegram(String action, String message) {
@@ -42,8 +42,8 @@ public class Bridge {
         }
     }
 
-    // Явная реализация команды
-    public class VelocitySendCommand implements Command {
+    // Явная реализация CommandExecutor
+    public class VelocitySendExecutor implements Command {
         @Override
         public void execute(CommandSource source, String[] args) {
             if (args.length < 2) {
