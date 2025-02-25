@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -11,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.util.List;
 
 public class PaperMain extends JavaPlugin implements Listener {
@@ -18,6 +20,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     private TelegramBot telegramBot;
     private double tpsThreshold;
     private boolean updateEnabled;
+    private boolean isVelocity = false;
 
     @Override
     public void onEnable() {
@@ -37,7 +40,8 @@ public class PaperMain extends JavaPlugin implements Listener {
         tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
         updateEnabled = getConfig().getBoolean("settings.update", true);
 
-        boolean isVelocity = Bukkit.getPluginManager().getPlugin("Velocity") != null;
+        // Определение, запущен ли сервер за Velocity
+        isVelocity = isVelocityEnabled();
 
         if (isVelocity) {
             getLogger().info("✅ Сервер запущен через Paper за Velocity.");
@@ -117,13 +121,31 @@ public class PaperMain extends JavaPlugin implements Listener {
     private class StatusCommand implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            boolean isVelocity = Bukkit.getPluginManager().getPlugin("Velocity") != null;
             String message = "📢 BWTelegramNotify:\n"
                     + "Сервер: " + (isVelocity ? "Paper за Velocity" : "Paper");
 
             sender.sendMessage(message);
             getLogger().info(message);
             return true;
+        }
+    }
+
+    /**
+     * Проверяет, включен ли режим Velocity в paper-global.yml
+     */
+    private boolean isVelocityEnabled() {
+        File paperGlobalConfig = new File(Bukkit.getWorldContainer(), "config/paper-global.yml");
+        if (!paperGlobalConfig.exists()) {
+            getLogger().warning("⚠ Не найден файл paper-global.yml! Невозможно определить, работает ли сервер за Velocity.");
+            return false;
+        }
+
+        try {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(paperGlobalConfig);
+            return config.getBoolean("proxies.velocity.enabled", false);
+        } catch (Exception e) {
+            getLogger().severe("❌ Ошибка при чтении paper-global.yml: " + e.getMessage());
+            return false;
         }
     }
 }
