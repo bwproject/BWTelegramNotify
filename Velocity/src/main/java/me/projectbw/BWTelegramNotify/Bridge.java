@@ -19,29 +19,14 @@ public class Bridge {
     @Inject
     public Bridge(ProxyServer server) {
         this.server = server;
-        // Инициализация Telegram-бота в конструкторе, так как он зависит от сервера.
+        // Инициализация Telegram-бота
         loadConfig();
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        // Регистрируем команду для обработки входящих сообщений
-        server.getCommandManager().register("velocity_send", new VelocitySendCommand());
-    }
-
-    private void loadConfig() {
-        // Инициализация Telegram-бота, если он еще не создан
-        if (telegramBot == null) {
-            String botToken = "ВАШ_ТОКЕН";  // Укажите ваш токен
-            List<String> chatIds = List.of("ВАШ_ЧАТ_ID");  // Укажите ваш chat ID
-            telegramBot = new TelegramBot(botToken, chatIds);
-        }
-    }
-
-    private class VelocitySendCommand implements Command {  // Здесь мы реализуем интерфейс Command
-
-        @Override
-        public void execute(CommandSource source, String[] args) {
+        // Регистрируем команду
+        server.getCommandManager().register("velocity_send", (source, args) -> {
             if (args.length < 2) {
                 source.sendMessage(Component.text("Ошибка: Неверное количество аргументов. Использование: /velocity_send <action> <message>"));
                 return;
@@ -53,11 +38,19 @@ public class Bridge {
             // Обработка команды и отправка сообщения в Telegram
             sendMessageToTelegram(action, message);
             source.sendMessage(Component.text("Сообщение отправлено в Telegram."));
+        });
+    }
+
+    private void loadConfig() {
+        if (telegramBot == null) {
+            String botToken = "ВАШ_ТОКЕН";  // Укажите ваш токен
+            List<String> chatIds = List.of("ВАШ_ЧАТ_ID");  // Укажите ваш chat ID
+            telegramBot = new TelegramBot(botToken, chatIds);
         }
     }
 
     private void sendMessageToTelegram(String action, String message) {
         String fullMessage = action + ": " + message;
-        telegramBot.sendMessage(fullMessage);
+        telegramBot.sendMessage(fullMessage);  // Отправляем в Telegram
     }
 }
