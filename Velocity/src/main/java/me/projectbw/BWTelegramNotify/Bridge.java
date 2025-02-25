@@ -8,6 +8,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import net.kyori.adventure.text.Component;
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 
 public class Bridge {
@@ -30,12 +31,9 @@ public class Bridge {
     }
 
     private void loadConfig() {
-        // Проверяем, не был ли уже создан экземпляр бота
         if (telegramBot == null) {
-            // Загружаем токен и чаты для Telegram
             String botToken = "ВАШ_ТОКЕН";  // Укажите ваш токен
             List<String> chatIds = List.of("ВАШ_ЧАТ_ID");  // Укажите ваш chat ID
-
             telegramBot = new TelegramBot(botToken, chatIds);
         }
     }
@@ -50,7 +48,7 @@ public class Bridge {
             }
 
             String action = args[0];
-            String message = String.join(" ", args, 1, args.length);
+            String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
             // Обработка команды и отправка сообщения в Telegram
             sendMessageToTelegram(action, message);
@@ -60,6 +58,6 @@ public class Bridge {
 
     private void sendMessageToTelegram(String action, String message) {
         String fullMessage = action + ": " + message;
-        telegramBot.sendMessage(fullMessage);  // Отправляем в Telegram
+        telegramBot.sendMessage(fullMessage);
     }
 }
