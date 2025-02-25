@@ -33,7 +33,7 @@ public class Bridge {
 
         try {
             CommandMeta commandMeta = server.getCommandManager()
-                .metaBuilder("velocity_send")
+                .metaBuilder("velocity_send") // Исправлено: теперь metaBuilder вызывается у commandManager
                 .build();
 
             server.getCommandManager().register(commandMeta, new VelocitySendCommand());
@@ -56,7 +56,7 @@ public class Bridge {
     // Реализация команды
     public static class VelocitySendCommand implements SimpleCommand {
         @Override
-        public void execute(Invocation invocation) {
+        public void execute(SimpleCommand.Invocation invocation) { // Исправлено: теперь передаётся SimpleCommand.Invocation
             CommandSource source = invocation.source();
             String[] args = invocation.arguments();
 
