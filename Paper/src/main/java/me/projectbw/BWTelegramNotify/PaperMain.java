@@ -27,15 +27,26 @@ public class PaperMain extends JavaPlugin implements Listener {
         reloadConfig();
 
         List<String> chatIds = getConfig().getStringList("telegram.chatIds");
-        String botToken = getConfig().getString("telegram.token");
+        String botToken = getConfig().getString("telegram.botToken", "").trim();
         tpsThreshold = getConfig().getDouble("settings.tps", 15.0);
         updateEnabled = getConfig().getBoolean("settings.update", true);
+
+        if (botToken.isEmpty() || chatIds.isEmpty()) {
+            getLogger().severe("Ошибка: botToken или chatIds не указаны в config.yml! Отключение плагина...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         telegramBot = new TelegramBot(botToken, chatIds);
         pluginUpdater = new PluginUpdater();
 
         Bukkit.getPluginManager().registerEvents(this, this);
-        getCommand("bwstatusbot").setExecutor(new StatusCommand());
+
+        if (getCommand("bwstatusbot") != null) {
+            getCommand("bwstatusbot").setExecutor(new StatusCommand());
+        } else {
+            getLogger().warning("Команда /bwstatusbot не зарегистрирована в plugin.yml!");
+        }
 
         getServer().getConsoleSender().sendMessage("\n§a==============================\n"
                 + "§a=== Плагин BWTelegramNotify активен ===\n"
@@ -45,12 +56,10 @@ public class PaperMain extends JavaPlugin implements Listener {
 
         telegramBot.sendMessage(getConfig().getString("messages.server_started", "✅ **Paper-сервер запущен!**"));
 
-        // Проверка обновлений при запуске, если включено в конфиге
         if (updateEnabled) {
             Bukkit.getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
         }
 
-        // Запуск мониторинга TPS
         startTpsMonitor();
     }
 
@@ -86,7 +95,7 @@ public class PaperMain extends JavaPlugin implements Listener {
                     telegramBot.sendMessage(message);
                 }
             }
-        }.runTaskTimer(this, 600L, 1200L); // Проверка каждую минуту (20 тиков * 60 сек)
+        }.runTaskTimer(this, 600L, 1200L);
     }
 
     private class StatusCommand implements CommandExecutor {
