@@ -15,6 +15,7 @@ import java.util.List;
 public class PaperMain extends JavaPlugin implements Listener {
     private static boolean running = false;
     private TelegramBot telegramBot;
+    private PluginUpdater pluginUpdater;
 
     @Override
     public void onEnable() {
@@ -24,6 +25,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         String botToken = getConfig().getString("telegram.token");
 
         telegramBot = new TelegramBot(botToken, chatIds);
+        pluginUpdater = new PluginUpdater();
 
         Bukkit.getPluginManager().registerEvents(this, this);
         getCommand("bwstatusbot").setExecutor(new StatusCommand());
@@ -35,6 +37,9 @@ public class PaperMain extends JavaPlugin implements Listener {
         getLogger().info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
 
         telegramBot.sendMessage("✅ **Paper-сервер запущен!**");
+
+        // Проверка обновлений при запуске
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> pluginUpdater.checkForUpdates());
     }
 
     @Override
