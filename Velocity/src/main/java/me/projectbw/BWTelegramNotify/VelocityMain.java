@@ -59,8 +59,9 @@ public class VelocityMain {
             telegramBot.sendMessage(message);
         }
 
-        // Создаем и запускаем Bridge, передаем туда telegramBot
-        bridge = new Bridge(server, telegramBot);
+        // Создаем и запускаем Bridge, передаем туда telegramBot через сеттер
+        bridge = new Bridge(server);
+        bridge.setTelegramBot(telegramBot);  // Передаем объект бота
         logger.info("Bridge успешно запущен.");
 
         logger.info("BWTelegramNotify успешно загружен!");
