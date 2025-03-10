@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
-    private TelegramBot telegramBot;
     private YamlConfiguration config;
     private Logger logger;
 
@@ -24,11 +23,10 @@ public class PaperMain extends JavaPlugin implements Listener {
         this.logger = getLogger();
         loadConfig();
 
-        if (telegramBot != null) {
-            String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
-                    .replace("{server}", getServerName());
-            telegramBot.sendMessage(message);
-        }
+        // Убираем использование TelegramBot
+        String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
+                .replace("{server}", getServerName());
+        logger.info(message);
 
         getServer().getPluginManager().registerEvents(this, this);
         logger.info("BWTelegramNotify успешно загружен!");
@@ -36,11 +34,9 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        if (telegramBot != null) {
-            String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
-                    .replace("{server}", getServerName());
-            telegramBot.sendMessage(message);
-        }
+        String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
+                .replace("{server}", getServerName());
+        logger.info(message);
         logger.info("BWTelegramNotify отключен.");
     }
 
@@ -49,7 +45,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         String message = config.getString("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**")
                 .replace("{player}", event.getPlayer().getName())
                 .replace("{server}", getServerName());
-        telegramBot.sendMessage(message);
+        logger.info(message);
     }
 
     @EventHandler
@@ -57,7 +53,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         String message = config.getString("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**")
                 .replace("{player}", event.getPlayer().getName())
                 .replace("{server}", getServerName());
-        telegramBot.sendMessage(message);
+        logger.info(message);
     }
 
     @EventHandler
@@ -65,5 +61,5 @@ public class PaperMain extends JavaPlugin implements Listener {
         checkTPS();
     }
 
-    // Закрывающая фигурная скобка для класса
+    // Убираем лишние методы и зависимости
 }
