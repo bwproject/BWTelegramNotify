@@ -28,11 +28,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <!-- Добавление JCenter для Simple-YAML -->
-        <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -44,11 +39,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Simple-YAML -->
+        <!-- Simple-YAML (через Jitpack) -->
         <dependency>
             <groupId>org.simpleyaml</groupId>
             <artifactId>simpleyaml</artifactId>
-            <version>1.8.0</version> <!-- Используем более старую версию -->
+            <version>1.9.1</version> <!-- Попробуйте последнюю доступную версию -->
         </dependency>
     </dependencies>
 
