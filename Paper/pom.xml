@@ -39,11 +39,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TelegramBots -->
+        <!-- Simple-YAML -->
         <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>5.5.0</version>
+            <groupId>org.simpleyaml</groupId>
+            <artifactId>simpleyaml</artifactId>
+            <version>1.9.1</version>
         </dependency>
     </dependencies>
 
