@@ -5,12 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerLoadEvent;
+import org.bukkit.event.plugin.PluginDisableEvent;  // Используем событие PluginDisableEvent
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.event.server.PluginEnableEvent;  // Используем PluginEnableEvent вместо ServerReadyEvent
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -26,6 +25,13 @@ public class PaperMain extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         this.logger = getLogger();
+
+        // Создаем папку плагина, если она не существует
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
+
+        // Загружаем конфигурацию
         loadConfig();
 
         // Логируем сообщение при запуске сервера
@@ -70,14 +76,35 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPluginEnable(PluginEnableEvent event) {  // Используем PluginEnableEvent вместо ServerReadyEvent
-        if (event.getPlugin().getName().equals(this.getName())) {
-            checkTPS();
+    public void onServerLoad(ServerLoadEvent event) {
+        checkTPS();
+    }
+
+    // Используем событие отключения плагина для обработки выключения сервера
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        if (event.getPlugin() == this) {
+            String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
+                    .replace("{server}", getServerName());
+            logger.info(message);
         }
     }
 
     private void loadConfig() {
-        // Ваш код для загрузки конфигурации
+        // Инициализация конфигурации
+        this.config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+
+        if (config == null) {
+            getLogger().warning("Конфигурация не была загружена!");
+        }
+
+        // Загружаем дефолтные значения, если они не существуют
+        config.addDefault("messages.server_started", "✅ **Сервер {server} запущен!**");
+        config.addDefault("messages.server_stopped", "⛔ **Сервер {server} выключен!**");
+        config.addDefault("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**");
+        config.addDefault("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**");
+        config.options().copyDefaults(true);  // Копируем дефолтные значения в конфиг
+        saveConfig();  // Сохраняем конфигурацию (если она была изменена)
     }
 
     private String getServerName() {
