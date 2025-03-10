@@ -65,4 +65,5 @@ public class PaperMain extends JavaPlugin implements Listener {
         checkTPS();
     }
 
-   
+    // Закрывающая фигурная скобка для класса
+}
