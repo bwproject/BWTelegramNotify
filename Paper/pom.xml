@@ -53,6 +53,14 @@
             <artifactId>json</artifactId>
             <version>20210307</version>
         </dependency>
+        
+        <!-- Добавлено для обработки событий плагина -->
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
