@@ -10,9 +10,12 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -22,7 +25,7 @@ import java.util.logging.Logger;
 @Plugin(
     id = "bwtelegramnotify",
     name = "BWTelegramNotify",
-    version = "1.0.0",
+    version = "1.1.0",
     description = "Плагин для уведомлений в Telegram",
     authors = {"The_Mr_Mes109"}
 )
@@ -32,7 +35,7 @@ public class VelocityMain {
     private final Path configFile;
     private TelegramBot telegramBot;
     private YamlConfiguration config;
-    private Bridge bridge;  // Экземпляр Bridge
+    private static final ChannelIdentifier CHANNEL = MinecraftChannelIdentifier.from("bwtelegram:notify");
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
@@ -48,21 +51,12 @@ public class VelocityMain {
         logger.info("==================================");
 
         loadConfig();
-
-        if (config.getBoolean("updater.enabled", true)) {
-            logger.info("Проверка обновлений...");
-            new PluginUpdater().checkForUpdates();
-        }
+        server.getChannelRegistrar().register(CHANNEL);
 
         if (telegramBot != null) {
             String message = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
             telegramBot.sendMessage(message);
         }
-
-        // Создаем и запускаем Bridge, передаем туда telegramBot через сеттер
-        bridge = new Bridge(server);
-        bridge.setTelegramBot(telegramBot);  // Передаем объект бота
-        logger.info("Bridge успешно запущен.");
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
@@ -119,6 +113,18 @@ public class VelocityMain {
                         .replace("%player%", player.getUsername())
                         .replace("%new_server%", newServer));
             }
+        }
+    }
+
+    @Subscribe
+    public void onPluginMessage(com.velocitypowered.api.event.connection.PluginMessageEvent event) {
+        if (!event.getIdentifier().equals(CHANNEL)) return;
+
+        String message = new String(event.getData(), StandardCharsets.UTF_8);
+        logger.info("📩 Получено сообщение от Paper: " + message);
+
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
         }
     }
 
