@@ -33,9 +33,9 @@
     <dependencies>
         <!-- Paper API -->
         <dependency>
-            <groupId>org.papermc</groupId>
+            <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.4</version> <!-- Используйте стабильную версию -->
+            <version>1.19.4</version> <!-- Стабильная версия -->
             <scope>provided</scope>
         </dependency>
 
@@ -43,11 +43,11 @@
         <dependency>
             <groupId>com.github.Carleslc</groupId>
             <artifactId>Simple-YAML</artifactId>
-            <version>1.8.4</version> <!-- Используйте нужную версию -->
+            <version>1.8.4</version>
             <scope>compile</scope>
         </dependency>
 
-        <!-- org.json for JSON parsing -->
+        <!-- org.json для парсинга JSON -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
