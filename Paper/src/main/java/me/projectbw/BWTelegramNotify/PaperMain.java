@@ -1,60 +1,68 @@
 package me.projectbw.BWTelegramNotify;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerLoadEvent;
+import org.bukkit.event.server.ServerShutdownEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
-    private static boolean running = false;
-    private static final String CHANNEL = "bwtelegram:notify";
+    private TelegramBot telegramBot;
+    private YamlConfiguration config;
+    private Logger logger;
 
     @Override
     public void onEnable() {
-        running = true;
-        saveDefaultConfig();
-        getServer().getMessenger().registerOutgoingPluginChannel(this, CHANNEL);
+        this.logger = getLogger();
+        loadConfig();
 
-        Bukkit.getPluginManager().registerEvents(this, this);
-        getCommand("bwstatusbot").setExecutor((sender, command, label, args) -> {
-            sender.sendMessage("📢 BWTelegramNotify работает через Velocity");
-            return true;
-        });
+        if (telegramBot != null) {
+            String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
+                    .replace("{server}", getServerName());
+            telegramBot.sendMessage(message);
+        }
 
-        getServer().getConsoleSender().sendMessage("\n§a==============================\n"
-                + "§a=== Плагин BWTelegramNotify активен ===\n"
-                + "§a==============================");
-
-        sendToVelocity("✅ **Paper-сервер запущен!**");
+        getServer().getPluginManager().registerEvents(this, this);
+        logger.info("BWTelegramNotify успешно загружен!");
     }
 
     @Override
     public void onDisable() {
-        running = false;
-        sendToVelocity("⛔ **Paper-сервер выключен!**");
+        if (telegramBot != null) {
+            String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
+                    .replace("{server}", getServerName());
+            telegramBot.sendMessage(message);
+        }
+        logger.info("BWTelegramNotify отключен.");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        sendToVelocity("🔵 **Игрок зашел на сервер:** " + event.getPlayer().getName());
+        String message = config.getString("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**")
+                .replace("{player}", event.getPlayer().getName())
+                .replace("{server}", getServerName());
+        telegramBot.sendMessage(message);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        sendToVelocity("⚪ **Игрок вышел с сервера:** " + event.getPlayer().getName());
+        String message = config.getString("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**")
+                .replace("{player}", event.getPlayer().getName())
+                .replace("{server}", getServerName());
+        telegramBot.sendMessage(message);
     }
 
-    private void sendToVelocity(String message) {
-        byte[] data = message.getBytes(StandardCharsets.UTF_8);
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendPluginMessage(this, CHANNEL, data);
-            break; // Достаточно одного игрока
-        }
+    @EventHandler
+    public void onServerLoad(ServerLoadEvent event) {
+        checkTPS();
     }
-}
+
+   
