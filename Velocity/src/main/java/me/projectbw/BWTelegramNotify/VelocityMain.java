@@ -12,6 +12,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -53,6 +54,27 @@ public class VelocityMain {
         loadConfig();
         server.getChannelRegistrar().register(CHANNEL);
 
+        // Получаем список серверов
+        StringBuilder serverList = new StringBuilder("🌐 **Доступные серверы:**\n");
+
+        if (server.getAllServers().isEmpty()) {
+            serverList.append("❌ Нет доступных серверов.");
+        } else {
+            for (RegisteredServer srv : server.getAllServers()) {
+                serverList.append("➡ ").append(srv.getServerInfo().getName()).append("\n");
+            }
+        }
+
+        // Логируем список серверов
+        logger.info(serverList.toString());
+
+        // Отправляем список серверов в Telegram
+        if (telegramBot != null) {
+            String message = config.getString("messages.server_list", "**Доступные серверы:**\n%server_list%");
+            telegramBot.sendMessage(message.replace("%server_list%", serverList.toString()));
+        }
+
+        // Сообщение о запуске прокси
         if (telegramBot != null) {
             String message = config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**");
             telegramBot.sendMessage(message);
@@ -142,6 +164,7 @@ public class VelocityMain {
                         messages:
                           server_started: "🔵 **Прокси-сервер запущен!**"
                           server_stopped: "🔴 **Прокси-сервер выключен!**"
+                          server_list: "**Доступные серверы:**\n%server_list%"
                           player_logged_in: "✅ **Игрок зашел**: %player%"
                           player_logged_out: "❌ **Игрок вышел**: %player%"
                           player_switched_server: "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**"
