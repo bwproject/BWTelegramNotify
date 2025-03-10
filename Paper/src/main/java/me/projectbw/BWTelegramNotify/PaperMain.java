@@ -1,6 +1,5 @@
 package me.projectbw.BWTelegramNotify;
 
-import io.papermc.paper.event.server.ServerLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,6 +7,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.event.server.ServerReadyEvent;  // Заменено на правильное событие
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -70,7 +70,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onServerLoad(ServerLoadEvent event) {
+    public void onServerReady(ServerReadyEvent event) {  // Используем ServerReadyEvent
         checkTPS();
     }
 
