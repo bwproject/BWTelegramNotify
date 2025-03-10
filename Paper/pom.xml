@@ -39,11 +39,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Simple-YAML (через Jitpack) -->
+        <!-- SnakeYAML -->
         <dependency>
-            <groupId>org.simpleyaml</groupId>
-            <artifactId>simpleyaml</artifactId>
-            <version>1.9.1</version> <!-- Попробуйте последнюю доступную версию -->
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.0</version>
         </dependency>
     </dependencies>
 
