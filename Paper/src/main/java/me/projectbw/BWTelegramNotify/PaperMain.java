@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.event.server.ServerReadyEvent;  // Заменено на правильное событие
+import org.bukkit.event.server.PluginEnableEvent;  // Используем PluginEnableEvent вместо ServerReadyEvent
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -70,8 +70,10 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onServerReady(ServerReadyEvent event) {  // Используем ServerReadyEvent
-        checkTPS();
+    public void onPluginEnable(PluginEnableEvent event) {  // Используем PluginEnableEvent вместо ServerReadyEvent
+        if (event.getPlugin().getName().equals(this.getName())) {
+            checkTPS();
+        }
     }
 
     private void loadConfig() {
