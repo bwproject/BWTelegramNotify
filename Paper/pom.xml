@@ -25,10 +25,6 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>simpleyaml-repo</id>
-            <url>https://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -43,11 +39,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- simpleyaml -->
+        <!-- Simple-YAML by Carleslc -->
         <dependency>
-            <groupId>org.simpleyaml</groupId>
-            <artifactId>simpleyaml</artifactId>
-            <version>1.7.1</version>
+            <groupId>com.github.Carleslc</groupId>
+            <artifactId>Simple-YAML</artifactId>
+            <version>1.8.4</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
