@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerLoadEvent;
-import org.bukkit.event.server.ServerShutdownEvent;  // Заменено на актуальное событие
+import org.bukkit.event.plugin.PluginDisableEvent;  // Используем событие PluginDisableEvent
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
@@ -72,12 +72,14 @@ public class PaperMain extends JavaPlugin implements Listener {
         checkTPS();
     }
 
-    // Обработчик события остановки сервера
+    // Используем событие отключения плагина для обработки выключения сервера
     @EventHandler
-    public void onServerStop(ServerShutdownEvent event) {  // Заменено на актуальное событие
-        String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
-                .replace("{server}", getServerName());
-        logger.info(message);
+    public void onPluginDisable(PluginDisableEvent event) {
+        if (event.getPlugin() == this) {
+            String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
+                    .replace("{server}", getServerName());
+            logger.info(message);
+        }
     }
 
     private void loadConfig() {
