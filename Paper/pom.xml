@@ -46,6 +46,13 @@
             <version>1.8.4</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- org.json for JSON parsing -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
     </dependencies>
 
     <build>
