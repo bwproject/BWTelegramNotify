@@ -1,6 +1,5 @@
-# Конфигурация для Velocity
 telegram:
-  token: "YOUR_BOT_TOKEN"
+  token: "your-telegram-bot-token"
   chats:
     - "chat_id_1"
     - "chat_id_2"
@@ -8,6 +7,7 @@ telegram:
 messages:
   server_started: "🔵 **Прокси-сервер запущен!**"
   server_stopped: "🔴 **Прокси-сервер выключен!**"
+  server_list: "**Доступные серверы:**\n%server_list%"
   player_logged_in: "✅ **Игрок зашел**: %player%"
   player_logged_out: "❌ **Игрок вышел**: %player%"
   player_switched_server: "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**"
@@ -15,3 +15,7 @@ messages:
 
 updater:
   enabled: true
+
+velocity:
+  host: "localhost"  # Укажите адрес сервера Velocity
+  port: 25577         # Укажите порт сервера Velocity
