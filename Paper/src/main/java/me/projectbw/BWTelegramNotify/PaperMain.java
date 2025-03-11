@@ -9,17 +9,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.io.*;
-import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
-public class PaperMain extends JavaPlugin implements Listener {
+public class PaperMain extends JavaPlugin implements Listener, PluginMessageListener {
 
     private Logger logger;
     private static final double TPS_THRESHOLD = 15.0;
-    private String velocityHost;
-    private int velocityPort;
+    private static final String CHANNEL = "bwtelegram:notify";
 
     @Override
     public void onEnable() {
@@ -27,12 +27,11 @@ public class PaperMain extends JavaPlugin implements Listener {
         logger.info("BWTelegramNotify плагин включен!");
 
         // Загружаем конфиг
-        saveDefaultConfig();  // Сохраняем конфиг, если его нет
-        FileConfiguration config = getConfig();
+        saveDefaultConfig();
 
-        // Читаем настройки из конфига
-        velocityHost = config.getString("velocity.host", "localhost");
-        velocityPort = config.getInt("velocity.port", 12345);
+        // Регистрируем канал плагиновых сообщений
+        getServer().getMessenger().registerOutgoingPluginChannel(this, CHANNEL);
+        getServer().getMessenger().registerIncomingPluginChannel(this, CHANNEL, this);
 
         // Регистрируем события
         getServer().getPluginManager().registerEvents(this, this);
@@ -71,42 +70,38 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     private void sendMessageToVelocity(String messageKey, String... args) {
         String message = formatMessage(messageKey, args);
-        sendViaSocket(message);
+        sendViaPluginMessage(message);
     }
 
     private String formatMessage(String messageKey, String... args) {
-        // Для простоты будем просто заменять placeholder в сообщении на реальные значения
         String messageTemplate = getMessageTemplate(messageKey);
         return String.format(messageTemplate, (Object[]) args);
     }
 
     private String getMessageTemplate(String messageKey) {
-        // Вернем строку, которая будет использоваться для каждого типа сообщения.
-        // Здесь можно загружать шаблоны из конфигурации
         switch (messageKey) {
             case "server_started":
-                return "✅ Сервер {server} запущен!";
+                return "✅ Сервер %s запущен!";
             case "server_stopped":
-                return "⛔ Сервер {server} остановлен!";
+                return "⛔ Сервер %s остановлен!";
             case "player_join":
-                return "🔵 Игрок {player} присоединился к серверу {server}!";
+                return "🔵 Игрок %s присоединился к серверу %s!";
             case "player_quit":
-                return "⚪ Игрок {player} покинул сервер {server}!";
+                return "⚪ Игрок %s покинул сервер %s!";
             case "low_tps":
-                return "⚠ Низкий TPS: {tps} на сервере {server}";
+                return "⚠ Низкий TPS: %s на сервере %s";
             default:
                 return "Неизвестное сообщение.";
         }
     }
 
-    private void sendViaSocket(String message) {
-        try (Socket socket = new Socket(velocityHost, velocityPort);
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-            out.println(message); // Отправляем сообщение на Velocity через сокет
-        } catch (IOException e) {
-            logger.severe("Ошибка при отправке сообщения на Velocity через сокет: " + e.getMessage());
-            e.printStackTrace();
+    private void sendViaPluginMessage(String message) {
+        byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.sendPluginMessage(this, CHANNEL, messageBytes);
+            return; // Отправляем только одному игроку, так как сообщение дойдет до Velocity
         }
+        logger.warning("Нет игроков онлайн, сообщение не отправлено в Velocity.");
     }
 
     private void checkTPS() {
@@ -116,7 +111,6 @@ public class PaperMain extends JavaPlugin implements Listener {
         }
     }
 
-    // Запуск мониторинга TPS
     private void startTPSMonitoring() {
         new BukkitRunnable() {
             @Override
@@ -124,5 +118,12 @@ public class PaperMain extends JavaPlugin implements Listener {
                 checkTPS();
             }
         }.runTaskTimerAsynchronously(this, 0L, 1200L); // Каждые 60 секунд
+    }
+
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!channel.equals(CHANNEL)) return;
+        String receivedMessage = new String(message, StandardCharsets.UTF_8);
+        logger.info("📩 Получено сообщение из Velocity: " + receivedMessage);
     }
 }
