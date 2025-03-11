@@ -44,11 +44,11 @@ public class PaperMain extends JavaPlugin implements Listener {
             startTPSMonitoring();
 
             // Проверка на обновления плагина
-            checkForPluginUpdates();  // Вызываем метод для проверки обновлений
+            checkForPluginUpdates();
 
             logger.info("BWTelegramNotify успешно загружен!");
         } catch (IOException e) {
-            logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
+            logger.severe("Ошибка при загрузке конфигурации или проверке обновлений: " + e.getMessage());
             e.printStackTrace();
         }
     }
