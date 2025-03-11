@@ -1,3 +1,4 @@
+// PaperMain.java
 package me.projectbw.BWTelegramNotify;
 
 import org.bukkit.Bukkit;
@@ -9,8 +10,8 @@ import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -28,8 +29,8 @@ public class PaperMain extends JavaPlugin implements Listener {
         this.logger = getLogger();
 
         // Создаем папку плагина, если она не существует
-        if (!getDataFolder().exists() && !getDataFolder().mkdirs()) {
-            logger.warning("Не удалось создать папку конфигурации!");
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
         }
 
         // Загружаем конфигурацию
@@ -82,26 +83,20 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     private void loadConfig() {
-        File configFile = new File(getDataFolder(), "config.yml");
-
-        if (!configFile.exists()) {
-            saveResource("config.yml", false);
-            logger.info("Создан новый config.yml");
-        }
-
-        this.config = YamlConfiguration.loadConfiguration(configFile);
+        // Инициализация конфигурации
+        this.config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
 
         if (config == null) {
-            logger.warning("Конфигурация не была загружена!");
+            getLogger().warning("Конфигурация не была загружена!");
         }
 
-        // Устанавливаем значения по умолчанию
+        // Загружаем дефолтные значения, если они не существуют
         config.addDefault("messages.server_started", "✅ **Сервер {server} запущен!**");
         config.addDefault("messages.server_stopped", "⛔ **Сервер {server} выключен!**");
         config.addDefault("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**");
         config.addDefault("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**");
-        config.options().copyDefaults(true);
-        saveConfig();
+        config.options().copyDefaults(true);  // Копируем дефолтные значения в конфиг
+        saveConfig();  // Сохраняем конфигурацию (если она была изменена)
     }
 
     private String getServerName() {
@@ -109,17 +104,19 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     private void checkTPS() {
-        double[] tpsArray = Bukkit.getServer().getTPS();
-        if (tpsArray.length > 0) {
-            double tps = tpsArray[0];
+        try {
+            double tps = Bukkit.getServer().getTPS()[0];
             if (tps < TPS_THRESHOLD) {
-                logger.warning("Внимание: низкий TPS: " + tps);
+                String message = "⚠ Внимание: низкий TPS: " + tps;
+                Bukkit.getLogger().warning(message);
             }
-        } else {
-            logger.warning("Не удалось получить данные о TPS.");
+        } catch (Exception e) {
+            Bukkit.getLogger().severe("Ошибка при получении TPS: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+    // Запуск мониторинга TPS
     private void startTPSMonitoring() {
         new BukkitRunnable() {
             @Override
@@ -129,17 +126,12 @@ public class PaperMain extends JavaPlugin implements Listener {
         }.runTaskTimerAsynchronously(this, 0L, 1200L);
     }
 
+    // Проверка на наличие обновлений плагина
     public void checkForUpdates() {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode != 200) {
-                logger.warning("Ошибка получения обновлений: " + responseCode);
-                return;
-            }
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
@@ -152,13 +144,10 @@ public class PaperMain extends JavaPlugin implements Listener {
             JSONObject jsonResponse = new JSONObject(response.toString());
             String latestVersion = jsonResponse.getString("tag_name");
 
-            JSONArray assets = jsonResponse.optJSONArray("assets");
-            if (assets == null) {
-                logger.warning("Не найдено файлов для загрузки.");
-                return;
-            }
-
+            JSONArray assets = jsonResponse.getJSONArray("assets");
             String downloadUrl = null;
+
+            // Ищем файл с "BWTelegramNotify-Paper" в имени
             for (int i = 0; i < assets.length(); i++) {
                 JSONObject asset = assets.getJSONObject(i);
                 String assetName = asset.getString("name");
@@ -169,46 +158,42 @@ public class PaperMain extends JavaPlugin implements Listener {
             }
 
             if (downloadUrl == null) {
-                logger.warning("Не найдено подходящих файлов для обновления.");
+                logger.warning("Не удалось найти нужный файл для загрузки.");
                 return;
             }
 
-            logger.info("Доступна новая версия: " + latestVersion);
+            logger.info("Новая версия доступна: " + latestVersion);
             downloadNewVersion(downloadUrl, latestVersion);
 
         } catch (Exception e) {
-            logger.warning("Ошибка при проверке обновлений: " + e.getMessage());
+            logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     public void downloadNewVersion(String downloadUrl, String latestVersion) {
         try {
-            logger.info("Загрузка обновления с: " + downloadUrl);
+            logger.info("Загрузка файла: " + downloadUrl);
             URL url = new URL(downloadUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            int responseCode = connection.getResponseCode();
-            if (responseCode != 200) {
-                logger.warning("Ошибка загрузки файла: " + responseCode);
-                return;
+            InputStream inputStream = connection.getInputStream();
+            File outputFile = new File("plugins/BWTelegramNotify-Paper.jar");
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
 
-            File pluginFile = new File("plugins/BWTelegramNotify-Paper.jar");
-            try (InputStream inputStream = connection.getInputStream();
-                 FileOutputStream outputStream = new FileOutputStream(pluginFile)) {
-
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            }
+            inputStream.close();
+            outputStream.close();
 
             logger.info("Плагин обновлен до версии " + latestVersion + "!");
         } catch (Exception e) {
-            logger.warning("Ошибка при загрузке обновления: " + e.getMessage());
+            logger.severe("Ошибка при загрузке новой версии: " + e.getMessage());
             e.printStackTrace();
         }
     }
