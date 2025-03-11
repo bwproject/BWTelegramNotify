@@ -21,7 +21,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     private YamlConfiguration config;
     private Logger logger;
     private static final double TPS_THRESHOLD = 15.0;
-    private static final String VELOCITY_SERVER_ADDRESS = "http://velocity-server-address";  // URL для отправки сообщений на Velocity
+    private static final String VELOCITY_SERVER_ADDRESS = "http://velocity-server-address";  // Используем HTTP
 
     @Override
     public void onEnable() {
@@ -107,9 +107,12 @@ public class PaperMain extends JavaPlugin implements Listener {
             URL url = new URL(VELOCITY_SERVER_ADDRESS + "/send-message?message=" + message);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.getResponseCode();  // Просто для выполнения запроса
+
+            // Получаем ответ от сервера (для выполнения запроса)
+            connection.getResponseCode();
         } catch (IOException e) {
             logger.severe("Ошибка при отправке сообщения на Velocity: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
