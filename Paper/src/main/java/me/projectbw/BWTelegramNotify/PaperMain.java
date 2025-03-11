@@ -12,6 +12,8 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
