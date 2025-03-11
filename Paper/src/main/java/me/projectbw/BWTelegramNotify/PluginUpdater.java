@@ -3,7 +3,6 @@ package me.projectbw.BWTelegramNotify;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,7 +11,7 @@ public class PluginUpdater {
     private static final String GITHUB_API_URL = "https://api.github.com/repos/bwproject/BWTelegramNotify/releases/latest";
     private static final String DOWNLOAD_BASE_URL = "https://github.com/bwproject/BWTelegramNotify/releases/download/";
 
-    public void checkForUpdates() {
+    public void checkForUpdates() throws IOException {  // Объявляем выбрасывание IOException
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
             connection.setRequestMethod("GET");
@@ -52,10 +51,11 @@ public class PluginUpdater {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new IOException("Ошибка при проверке обновлений плагина: " + e.getMessage(), e);
         }
     }
 
-    public void downloadNewVersion(String downloadUrl, String latestVersion) {
+    public void downloadNewVersion(String downloadUrl, String latestVersion) throws IOException {
         try {
             System.out.println("Загрузка файла: " + downloadUrl);
             URL url = new URL(downloadUrl);
@@ -77,6 +77,7 @@ public class PluginUpdater {
             System.out.println("Плагин обновлен до версии " + latestVersion + "!");
         } catch (Exception e) {
             e.printStackTrace();
+            throw new IOException("Ошибка при скачивании новой версии плагина: " + e.getMessage(), e);
         }
     }
 }
