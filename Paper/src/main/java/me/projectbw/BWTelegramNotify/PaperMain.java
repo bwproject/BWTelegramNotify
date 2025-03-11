@@ -21,36 +21,36 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        this.logger = getLogger();
+
+        // Создаем папку плагина, если она не существует
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
+
+        // Загружаем конфигурацию
+        loadConfig();
+
+        // Логируем сообщение при запуске сервера
+        String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
+                .replace("{server}", getServerName());
+        logger.info(message);
+
+        // Регистрируем события
+        getServer().getPluginManager().registerEvents(this, this);
+
+        // Запускаем мониторинг TPS
+        startTPSMonitoring();
+
+        // Проверка на обновления плагина
         try {
-            this.logger = getLogger();
-
-            // Создаем папку плагина, если она не существует
-            if (!getDataFolder().exists()) {
-                getDataFolder().mkdirs();
-            }
-
-            // Загружаем конфигурацию
-            loadConfig();
-
-            // Логируем сообщение при запуске сервера
-            String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
-                    .replace("{server}", getServerName());
-            logger.info(message);
-
-            // Регистрируем события
-            getServer().getPluginManager().registerEvents(this, this);
-
-            // Запускаем мониторинг TPS
-            startTPSMonitoring();
-
-            // Проверка на обновления плагина
             checkForPluginUpdates();  // Вызываем метод для проверки обновлений
-
-            logger.info("BWTelegramNotify успешно загружен!");
         } catch (IOException e) {
             logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
             e.printStackTrace();
         }
+
+        logger.info("BWTelegramNotify успешно загружен!");
     }
 
     @Override
@@ -127,13 +127,8 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     // Проверка на наличие обновлений плагина
-    private void checkForPluginUpdates() {
-        try {
-            PluginUpdater pluginUpdater = new PluginUpdater();
-            pluginUpdater.checkForUpdates();  // Вызываем метод из PluginUpdater для проверки обновлений
-        } catch (IOException e) {
-            logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
-            e.printStackTrace();
-        }
+    private void checkForPluginUpdates() throws IOException {
+        PluginUpdater pluginUpdater = new PluginUpdater();
+        pluginUpdater.checkForUpdates();  // Вызываем метод из PluginUpdater для проверки обновлений
     }
 }
