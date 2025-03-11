@@ -10,15 +10,12 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +37,7 @@ public class VelocityMain {
     private TelegramBot telegramBot;
     private YamlConfiguration config;
     private static final ChannelIdentifier CHANNEL = MinecraftChannelIdentifier.from("bwtelegram:notify");
+    private VelocityListener velocityListener;
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
@@ -83,6 +81,13 @@ public class VelocityMain {
             telegramBot.sendMessage(message);
         }
 
+        // Запуск VelocityListener, если в конфиге включено
+        if (config.getBoolean("velocity_listener.enabled", true)) {
+            velocityListener = new VelocityListener(server, telegramBot, CHANNEL);
+            velocityListener.startListening(); // Запуск прослушивания сообщений
+            logger.info("VelocityListener запущен и слушает канал: " + CHANNEL.getId());
+        }
+
         logger.info("BWTelegramNotify успешно загружен!");
     }
 
@@ -93,6 +98,13 @@ public class VelocityMain {
             String message = config.getString("messages.server_stopped", "🔴 **Прокси-сервер выключен!**");
             telegramBot.sendMessage(message);
         }
+
+        // Останавливаем VelocityListener при отключении прокси
+        if (velocityListener != null) {
+            velocityListener.stopListening();
+            logger.info("VelocityListener остановлен.");
+        }
+
         logger.info("BWTelegramNotify успешно отключен.");
     }
 
@@ -176,9 +188,9 @@ public class VelocityMain {
                         updater:
                           enabled: true
                         
-                        velocity:
-                          host: "localhost"
-                          port: 25577
+                        velocity_listener:
+                          enabled: true
+                          channel: "bwtelegram:notify"
                         """);
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
@@ -203,27 +215,7 @@ public class VelocityMain {
             return;
         }
 
-        // Получаем параметры для Velocity
-        String velocityHost = config.getString("velocity.host", "localhost");
-        int velocityPort = config.getInt("velocity.port", 25577);
-
-        // Подключаемся к серверу Velocity
-        connectToVelocityServer(velocityHost, velocityPort);
-
         telegramBot = new TelegramBot(botToken, chatIds);
         logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
-    }
-
-    private void connectToVelocityServer(String host, int port) {
-        try {
-            Socket socket = new Socket(host, port);
-            OutputStream outputStream = socket.getOutputStream();
-            PrintWriter writer = new PrintWriter(outputStream, true);
-            String message = "🚀 **Прокси-сервер запущен!**";
-            writer.println(message);
-            logger.info("Соединение с сервером Velocity успешно установлено. Сообщение отправлено.");
-        } catch (IOException e) {
-            logger.severe("Ошибка при подключении к серверу Velocity: " + e.getMessage());
-        }
     }
 }
