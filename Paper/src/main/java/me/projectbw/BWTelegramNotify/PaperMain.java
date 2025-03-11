@@ -48,13 +48,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         startTPSMonitoring();
 
         // Проверяем наличие обновлений плагина
-        try {
-            checkForUpdates();
-        } catch (Exception e) {
-            // Обработка исключения, если оно возникнет
-            logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
-            e.printStackTrace();
-        }
+        checkForUpdates();
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
@@ -133,7 +127,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     // Проверка на наличие обновлений плагина
-    public void checkForUpdates() throws Exception {
+    public void checkForUpdates() {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
             connection.setRequestMethod("GET");
@@ -171,36 +165,36 @@ public class PaperMain extends JavaPlugin implements Listener {
             logger.info("Новая версия доступна: " + latestVersion);
             downloadNewVersion(downloadUrl, latestVersion);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
             e.printStackTrace();
-            throw new Exception("Ошибка при проверке обновлений: " + e.getMessage());
         }
     }
 
-    // Загрузка новой версии плагина
-    public void downloadNewVersion(String downloadUrl, String latestVersion) throws IOException {
+    public void downloadNewVersion(String downloadUrl, String latestVersion) {
         try {
             logger.info("Загрузка файла: " + downloadUrl);
             URL url = new URL(downloadUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            // Использование try-with-resources для автоматического закрытия потоков
-            try (InputStream inputStream = connection.getInputStream();
-                 FileOutputStream outputStream = new FileOutputStream(new File("plugins/BWTelegramNotify-Paper.jar"))) {
+            InputStream inputStream = connection.getInputStream();
+            File outputFile = new File("plugins/BWTelegramNotify-Paper.jar");
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-
-                logger.info("Плагин обновлен до версии " + latestVersion + "!");
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
+
+            inputStream.close();
+            outputStream.close();
+
+            logger.info("Плагин обновлен до версии " + latestVersion + "!");
         } catch (IOException e) {
             logger.severe("Ошибка при загрузке новой версии: " + e.getMessage());
-            throw e;  // Перекидываем IOException
+            e.printStackTrace();
         }
     }
 }
