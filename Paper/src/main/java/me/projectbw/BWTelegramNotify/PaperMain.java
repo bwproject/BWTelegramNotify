@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
@@ -42,7 +43,12 @@ public class PaperMain extends JavaPlugin implements Listener {
         startTPSMonitoring();
 
         // Проверка на обновления плагина
-        checkForPluginUpdates();
+        try {
+            checkForPluginUpdates();  // Вызываем метод для проверки обновлений
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.warning("Ошибка при проверке обновлений плагина: " + e.getMessage());
+        }
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
@@ -121,7 +127,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     // Проверка на наличие обновлений плагина
-    private void checkForPluginUpdates() {
+    private void checkForPluginUpdates() throws IOException {
         PluginUpdater pluginUpdater = new PluginUpdater();
         pluginUpdater.checkForUpdates();  // Вызываем метод из PluginUpdater для проверки обновлений
     }
