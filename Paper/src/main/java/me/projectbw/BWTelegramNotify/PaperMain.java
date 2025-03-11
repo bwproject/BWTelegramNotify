@@ -12,8 +12,6 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
@@ -45,12 +43,9 @@ public class PaperMain extends JavaPlugin implements Listener {
             // Запускаем мониторинг TPS
             startTPSMonitoring();
 
-            // Проверка на обновления плагина
-            checkForPluginUpdates();
-
             logger.info("BWTelegramNotify успешно загружен!");
         } catch (IOException e) {
-            logger.severe("Ошибка при загрузке конфигурации или проверке обновлений: " + e.getMessage());
+            logger.severe("Ошибка при загрузке конфигурации: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -136,29 +131,5 @@ public class PaperMain extends JavaPlugin implements Listener {
                 checkTPS();
             }
         }.runTaskTimerAsynchronously(this, 0L, 1200L); // Каждые 60 секунд
-    }
-
-    // Проверка на наличие обновлений плагина
-    private void checkForPluginUpdates() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(config.getString("plugin.update_check_url"));
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("GET");
-
-                    // Печатаем ответ (или можем обработать как-то по-другому)
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                        logger.info("Проверка обновлений плагина прошла успешно.");
-                    } else {
-                        logger.warning("Ошибка при проверке обновлений.");
-                    }
-                } catch (IOException e) {
-                    logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
-                }
-            }
-        }.runTaskTimer(this, 0L, config.getLong("plugin.check_interval") * 20L); // Каждые config.check_interval секунд
     }
 }
