@@ -1,3 +1,4 @@
+# config.yml
 messages:
   server_started: "✅ **Сервер {server} запущен!**"
   server_stopped: "⛔ **Сервер {server} выключен!**"
@@ -8,3 +9,7 @@ messages:
 settings:
   tps: 15.0
   update: true
+
+velocity:
+  host: "localhost"  # IP-адрес сервера Velocity
+  port: 12345        # Порт сервера Velocity
