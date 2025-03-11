@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.github.Carleslc</groupId>
             <artifactId>Simple-YAML</artifactId>
-            <version>1.8.5</version>
+            <version>1.8.4</version>
         </dependency>
 
         <!-- org.json для работы с JSON -->
