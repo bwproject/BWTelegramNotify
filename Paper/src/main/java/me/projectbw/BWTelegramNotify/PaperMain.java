@@ -20,7 +20,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     private static final double TPS_THRESHOLD = 15.0;
 
     @Override
-    public void onEnable() {
+    public void onEnable() throws IOException {  // Добавляем throws IOException
         this.logger = getLogger();
 
         // Создаем папку плагина, если она не существует
@@ -43,12 +43,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         startTPSMonitoring();
 
         // Проверка на обновления плагина
-        try {
-            checkForPluginUpdates();  // Вызываем метод для проверки обновлений
-        } catch (IOException e) {
-            logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
-            e.printStackTrace();
-        }
+        checkForPluginUpdates();  // Вызываем метод для проверки обновлений
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
