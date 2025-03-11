@@ -1,5 +1,4 @@
 // Этот код относится к PaperMain.java
-
 package me.projectbw.BWTelegramNotify;
 
 import org.bukkit.Bukkit;
@@ -29,23 +28,30 @@ public class PaperMain extends JavaPlugin implements Listener {
     public void onEnable() {
         this.logger = getLogger();
 
+        // Создаем папку плагина, если она не существует
         if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
         }
 
+        // Загружаем конфигурацию
         loadConfig();
 
+        // Логируем сообщение при запуске сервера
         String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
                 .replace("{server}", getServerName());
         logger.info(message);
 
+        // Регистрируем события
         getServer().getPluginManager().registerEvents(this, this);
 
+        // Запускаем мониторинг TPS
         startTPSMonitoring();
 
         try {
+            // Проверяем наличие обновлений плагина
             checkForUpdates();
         } catch (IOException e) {
+            // Обработка исключения, если оно возникнет
             logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
             e.printStackTrace();
         }
@@ -83,18 +89,20 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     private void loadConfig() {
+        // Инициализация конфигурации
         this.config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
 
         if (config == null) {
             getLogger().warning("Конфигурация не была загружена!");
         }
 
+        // Загружаем дефолтные значения, если они не существуют
         config.addDefault("messages.server_started", "✅ **Сервер {server} запущен!**");
         config.addDefault("messages.server_stopped", "⛔ **Сервер {server} выключен!**");
         config.addDefault("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**");
         config.addDefault("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**");
-        config.options().copyDefaults(true);
-        saveConfig();
+        config.options().copyDefaults(true);  // Копируем дефолтные значения в конфиг
+        saveConfig();  // Сохраняем конфигурацию (если она была изменена)
     }
 
     private String getServerName() {
@@ -102,13 +110,19 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     private void checkTPS() {
-        double tps = Bukkit.getServer().getTPS()[0];
-        if (tps < TPS_THRESHOLD) {
-            String message = "⚠ Внимание: низкий TPS: " + tps;
-            Bukkit.getLogger().warning(message);
+        try {
+            double tps = Bukkit.getServer().getTPS()[0];
+            if (tps < TPS_THRESHOLD) {
+                String message = "⚠ Внимание: низкий TPS: " + tps;
+                Bukkit.getLogger().warning(message);
+            }
+        } catch (Exception e) {
+            Bukkit.getLogger().severe("Ошибка при получении TPS: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+    // Запуск мониторинга TPS
     private void startTPSMonitoring() {
         new BukkitRunnable() {
             @Override
@@ -118,17 +132,20 @@ public class PaperMain extends JavaPlugin implements Listener {
         }.runTaskTimerAsynchronously(this, 0L, 1200L);
     }
 
+    // Проверка на наличие обновлений плагина
     public void checkForUpdates() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }
+            reader.close();
 
             JSONObject jsonResponse = new JSONObject(response.toString());
             String latestVersion = jsonResponse.getString("tag_name");
@@ -136,6 +153,7 @@ public class PaperMain extends JavaPlugin implements Listener {
             JSONArray assets = jsonResponse.getJSONArray("assets");
             String downloadUrl = null;
 
+            // Ищем файл с "BWTelegramNotify-Paper" в имени
             for (int i = 0; i < assets.length(); i++) {
                 JSONObject asset = assets.getJSONObject(i);
                 String assetName = asset.getString("name");
@@ -152,8 +170,10 @@ public class PaperMain extends JavaPlugin implements Listener {
 
             logger.info("Новая версия доступна: " + latestVersion);
             downloadNewVersion(downloadUrl, latestVersion);
-        } finally {
-            connection.disconnect();
+
+        } catch (Exception e) {
+            logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -164,19 +184,21 @@ public class PaperMain extends JavaPlugin implements Listener {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
+            InputStream inputStream = connection.getInputStream();
             File outputFile = new File("plugins/BWTelegramNotify-Paper.jar");
-            try (InputStream inputStream = connection.getInputStream();
-                 FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
             }
 
+            inputStream.close();
+            outputStream.close();
+
             logger.info("Плагин обновлен до версии " + latestVersion + "!");
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.severe("Ошибка при загрузке новой версии: " + e.getMessage());
             e.printStackTrace();
         }
