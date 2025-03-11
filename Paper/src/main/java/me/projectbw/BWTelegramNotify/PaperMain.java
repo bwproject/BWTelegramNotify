@@ -47,10 +47,10 @@ public class PaperMain extends JavaPlugin implements Listener {
         // Запускаем мониторинг TPS
         startTPSMonitoring();
 
+        // Проверяем наличие обновлений плагина
         try {
-            // Проверяем наличие обновлений плагина
             checkForUpdates();
-        } catch (IOException e) {
+        } catch (Exception e) {
             // Обработка исключения, если оно возникнет
             logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
             e.printStackTrace();
@@ -133,7 +133,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     // Проверка на наличие обновлений плагина
-    public void checkForUpdates() throws IOException {
+    public void checkForUpdates() throws Exception {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
             connection.setRequestMethod("GET");
@@ -174,6 +174,7 @@ public class PaperMain extends JavaPlugin implements Listener {
         } catch (Exception e) {
             logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
             e.printStackTrace();
+            throw new Exception("Ошибка при проверке обновлений: " + e.getMessage());
         }
     }
 
