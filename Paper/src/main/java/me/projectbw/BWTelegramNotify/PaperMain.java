@@ -8,54 +8,37 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.simpleyaml.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.*;
+import java.net.Socket;
 import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
 
-    private YamlConfiguration config;
     private Logger logger;
     private static final double TPS_THRESHOLD = 15.0;
-    private static final String VELOCITY_SERVER_ADDRESS = "http://velocity-server-address";  // Используем HTTP
+    private static final String VELOCITY_SERVER_HOST = "localhost";  // IP Velocity-сервера
+    private static final int VELOCITY_SERVER_PORT = 12345;  // Порт для связи с Velocity
 
     @Override
     public void onEnable() {
-        try {
-            this.logger = getLogger();
+        this.logger = getLogger();
+        logger.info("BWTelegramNotify плагин включен!");
 
-            // Создаем папку плагина, если она не существует
-            if (!getDataFolder().exists()) {
-                getDataFolder().mkdirs();
-            }
+        // Регистрируем события
+        getServer().getPluginManager().registerEvents(this, this);
 
-            // Загружаем конфигурацию
-            loadConfig();
+        // Логируем сообщение при старте сервера
+        sendMessageToVelocity("server_started", getServerName());
 
-            // Логируем сообщение при запуске сервера
-            sendMessageToVelocity("server_started", getServerName());
-
-            // Регистрируем события
-            getServer().getPluginManager().registerEvents(this, this);
-
-            // Запускаем мониторинг TPS
-            startTPSMonitoring();
-
-            logger.info("BWTelegramNotify успешно загружен!");
-        } catch (IOException e) {
-            logger.severe("Ошибка при загрузке конфигурации: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Запускаем мониторинг TPS
+        startTPSMonitoring();
     }
 
     @Override
     public void onDisable() {
         sendMessageToVelocity("server_stopped", getServerName());
-        logger.info("BWTelegramNotify отключен.");
+        logger.info("BWTelegramNotify плагин отключен.");
     }
 
     @EventHandler
@@ -73,58 +56,54 @@ public class PaperMain extends JavaPlugin implements Listener {
         checkTPS();
     }
 
-    private void loadConfig() {
-        // Инициализация конфигурации
-        this.config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
-
-        // Загружаем дефолтные значения, если они не существуют
-        config.addDefault("messages.server_started", "✅ **Сервер {server} запущен!**");
-        config.addDefault("messages.server_stopped", "⛔ **Сервер {server} выключен!**");
-        config.addDefault("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**");
-        config.addDefault("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**");
-        config.addDefault("messages.low_tps", "⚠ Внимание: низкий TPS: {tps} на сервере {server}");
-        config.options().copyDefaults(true);  // Копируем дефолтные значения в конфиг
-        saveConfig();  // Сохраняем конфигурацию (если она была изменена)
-    }
-
     private String getServerName() {
         return Bukkit.getServer().getName();
     }
 
     private void sendMessageToVelocity(String messageKey, String... args) {
-        // Получаем шаблон сообщения из конфигурации
-        String messageTemplate = config.getString("messages." + messageKey, "Сообщение не найдено");
-        
-        // Форматируем сообщение
-        String message = String.format(messageTemplate, (Object[]) args);
-
-        // Отправляем сообщение на сервер Velocity
-        sendToVelocity(message);
+        String message = formatMessage(messageKey, args);
+        sendViaSocket(message);
     }
 
-    private void sendToVelocity(String message) {
-        try {
-            URL url = new URL(VELOCITY_SERVER_ADDRESS + "/send-message?message=" + message);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+    private String formatMessage(String messageKey, String... args) {
+        // Для простоты будем просто заменять placeholder в сообщении на реальные значения
+        String messageTemplate = getMessageTemplate(messageKey);
+        return String.format(messageTemplate, (Object[]) args);
+    }
 
-            // Получаем ответ от сервера (для выполнения запроса)
-            connection.getResponseCode();
+    private String getMessageTemplate(String messageKey) {
+        // Вернем строку, которая будет использоваться для каждого типа сообщения.
+        // Здесь можно загружать шаблоны из конфигурации
+        switch (messageKey) {
+            case "server_started":
+                return "✅ Сервер {server} запущен!";
+            case "server_stopped":
+                return "⛔ Сервер {server} остановлен!";
+            case "player_join":
+                return "🔵 Игрок {player} присоединился к серверу {server}!";
+            case "player_quit":
+                return "⚪ Игрок {player} покинул сервер {server}!";
+            case "low_tps":
+                return "⚠ Низкий TPS: {tps} на сервере {server}";
+            default:
+                return "Неизвестное сообщение.";
+        }
+    }
+
+    private void sendViaSocket(String message) {
+        try (Socket socket = new Socket(VELOCITY_SERVER_HOST, VELOCITY_SERVER_PORT);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+            out.println(message); // Отправляем сообщение на Velocity через сокет
         } catch (IOException e) {
-            logger.severe("Ошибка при отправке сообщения на Velocity: " + e.getMessage());
+            logger.severe("Ошибка при отправке сообщения на Velocity через сокет: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void checkTPS() {
-        try {
-            double tps = Bukkit.getServer().getTPS()[0];
-            if (tps < TPS_THRESHOLD) {
-                sendMessageToVelocity("low_tps", String.valueOf(tps), getServerName());
-            }
-        } catch (Exception e) {
-            Bukkit.getLogger().severe("Ошибка при получении TPS: " + e.getMessage());
-            e.printStackTrace();
+        double tps = Bukkit.getServer().getTPS()[0];
+        if (tps < TPS_THRESHOLD) {
+            sendMessageToVelocity("low_tps", String.valueOf(tps), getServerName());
         }
     }
 
