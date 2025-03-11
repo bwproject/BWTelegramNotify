@@ -12,12 +12,16 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Logger;
 
 public class PaperMain extends JavaPlugin implements Listener {
+
     private YamlConfiguration config;
     private Logger logger;
     private static final double TPS_THRESHOLD = 15.0;
+    private static final String VELOCITY_SERVER_ADDRESS = "http://velocity-server-address";  // URL для отправки сообщений на Velocity
 
     @Override
     public void onEnable() {
@@ -33,9 +37,7 @@ public class PaperMain extends JavaPlugin implements Listener {
             loadConfig();
 
             // Логируем сообщение при запуске сервера
-            String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
-                    .replace("{server}", getServerName());
-            logger.info(message);
+            sendMessageToVelocity("server_started", getServerName());
 
             // Регистрируем события
             getServer().getPluginManager().registerEvents(this, this);
@@ -55,26 +57,18 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        String message = config.getString("messages.server_stopped", "⛔ **Сервер {server} выключен!**")
-                .replace("{server}", getServerName());
-        logger.info(message);
+        sendMessageToVelocity("server_stopped", getServerName());
         logger.info("BWTelegramNotify отключен.");
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        String message = config.getString("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**")
-                .replace("{player}", event.getPlayer().getName())
-                .replace("{server}", getServerName());
-        logger.info(message);
+        sendMessageToVelocity("player_join", event.getPlayer().getName(), getServerName());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        String message = config.getString("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**")
-                .replace("{player}", event.getPlayer().getName())
-                .replace("{server}", getServerName());
-        logger.info(message);
+        sendMessageToVelocity("player_quit", event.getPlayer().getName(), getServerName());
     }
 
     @EventHandler
@@ -86,15 +80,12 @@ public class PaperMain extends JavaPlugin implements Listener {
         // Инициализация конфигурации
         this.config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
 
-        if (config == null) {
-            getLogger().warning("Конфигурация не была загружена!");
-        }
-
         // Загружаем дефолтные значения, если они не существуют
         config.addDefault("messages.server_started", "✅ **Сервер {server} запущен!**");
         config.addDefault("messages.server_stopped", "⛔ **Сервер {server} выключен!**");
         config.addDefault("messages.player_join", "🔵 **Игрок {player} зашел на сервер {server}**");
         config.addDefault("messages.player_quit", "⚪ **Игрок {player} вышел с сервера {server}**");
+        config.addDefault("messages.low_tps", "⚠ Внимание: низкий TPS: {tps} на сервере {server}");
         config.options().copyDefaults(true);  // Копируем дефолтные значения в конфиг
         saveConfig();  // Сохраняем конфигурацию (если она была изменена)
     }
@@ -103,12 +94,33 @@ public class PaperMain extends JavaPlugin implements Listener {
         return Bukkit.getServer().getName();
     }
 
+    private void sendMessageToVelocity(String messageKey, String... args) {
+        // Получаем шаблон сообщения из конфигурации
+        String messageTemplate = config.getString("messages." + messageKey, "Сообщение не найдено");
+        
+        // Форматируем сообщение
+        String message = String.format(messageTemplate, (Object[]) args);
+
+        // Отправляем сообщение на сервер Velocity
+        sendToVelocity(message);
+    }
+
+    private void sendToVelocity(String message) {
+        try {
+            URL url = new URL(VELOCITY_SERVER_ADDRESS + "/send-message?message=" + message);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.getResponseCode();
+        } catch (IOException e) {
+            logger.severe("Ошибка при отправке сообщения на Velocity: " + e.getMessage());
+        }
+    }
+
     private void checkTPS() {
         try {
             double tps = Bukkit.getServer().getTPS()[0];
             if (tps < TPS_THRESHOLD) {
-                String message = "⚠ Внимание: низкий TPS: " + tps;
-                Bukkit.getLogger().warning(message);
+                sendMessageToVelocity("low_tps", String.valueOf(tps), getServerName());
             }
         } catch (Exception e) {
             Bukkit.getLogger().severe("Ошибка при получении TPS: " + e.getMessage());
@@ -123,12 +135,30 @@ public class PaperMain extends JavaPlugin implements Listener {
             public void run() {
                 checkTPS();
             }
-        }.runTaskTimerAsynchronously(this, 0L, 1200L);
+        }.runTaskTimerAsynchronously(this, 0L, 1200L); // Каждые 60 секунд
     }
 
     // Проверка на наличие обновлений плагина
-    private void checkForPluginUpdates() throws IOException {
-        PluginUpdater pluginUpdater = new PluginUpdater();
-        pluginUpdater.checkForUpdates();  // Вызываем метод из PluginUpdater для проверки обновлений
+    private void checkForPluginUpdates() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(config.getString("plugin.update_check_url"));
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+
+                    // Печатаем ответ (или можем обработать как-то по-другому)
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        logger.info("Проверка обновлений плагина прошла успешно.");
+                    } else {
+                        logger.warning("Ошибка при проверке обновлений.");
+                    }
+                } catch (IOException e) {
+                    logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
+                }
+            }
+        }.runTaskTimer(this, 0L, config.getLong("plugin.check_interval") * 20L); // Каждые config.check_interval секунд
     }
 }
