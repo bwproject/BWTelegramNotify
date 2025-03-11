@@ -39,19 +39,18 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Simple-YAML by Carleslc -->
+        <!-- Simple-YAML -->
         <dependency>
             <groupId>com.github.Carleslc</groupId>
             <artifactId>Simple-YAML</artifactId>
-            <version>1.8.4</version>
-            <scope>compile</scope>
+            <version>1.8.5</version>
         </dependency>
 
-        <!-- org.json для парсинга JSON -->
+        <!-- org.json для работы с JSON -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20210307</version>
+            <version>20231013</version>
         </dependency>
     </dependencies>
 
@@ -94,8 +93,8 @@
                             </filters>
                             <relocations>
                                 <relocation>
-                                    <pattern>org.telegram</pattern>
-                                    <shadedPattern>me.projectbw.telegram</shadedPattern>
+                                    <pattern>org.json</pattern>
+                                    <shadedPattern>me.projectbw.json</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
