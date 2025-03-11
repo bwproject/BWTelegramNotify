@@ -133,52 +133,53 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     // Проверка на наличие обновлений плагина
-    public void checkForUpdates() {
+    public void checkForUpdates() throws Exception {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(GITHUB_API_URL).openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
 
-            // Использование try-with-resources для автоматического закрытия потоков
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-
-                JSONObject jsonResponse = new JSONObject(response.toString());
-                String latestVersion = jsonResponse.getString("tag_name");
-
-                JSONArray assets = jsonResponse.getJSONArray("assets");
-                String downloadUrl = null;
-
-                // Ищем файл с "BWTelegramNotify-Paper" в имени
-                for (int i = 0; i < assets.length(); i++) {
-                    JSONObject asset = assets.getJSONObject(i);
-                    String assetName = asset.getString("name");
-                    if (assetName.startsWith("BWTelegramNotify-Paper")) {
-                        downloadUrl = asset.getString("browser_download_url");
-                        break;
-                    }
-                }
-
-                if (downloadUrl == null) {
-                    logger.warning("Не удалось найти нужный файл для загрузки.");
-                    return;
-                }
-
-                logger.info("Новая версия доступна: " + latestVersion);
-                downloadNewVersion(downloadUrl, latestVersion);
-
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
             }
+            reader.close();
+
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            String latestVersion = jsonResponse.getString("tag_name");
+
+            JSONArray assets = jsonResponse.getJSONArray("assets");
+            String downloadUrl = null;
+
+            // Ищем файл с "BWTelegramNotify-Paper" в имени
+            for (int i = 0; i < assets.length(); i++) {
+                JSONObject asset = assets.getJSONObject(i);
+                String assetName = asset.getString("name");
+                if (assetName.startsWith("BWTelegramNotify-Paper")) {
+                    downloadUrl = asset.getString("browser_download_url");
+                    break;
+                }
+            }
+
+            if (downloadUrl == null) {
+                logger.warning("Не удалось найти нужный файл для загрузки.");
+                return;
+            }
+
+            logger.info("Новая версия доступна: " + latestVersion);
+            downloadNewVersion(downloadUrl, latestVersion);
+
         } catch (Exception e) {
             logger.severe("Ошибка при проверке обновлений: " + e.getMessage());
             e.printStackTrace();
+            throw new Exception("Ошибка при проверке обновлений: " + e.getMessage());
         }
     }
 
-    public void downloadNewVersion(String downloadUrl, String latestVersion) {
+    // Загрузка новой версии плагина
+    public void downloadNewVersion(String downloadUrl, String latestVersion) throws IOException {
         try {
             logger.info("Загрузка файла: " + downloadUrl);
             URL url = new URL(downloadUrl);
@@ -197,9 +198,9 @@ public class PaperMain extends JavaPlugin implements Listener {
 
                 logger.info("Плагин обновлен до версии " + latestVersion + "!");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.severe("Ошибка при загрузке новой версии: " + e.getMessage());
-            e.printStackTrace();
+            throw e;  // Перекидываем IOException
         }
     }
 }
