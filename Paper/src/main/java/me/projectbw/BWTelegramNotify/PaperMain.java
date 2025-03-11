@@ -21,36 +21,36 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        this.logger = getLogger();
-
-        // Создаем папку плагина, если она не существует
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdirs();
-        }
-
-        // Загружаем конфигурацию
-        loadConfig();
-
-        // Логируем сообщение при запуске сервера
-        String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
-                .replace("{server}", getServerName());
-        logger.info(message);
-
-        // Регистрируем события
-        getServer().getPluginManager().registerEvents(this, this);
-
-        // Запускаем мониторинг TPS
-        startTPSMonitoring();
-
-        // Проверка на обновления плагина
         try {
-            checkForPluginUpdates();  // Вызываем метод для проверки обновлений
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warning("Ошибка при проверке обновлений плагина: " + e.getMessage());
-        }
+            this.logger = getLogger();
 
-        logger.info("BWTelegramNotify успешно загружен!");
+            // Создаем папку плагина, если она не существует
+            if (!getDataFolder().exists()) {
+                getDataFolder().mkdirs();
+            }
+
+            // Загружаем конфигурацию
+            loadConfig();
+
+            // Логируем сообщение при запуске сервера
+            String message = config.getString("messages.server_started", "✅ **Сервер {server} запущен!**")
+                    .replace("{server}", getServerName());
+            logger.info(message);
+
+            // Регистрируем события
+            getServer().getPluginManager().registerEvents(this, this);
+
+            // Запускаем мониторинг TPS
+            startTPSMonitoring();
+
+            // Проверка на обновления плагина
+            checkForPluginUpdates();  // Вызываем метод для проверки обновлений
+
+            logger.info("BWTelegramNotify успешно загружен!");
+        } catch (IOException e) {
+            logger.severe("Ошибка при проверке обновлений плагина: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
