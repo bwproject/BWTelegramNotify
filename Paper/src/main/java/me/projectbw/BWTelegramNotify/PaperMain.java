@@ -110,7 +110,7 @@ public class PaperMain extends JavaPlugin implements Listener {
             URL url = new URL(VELOCITY_SERVER_ADDRESS + "/send-message?message=" + message);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.getResponseCode();
+            connection.getResponseCode();  // Просто для выполнения запроса
         } catch (IOException e) {
             logger.severe("Ошибка при отправке сообщения на Velocity: " + e.getMessage());
         }
