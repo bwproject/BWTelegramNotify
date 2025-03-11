@@ -10,12 +10,15 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -172,6 +175,10 @@ public class VelocityMain {
                         
                         updater:
                           enabled: true
+                        
+                        velocity:
+                          host: "localhost"
+                          port: 25577
                         """);
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
@@ -196,7 +203,27 @@ public class VelocityMain {
             return;
         }
 
+        // Получаем параметры для Velocity
+        String velocityHost = config.getString("velocity.host", "localhost");
+        int velocityPort = config.getInt("velocity.port", 25577);
+
+        // Подключаемся к серверу Velocity
+        connectToVelocityServer(velocityHost, velocityPort);
+
         telegramBot = new TelegramBot(botToken, chatIds);
         logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
+    }
+
+    private void connectToVelocityServer(String host, int port) {
+        try {
+            Socket socket = new Socket(host, port);
+            OutputStream outputStream = socket.getOutputStream();
+            PrintWriter writer = new PrintWriter(outputStream, true);
+            String message = "🚀 **Прокси-сервер запущен!**";
+            writer.println(message);
+            logger.info("Соединение с сервером Velocity успешно установлено. Сообщение отправлено.");
+        } catch (IOException e) {
+            logger.severe("Ошибка при подключении к серверу Velocity: " + e.getMessage());
+        }
     }
 }
