@@ -38,8 +38,9 @@ public class VelocityMain {
     private YamlConfiguration config;
     private static final ChannelIdentifier CHANNEL = MinecraftChannelIdentifier.from("bwtelegram:notify");
     private VelocityListener velocityListener;
-    private String fakePlayerName;
+    
     private boolean fakePlayerEnabled;
+    private String fakePlayerName;
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
@@ -66,16 +67,15 @@ public class VelocityMain {
         }
 
         // Запуск VelocityListener
-        if (config.getBoolean("velocity_listener.enabled", true)) {
-            velocityListener = new VelocityListener(server, logger, this);
-            server.getEventManager().register(this, velocityListener);
-            logger.info("VelocityListener запущен и слушает сообщения от Paper.");
-        }
+        velocityListener = new VelocityListener(server, logger, this);
+        server.getEventManager().register(this, velocityListener);
+        logger.info("VelocityListener запущен и слушает сообщения от Paper.");
 
-        // Проверка и добавление фейкового игрока
+        // Запуск фейкового игрока
         if (fakePlayerEnabled) {
-            logger.info("Фейковый игрок включен. Используется ник: " + fakePlayerName);
-            // Здесь можно реализовать механизм добавления фейкового игрока в список.
+            logger.info("Фейковый игрок '" + fakePlayerName + "' включен.");
+        } else {
+            logger.info("Фейковый игрок отключен.");
         }
 
         logger.info("BWTelegramNotify успешно загружен!");
@@ -133,13 +133,21 @@ public class VelocityMain {
         }
     }
 
+    @Subscribe
+    public void onPluginMessage(com.velocitypowered.api.event.connection.PluginMessageEvent event) {
+        if (!event.getIdentifier().equals(CHANNEL)) return;
+
+        String message = new String(event.getData(), StandardCharsets.UTF_8);
+        logger.info("📩 Получено сообщение от Paper: " + message);
+        forwardMessageToTelegram(message);
+    }
+
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
         if (!Files.exists(configFile)) {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
-                Files.writeString(configFile, getDefaultConfig());
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
@@ -147,13 +155,11 @@ public class VelocityMain {
             }
         }
 
-        try {
-            config = YamlConfiguration.loadConfiguration(configFile.toFile());
-            logger.info("config.yml загружен успешно.");
-        } catch (IOException e) {
-            logger.severe("Ошибка при загрузке config.yml: " + e.getMessage());
-            return;
-        }
+        config = YamlConfiguration.loadConfiguration(configFile.toFile());
+        logger.info("config.yml загружен успешно.");
+
+        fakePlayerEnabled = config.getBoolean("fake_player.enabled", true);
+        fakePlayerName = config.getString("fake_player.name", "projectbw.ru");
 
         String botToken = config.getString("telegram.token", "");
         List<String> chatIds = config.getStringList("telegram.chats");
@@ -165,9 +171,6 @@ public class VelocityMain {
 
         telegramBot = new TelegramBot(botToken, chatIds);
         logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
-
-        fakePlayerEnabled = config.getBoolean("fake_player.enabled", true);
-        fakePlayerName = config.getString("fake_player.name", "projectbw.ru");
     }
 
     private void sendServerListToTelegram() {
@@ -188,26 +191,11 @@ public class VelocityMain {
         }
     }
 
-    private String getDefaultConfig() {
-        return """
-                telegram:
-                  token: "your-telegram-bot-token"
-                  chats:
-                    - "chat_id_1"
-                    - "chat_id_2"
-                
-                messages:
-                  server_started: "🔵 **Прокси-сервер запущен!**"
-                  server_stopped: "🔴 **Прокси-сервер выключен!**"
-                  player_logged_in: "✅ **Игрок зашел**: %player%"
-                
-                velocity_listener:
-                  enabled: true
-                  channel: "bwtelegram:notify"
-                
-                fake_player:
-                  enabled: true
-                  name: "projectbw.ru"
-                """;
+    public void forwardMessageToTelegram(String message) {
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        } else {
+            logger.warning("Попытка отправить сообщение в Telegram, но бот не инициализирован!");
+        }
     }
 }
