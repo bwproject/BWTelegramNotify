@@ -1,6 +1,7 @@
 package me.projectbw.BWTelegramNotify;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -17,13 +18,21 @@ public class PaperMain extends JavaPlugin implements Listener {
 
     private Logger logger;
     private static final double TPS_THRESHOLD = 15.0;
-    private static final String VELOCITY_SERVER_HOST = "localhost";  // IP Velocity-сервера
-    private static final int VELOCITY_SERVER_PORT = 12345;  // Порт для связи с Velocity
+    private String velocityHost;
+    private int velocityPort;
 
     @Override
     public void onEnable() {
         this.logger = getLogger();
         logger.info("BWTelegramNotify плагин включен!");
+
+        // Загружаем конфиг
+        saveDefaultConfig();  // Сохраняем конфиг, если его нет
+        FileConfiguration config = getConfig();
+
+        // Читаем настройки из конфига
+        velocityHost = config.getString("velocity.host", "localhost");
+        velocityPort = config.getInt("velocity.port", 12345);
 
         // Регистрируем события
         getServer().getPluginManager().registerEvents(this, this);
@@ -91,7 +100,7 @@ public class PaperMain extends JavaPlugin implements Listener {
     }
 
     private void sendViaSocket(String message) {
-        try (Socket socket = new Socket(VELOCITY_SERVER_HOST, VELOCITY_SERVER_PORT);
+        try (Socket socket = new Socket(velocityHost, velocityPort);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
             out.println(message); // Отправляем сообщение на Velocity через сокет
         } catch (IOException e) {
