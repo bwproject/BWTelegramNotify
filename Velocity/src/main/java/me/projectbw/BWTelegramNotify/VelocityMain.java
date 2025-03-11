@@ -38,6 +38,8 @@ public class VelocityMain {
     private YamlConfiguration config;
     private static final ChannelIdentifier CHANNEL = MinecraftChannelIdentifier.from("bwtelegram:notify");
     private VelocityListener velocityListener;
+    private String fakePlayerName;
+    private boolean fakePlayerEnabled;
 
     @Inject
     public VelocityMain(ProxyServer server, Logger logger, @com.velocitypowered.api.plugin.annotation.DataDirectory Path dataFolder) {
@@ -64,9 +66,17 @@ public class VelocityMain {
         }
 
         // Запуск VelocityListener
-        velocityListener = new VelocityListener(server, logger, this);
-        server.getEventManager().register(this, velocityListener);
-        logger.info("VelocityListener запущен и слушает сообщения от Paper.");
+        if (config.getBoolean("velocity_listener.enabled", true)) {
+            velocityListener = new VelocityListener(server, logger, this);
+            server.getEventManager().register(this, velocityListener);
+            logger.info("VelocityListener запущен и слушает сообщения от Paper.");
+        }
+
+        // Проверка и добавление фейкового игрока
+        if (fakePlayerEnabled) {
+            logger.info("Фейковый игрок включен. Используется ник: " + fakePlayerName);
+            // Здесь можно реализовать механизм добавления фейкового игрока в список.
+        }
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
@@ -123,35 +133,13 @@ public class VelocityMain {
         }
     }
 
-    @Subscribe
-    public void onPluginMessage(com.velocitypowered.api.event.connection.PluginMessageEvent event) {
-        if (!event.getIdentifier().equals(CHANNEL)) return;
-
-        String message = new String(event.getData(), StandardCharsets.UTF_8);
-        logger.info("📩 Получено сообщение от Paper: " + message);
-        forwardMessageToTelegram(message);
-    }
-
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
         if (!Files.exists(configFile)) {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
-                Files.writeString(configFile, """
-                        telegram:
-                          token: ""
-                          chats: []
-                        
-                        messages:
-                          server_started: "🔵 **Прокси-сервер запущен!**"
-                          server_stopped: "🔴 **Прокси-сервер выключен!**"
-                          server_list: "**Доступные серверы:**\n%server_list%"
-                          player_logged_in: "✅ **Игрок зашел**: %player%"
-                          player_logged_out: "❌ **Игрок вышел**: %player%"
-                          player_switched_server: "🔄 **Игрок сменил сервер**: %player%\n➡ **%previous_server%** → **%new_server%**"
-                          player_joined_server: "➡ **Игрок зашел на сервер**: %player%\n🟢 **Сервер**: %new_server%"
-                        """);
+                Files.writeString(configFile, getDefaultConfig());
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
@@ -177,6 +165,9 @@ public class VelocityMain {
 
         telegramBot = new TelegramBot(botToken, chatIds);
         logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
+
+        fakePlayerEnabled = config.getBoolean("fake_player.enabled", true);
+        fakePlayerName = config.getString("fake_player.name", "projectbw.ru");
     }
 
     private void sendServerListToTelegram() {
@@ -197,9 +188,26 @@ public class VelocityMain {
         }
     }
 
-    public void forwardMessageToTelegram(String message) {
-        if (telegramBot != null) {
-            telegramBot.sendMessage(message);
-        }
+    private String getDefaultConfig() {
+        return """
+                telegram:
+                  token: "your-telegram-bot-token"
+                  chats:
+                    - "chat_id_1"
+                    - "chat_id_2"
+                
+                messages:
+                  server_started: "🔵 **Прокси-сервер запущен!**"
+                  server_stopped: "🔴 **Прокси-сервер выключен!**"
+                  player_logged_in: "✅ **Игрок зашел**: %player%"
+                
+                velocity_listener:
+                  enabled: true
+                  channel: "bwtelegram:notify"
+                
+                fake_player:
+                  enabled: true
+                  name: "projectbw.ru"
+                """;
     }
 }
