@@ -16,6 +16,10 @@ messages:
 updater:
   enabled: true
 
+velocity_listener:
+  enabled: true # Разрешить ли использование VelocityListener
+  channel: "bwtelegram:notify" # Канал для общения
+
 velocity:
   host: "localhost"  # Укажите адрес сервера Velocity
   port: 25577         # Укажите порт сервера Velocity
