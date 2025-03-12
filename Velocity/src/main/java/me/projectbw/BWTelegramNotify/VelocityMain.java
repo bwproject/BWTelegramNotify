@@ -1,5 +1,4 @@
-// Filename: VelocityMain.java
-
+// VelocityMain.java
 package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
@@ -12,12 +11,13 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -75,7 +75,7 @@ public class VelocityMain {
         String playerName = event.getPlayer().getUsername();
 
         if (fakePlayerEnabled && playerName.equalsIgnoreCase(fakePlayerName)) {
-            event.getPlayer().disconnect(Component.text("Этот ник зарезервирован для системы."));
+            event.getPlayer().disconnect("Этот ник зарезервирован для системы.");
             return;
         }
 
@@ -120,23 +120,22 @@ public class VelocityMain {
         }
     }
 
-    public void forwardMessageToTelegram(String message) {
-        if (telegramBot != null) {
-            telegramBot.sendMessage(message);
-        }
-    }
-
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
 
         if (!Files.exists(configFile)) {
-            try {
+            try (InputStream inputStream = getClass().getResourceAsStream("/config.yml")) {
+                if (inputStream == null) {
+                    logger.severe("Не найден config.yml в ресурсах! Проверьте contents JAR-файла.");
+                    return;
+                }
+
                 Files.createDirectories(configFile.getParent());
-                Files.createFile(configFile);
-                logger.warning("Создан новый config.yml. Заполни его перед запуском!");
-                return;
+                Files.copy(inputStream, configFile, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("config.yml скопирован из ресурсов.");
             } catch (IOException e) {
                 logger.severe("Ошибка при создании config.yml: " + e.getMessage());
+                return;
             }
         }
 
