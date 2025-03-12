@@ -150,6 +150,16 @@ public class VelocityMain {
         }
     }
 
+    // Добавлен метод для отправки сообщения в Telegram
+    public void forwardMessageToTelegram(String message) {
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+            logger.info("Сообщение отправлено в Telegram: " + message);
+        } else {
+            logger.warning("Telegram-бот не настроен. Сообщение не отправлено.");
+        }
+    }
+
     public boolean isFakePlayerEnabled() {
         return fakePlayerEnabled;
     }
