@@ -76,6 +76,12 @@ public class PluginUpdater {
             outputStream.close();
 
             System.out.println("Плагин обновлен до версии " + latestVersion + "!");
+            
+            // Сообщение в Telegram
+            if (velocityMain.getTelegramBot() != null) {
+                velocityMain.getTelegramBot().sendMessage("🔔 Плагин обновлен до версии " + latestVersion + "!");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
