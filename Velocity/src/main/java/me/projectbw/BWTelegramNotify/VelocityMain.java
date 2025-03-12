@@ -53,6 +53,10 @@ public class VelocityMain {
 
         loadConfig();
 
+        // Проверка наличия обновлений
+        PluginUpdater updater = new PluginUpdater();
+        updater.checkForUpdates();
+
         // Сообщение о запуске прокси
         if (telegramBot != null) {
             telegramBot.sendMessage(config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**"));
@@ -160,5 +164,9 @@ public class VelocityMain {
 
         fakePlayerEnabled = config.getBoolean("fake_player.enabled", true);
         fakePlayerName = config.getString("fake_player.name", "projectbw.ru");
+    }
+
+    public TelegramBot getTelegramBot() {
+        return telegramBot;
     }
 }
