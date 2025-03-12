@@ -40,7 +40,6 @@ public class VelocityMain {
     private YamlConfiguration config;
     private static final ChannelIdentifier CHANNEL = MinecraftChannelIdentifier.from("bwtelegram:notify");
     private VelocityListener velocityListener;
-    
     private boolean fakePlayerEnabled;
     private String fakePlayerName;
 
@@ -60,20 +59,22 @@ public class VelocityMain {
         loadConfig();
         server.getChannelRegistrar().register(CHANNEL);
 
+        // Отправка списка серверов
         sendServerListToTelegram();
 
+        // Сообщение о запуске прокси
         if (telegramBot != null) {
             telegramBot.sendMessage(config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**"));
         }
 
+        // Запуск VelocityListener
         velocityListener = new VelocityListener(server, logger, this);
         server.getEventManager().register(this, velocityListener);
         logger.info("VelocityListener запущен и слушает сообщения от Paper.");
 
+        // Добавление фейкового игрока, если включено в конфиге
         if (fakePlayerEnabled) {
-            logger.info("Фейковый игрок '" + fakePlayerName + "' включен.");
-        } else {
-            logger.info("Фейковый игрок отключен.");
+            logger.info("Фейковый игрок включен: " + fakePlayerName);
         }
 
         logger.info("BWTelegramNotify успешно загружен!");
@@ -146,6 +147,33 @@ public class VelocityMain {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
+                Files.writeString(configFile, """
+                        telegram:
+                          token: "your-telegram-bot-token"
+                          chats:
+                            - "chat_id_1"
+                            - "chat_id_2"
+                        
+                        messages:
+                          server_started: "🔵 **Прокси-сервер запущен!**"
+                          server_stopped: "🔴 **Прокси-сервер выключен!**"
+                          server_list: "**Доступные серверы:**\\n%server_list%"
+                          player_logged_in: "✅ **Игрок зашел**: %player%"
+                          player_logged_out: "❌ **Игрок вышел**: %player%"
+                          player_switched_server: "🔄 **Игрок сменил сервер**: %player%\\n➡ **%previous_server%** → **%new_server%**"
+                          player_joined_server: "➡ **Игрок зашел на сервер**: %player%\\n🟢 **Сервер**: %new_server%"
+                        
+                        updater:
+                          enabled: true
+                        
+                        velocity_listener:
+                          enabled: true
+                          channel: "bwtelegram:notify"
+                        
+                        fake_player:
+                          enabled: true
+                          name: "projectbw.ru"
+                        """);
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
@@ -158,17 +186,6 @@ public class VelocityMain {
 
         fakePlayerEnabled = config.getBoolean("fake_player.enabled", true);
         fakePlayerName = config.getString("fake_player.name", "projectbw.ru");
-
-        String botToken = config.getString("telegram.token", "");
-        List<String> chatIds = config.getStringList("telegram.chats");
-
-        if (botToken.isEmpty() || chatIds.isEmpty()) {
-            logger.severe("В config.yml не указан токен или список чатов! Бот не будет запущен.");
-            return;
-        }
-
-        telegramBot = new TelegramBot(botToken, chatIds);
-        logger.info("Telegram-бот запущен: " + telegramBot.getBotName() + " (@" + telegramBot.getBotUsername() + ")");
     }
 
     private void sendServerListToTelegram() {
@@ -192,8 +209,6 @@ public class VelocityMain {
     public void forwardMessageToTelegram(String message) {
         if (telegramBot != null) {
             telegramBot.sendMessage(message);
-        } else {
-            logger.warning("Попытка отправить сообщение в Telegram, но бот не инициализирован!");
         }
     }
 }
