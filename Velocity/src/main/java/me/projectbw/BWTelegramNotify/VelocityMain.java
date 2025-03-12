@@ -1,4 +1,3 @@
-// VelocityMain.java
 package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
@@ -61,6 +60,9 @@ public class VelocityMain {
         if (telegramBot != null) {
             telegramBot.sendMessage(config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**"));
         }
+
+        // Регистрируем слушатель событий
+        server.getEventManager().register(this, new VelocityListener(server, logger, this));
 
         logger.info("BWTelegramNotify успешно загружен!");
     }
@@ -168,5 +170,12 @@ public class VelocityMain {
 
     public TelegramBot getTelegramBot() {
         return telegramBot;
+    }
+
+    // Этот метод будет передавать сообщение в Telegram через бот
+    public void forwardMessageToTelegram(String message) {
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        }
     }
 }
