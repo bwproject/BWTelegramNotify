@@ -1,5 +1,4 @@
-// Filename: VelocityMain.java
-
+// VelocityMain.java
 package me.projectbw.BWTelegramNotify;
 
 import com.google.inject.Inject;
@@ -112,6 +111,15 @@ public class VelocityMain {
         }
     }
 
+    // Новый метод для отправки сообщения в Telegram
+    public void forwardMessageToTelegram(String message) {
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        } else {
+            logger.warning("Telegram-бот не инициализирован, сообщение не отправлено.");
+        }
+    }
+
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
 
@@ -128,7 +136,6 @@ public class VelocityMain {
                 logger.warning("Создан новый config.yml из ресурсов.");
             } catch (IOException e) {
                 logger.severe("Ошибка при копировании config.yml: " + e.getMessage());
-                e.printStackTrace();  // Логирование исключения для диагностики
                 return;
             }
         }
