@@ -49,7 +49,12 @@ public class VelocityMain {
         logger.info("=== BWTelegramNotify загружается ===");
         logger.info("==================================");
 
-        loadConfig();
+        try {
+            loadConfig();
+        } catch (IOException e) {
+            logger.severe("Ошибка при загрузке конфигурации: " + e.getMessage());
+            return;
+        }
 
         // Сообщение о запуске прокси
         if (telegramBot != null) {
@@ -111,16 +116,7 @@ public class VelocityMain {
         }
     }
 
-    // Новый метод для отправки сообщения в Telegram
-    public void forwardMessageToTelegram(String message) {
-        if (telegramBot != null) {
-            telegramBot.sendMessage(message);
-        } else {
-            logger.warning("Telegram-бот не инициализирован, сообщение не отправлено.");
-        }
-    }
-
-    private void loadConfig() {
+    private void loadConfig() throws IOException {  // добавлено "throws IOException"
         logger.info("Загрузка config.yml...");
 
         // Копирование из ресурсов, если файла нет
@@ -136,7 +132,7 @@ public class VelocityMain {
                 logger.warning("Создан новый config.yml из ресурсов.");
             } catch (IOException e) {
                 logger.severe("Ошибка при копировании config.yml: " + e.getMessage());
-                return;
+                throw e;  // выбрасываем исключение дальше
             }
         }
 
