@@ -1,17 +1,20 @@
 // PluginUpdater.java
+
 package me.projectbw.BWTelegramNotify;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class PluginUpdater {
-
     private static final String GITHUB_API_URL = "https://api.github.com/repos/bwproject/BWTelegramNotify/releases/latest";
-    private static final String DOWNLOAD_BASE_URL = "https://github.com/bwproject/BWTelegramNotify/releases/download/";
+    private final VelocityMain velocityMain;
+
+    public PluginUpdater(VelocityMain velocityMain) {
+        this.velocityMain = velocityMain;
+    }
 
     public void checkForUpdates() {
         try {
@@ -33,7 +36,6 @@ public class PluginUpdater {
             JSONArray assets = jsonResponse.getJSONArray("assets");
             String downloadUrl = null;
 
-            // Ищем файл с "BWTelegramNotify-Velocity" в имени
             for (int i = 0; i < assets.length(); i++) {
                 JSONObject asset = assets.getJSONObject(i);
                 String assetName = asset.getString("name");
@@ -76,13 +78,8 @@ public class PluginUpdater {
             outputStream.close();
 
             System.out.println("Плагин обновлен до версии " + latestVersion + "!");
-            
-            // Сообщение в Telegram
-            if (velocityMain.getTelegramBot() != null) {
-                velocityMain.getTelegramBot().sendMessage("🔔 Плагин обновлен до версии " + latestVersion + "!");
-            }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
