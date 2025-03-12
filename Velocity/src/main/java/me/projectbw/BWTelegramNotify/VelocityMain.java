@@ -12,16 +12,12 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
-import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -36,10 +32,8 @@ public class VelocityMain {
     private final ProxyServer server;
     private final Logger logger;
     private final Path configFile;
-    private TelegramBot telegramBot;
     private YamlConfiguration config;
-    private static final ChannelIdentifier CHANNEL = MinecraftChannelIdentifier.from("bwtelegram:notify");
-    private VelocityListener velocityListener;
+    private TelegramBot telegramBot;
     private boolean fakePlayerEnabled;
     private String fakePlayerName;
 
@@ -57,24 +51,10 @@ public class VelocityMain {
         logger.info("==================================");
 
         loadConfig();
-        server.getChannelRegistrar().register(CHANNEL);
-
-        // Отправка списка серверов
-        sendServerListToTelegram();
 
         // Сообщение о запуске прокси
         if (telegramBot != null) {
             telegramBot.sendMessage(config.getString("messages.server_started", "🔵 **Прокси-сервер запущен!**"));
-        }
-
-        // Запуск VelocityListener
-        velocityListener = new VelocityListener(server, logger, this);
-        server.getEventManager().register(this, velocityListener);
-        logger.info("VelocityListener запущен и слушает сообщения от Paper.");
-
-        // Добавление фейкового игрока, если включено в конфиге
-        if (fakePlayerEnabled) {
-            logger.info("Фейковый игрок включен: " + fakePlayerName);
         }
 
         logger.info("BWTelegramNotify успешно загружен!");
@@ -132,83 +112,49 @@ public class VelocityMain {
         }
     }
 
-    @Subscribe
-    public void onPluginMessage(com.velocitypowered.api.event.connection.PluginMessageEvent event) {
-        if (!event.getIdentifier().equals(CHANNEL)) return;
-
-        String message = new String(event.getData(), StandardCharsets.UTF_8);
-        logger.info("📩 Получено сообщение от Paper: " + message);
-        forwardMessageToTelegram(message);
-    }
-
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
+
+        // Копирование из ресурсов, если файла нет
         if (!Files.exists(configFile)) {
-            try {
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream("config.yml")) {
+                if (in == null) {
+                    logger.severe("Не найден config.yml в ресурсах! Проверь, что он есть в src/main/resources.");
+                    return;
+                }
+
                 Files.createDirectories(configFile.getParent());
-                Files.createFile(configFile);
-                Files.writeString(configFile, """
-                        telegram:
-                          token: "your-telegram-bot-token"
-                          chats:
-                            - "chat_id_1"
-                            - "chat_id_2"
-                        
-                        messages:
-                          server_started: "🔵 **Прокси-сервер запущен!**"
-                          server_stopped: "🔴 **Прокси-сервер выключен!**"
-                          server_list: "**Доступные серверы:**\\n%server_list%"
-                          player_logged_in: "✅ **Игрок зашел**: %player%"
-                          player_logged_out: "❌ **Игрок вышел**: %player%"
-                          player_switched_server: "🔄 **Игрок сменил сервер**: %player%\\n➡ **%previous_server%** → **%new_server%**"
-                          player_joined_server: "➡ **Игрок зашел на сервер**: %player%\\n🟢 **Сервер**: %new_server%"
-                        
-                        updater:
-                          enabled: true
-                        
-                        velocity_listener:
-                          enabled: true
-                          channel: "bwtelegram:notify"
-                        
-                        fake_player:
-                          enabled: true
-                          name: "projectbw.ru"
-                        """);
-                logger.warning("Создан новый config.yml. Заполни его перед запуском!");
-                return;
+                Files.copy(in, configFile);
+                logger.warning("Создан новый config.yml из ресурсов.");
             } catch (IOException e) {
-                logger.severe("Ошибка при создании config.yml: " + e.getMessage());
+                logger.severe("Ошибка при копировании config.yml: " + e.getMessage());
+                return;
             }
         }
 
+        // Загрузка конфига
         config = YamlConfiguration.loadConfiguration(configFile.toFile());
         logger.info("config.yml загружен успешно.");
 
+        // Чтение настроек
         fakePlayerEnabled = config.getBoolean("fake_player.enabled", true);
         fakePlayerName = config.getString("fake_player.name", "projectbw.ru");
-    }
 
-    private void sendServerListToTelegram() {
-        StringBuilder serverList = new StringBuilder("🌐 **Доступные серверы:**\n");
-
-        if (server.getAllServers().isEmpty()) {
-            serverList.append("❌ Нет доступных серверов.");
+        // Настройка Telegram-бота
+        String botToken = config.getString("telegram.token", "");
+        if (!botToken.isEmpty()) {
+            telegramBot = new TelegramBot(botToken, config.getStringList("telegram.chats"));
+            logger.info("Telegram-бот запущен.");
         } else {
-            for (RegisteredServer srv : server.getAllServers()) {
-                serverList.append("➡ ").append(srv.getServerInfo().getName()).append("\n");
-            }
-        }
-
-        logger.info(serverList.toString());
-        if (telegramBot != null) {
-            telegramBot.sendMessage(config.getString("messages.server_list", "**Доступные серверы:**\n%server_list%")
-                    .replace("%server_list%", serverList.toString()));
+            logger.warning("Токен Telegram-бота не указан, бот не будет работать.");
         }
     }
 
-    public void forwardMessageToTelegram(String message) {
-        if (telegramBot != null) {
-            telegramBot.sendMessage(message);
-        }
+    public boolean isFakePlayerEnabled() {
+        return fakePlayerEnabled;
+    }
+
+    public String getFakePlayerName() {
+        return fakePlayerName;
     }
 }
