@@ -161,4 +161,13 @@ public class VelocityMain {
     public String getFakePlayerName() {
         return fakePlayerName;
     }
+
+    // Новый метод для передачи сообщения в Telegram
+    public void forwardMessageToTelegram(String message) {
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        } else {
+            logger.warning("Telegram-бот не настроен. Сообщение не отправлено.");
+        }
+    }
 }
