@@ -1,4 +1,4 @@
-// VelocityMain.java
+// Filename: VelocityMain.java
 
 package me.projectbw.BWTelegramNotify;
 
@@ -128,6 +128,7 @@ public class VelocityMain {
                 logger.warning("Создан новый config.yml из ресурсов.");
             } catch (IOException e) {
                 logger.severe("Ошибка при копировании config.yml: " + e.getMessage());
+                e.printStackTrace();  // Логирование исключения для диагностики
                 return;
             }
         }
@@ -147,16 +148,6 @@ public class VelocityMain {
             logger.info("Telegram-бот запущен.");
         } else {
             logger.warning("Токен Telegram-бота не указан, бот не будет работать.");
-        }
-    }
-
-    // Добавлен метод для отправки сообщения в Telegram
-    public void forwardMessageToTelegram(String message) {
-        if (telegramBot != null) {
-            telegramBot.sendMessage(message);
-            logger.info("Сообщение отправлено в Telegram: " + message);
-        } else {
-            logger.warning("Telegram-бот не настроен. Сообщение не отправлено.");
         }
     }
 
