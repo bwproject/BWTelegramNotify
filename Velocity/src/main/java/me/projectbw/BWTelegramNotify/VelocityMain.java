@@ -1,4 +1,4 @@
-// VelocityMain.java
+// Filename: VelocityMain.java
 
 package me.projectbw.BWTelegramNotify;
 
@@ -12,7 +12,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
+import net.kyori.adventure.text.Component;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class VelocityMain {
         String playerName = event.getPlayer().getUsername();
 
         if (fakePlayerEnabled && playerName.equalsIgnoreCase(fakePlayerName)) {
-            event.getPlayer().disconnect("Этот ник зарезервирован для системы.");
+            event.getPlayer().disconnect(Component.text("Этот ник зарезервирован для системы."));
             return;
         }
 
@@ -120,6 +120,12 @@ public class VelocityMain {
         }
     }
 
+    public void forwardMessageToTelegram(String message) {
+        if (telegramBot != null) {
+            telegramBot.sendMessage(message);
+        }
+    }
+
     private void loadConfig() {
         logger.info("Загрузка config.yml...");
 
@@ -127,33 +133,6 @@ public class VelocityMain {
             try {
                 Files.createDirectories(configFile.getParent());
                 Files.createFile(configFile);
-                Files.writeString(configFile, """
-                        telegram:
-                          token: "your-telegram-bot-token"
-                          chats:
-                            - "chat_id_1"
-                            - "chat_id_2"
-
-                        messages:
-                          server_started: "🔵 **Прокси-сервер запущен!**"
-                          server_stopped: "🔴 **Прокси-сервер выключен!**"
-                          server_list: "**Доступные серверы:**\\n%server_list%"
-                          player_logged_in: "✅ **Игрок зашел**: %player%"
-                          player_logged_out: "❌ **Игрок вышел**: %player%"
-                          player_switched_server: "🔄 **Игрок сменил сервер**: %player%\\n➡ **%previous_server%** → **%new_server%**"
-                          player_joined_server: "➡ **Игрок зашел на сервер**: %player%\\n🟢 **Сервер**: %new_server%"
-
-                        updater:
-                          enabled: true
-
-                        velocity_listener:
-                          enabled: true
-                          channel: "bwtelegram:notify"
-
-                        fake_player:
-                          enabled: true
-                          name: "projectbw.ru"
-                        """);
                 logger.warning("Создан новый config.yml. Заполни его перед запуском!");
                 return;
             } catch (IOException e) {
